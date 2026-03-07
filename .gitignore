@@ -1,0 +1,31 @@
+aws
+awscliv2.zip
+
+# python
+__pycache__/
+*.pyc
+
+# env
+.env
+.venv
+uv.lock
+
+# model
+*.bin
+*.pt
+*.safetensors
+
+# dataset
+*.parquet
+*.jsonl
+data/
+
+# logs
+logs/
+wandb/
+
+# notebook
+.ipynb_checkpoints
+
+# system
+.DS_Store

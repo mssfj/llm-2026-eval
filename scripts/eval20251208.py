@@ -18,15 +18,15 @@ from mymath_verify import verify_math_answer, MathVerifyConfig, MathVerifyResult
 
 from transformers import AutoTokenizer
 
-WANDB_PROJECT = "qwen3-4b-gsm8k-100"
+WANDB_PROJECT = "qwen3.5-9b-gsm8k-100"
 WANDB_ENTITY = "mssfj-1"
-WANDB_RUNNAME = "qwen3-4b-base"
+WANDB_RUNNAME = "qwen3.5-9b-base"
 
-MODEL_NAME = "unsloth/Qwen3-4B-bnb-4bit"
+MODEL_NAME = "Qwen/Qwen3.5-9B"
 
 #LORA_PATH = "/workspace/model/qwen3_sft_lora_openmathinst2-1000/"
 LORA_PATH = ""
-OUTPUT_PATH = "/workspace/outputs/gsm8k_eval_qwen3-4b-base.jsonl"
+OUTPUT_PATH = "/workspace/outputs/gsm8k_eval_qwen3.5-9b.jsonl"
 
 
 def extract_gsm8k_gold_answer(answer_text: str) -> str:
