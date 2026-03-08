@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python/
 # eval.py
 """
 Unsloth 4bit Base Model + LoRA + vLLM で HuggingFaceH4/MATH-500 を評価するスクリプト。
@@ -24,6 +24,11 @@ WANDB_RUNNAME = "qwen3.5-9b-base"
 DATASET_NAME = "HuggingFaceH4/MATH-500"
 
 MODEL_NAME = "Qwen/Qwen3.5-9B"
+VLLM_TENSOR_PARALLEL_SIZE = 1
+VLLM_MAX_MODEL_LEN = 2048
+VLLM_GPU_MEMORY_UTILIZATION = 0.6
+VLLM_BATCH_SIZE = 4
+MAX_SAMPLES = 10
 
 #LORA_PATH = "/workspace/model/qwen3_sft_lora_openmathinst2-1000/"
 LORA_PATH = ""
@@ -62,7 +67,7 @@ def build_prompt(question: str, tokenizer) -> str:
     # トークナイザーのテンプレートを適用
     return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 
-def evaluate_gsm8k_with_vllm(
+def evaluate_with_vllm(
     model_name: str,
     lora_path: Optional[str] = None,
     max_samples: Optional[int] = None,
@@ -90,12 +95,13 @@ def evaluate_gsm8k_with_vllm(
     llm = LLM(
         model=model_name,
         trust_remote_code=True,
-        tensor_parallel_size=1,
-        max_model_len=4096,
+        tensor_parallel_size=VLLM_TENSOR_PARALLEL_SIZE,
+        max_model_len=VLLM_MAX_MODEL_LEN,
         quantization="bitsandbytes",
         load_format="bitsandbytes",
         enforce_eager=True,
-        gpu_memory_utilization=0.9,
+        gpu_memory_utilization=VLLM_GPU_MEMORY_UTILIZATION,
+        max_num_seqs=batch_size,
         enable_lora=(lora_path is not None),
         max_lora_rank=32 if lora_path else 16,
     )
@@ -202,8 +208,8 @@ def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser()
     p.add_argument("--model-name",type=str,default=f"{MODEL_NAME}",help="Hugging Face 4-bit base model name.")
     p.add_argument("--lora-path",type=str,default=LORA_PATH,help="Path to the LoRA adapter.")
-    p.add_argument("--max-samples", type=int, default=100)
-    p.add_argument("--batch-size", type=int,default=16,help="vLLM batch size (passed to max_num_seqs).")
+    p.add_argument("--max-samples", type=int, default=MAX_SAMPLES)
+    p.add_argument("--batch-size", type=int,default=VLLM_BATCH_SIZE,help="vLLM batch size (passed to max_num_seqs).")
     p.add_argument("--output-path", type=str, default=f"{OUTPUT_PATH}")
     p.add_argument("--wandb-project", type=str, default=f"{WANDB_PROJECT}", help="W&B project name.")
     p.add_argument("--wandb-entity", type=str, default=f"{WANDB_ENTITY}", help="W&B entity/user.")
@@ -252,7 +258,7 @@ def main():
     args = parse_args()
     wandb_run = init_wandb(args)
     try:
-        evaluate_gsm8k_with_vllm(
+        evaluate_with_vllm(
             model_name = args.model_name,
             lora_path = args.lora_path,
             max_samples = args.max_samples if args.max_samples > 0 else None,

@@ -73,8 +73,8 @@ dependencies = [
     "bitsandbytes",
     "sentencepiece",
     "evaluate",
-    # wandb 0.12.x is incompatible with NumPy 2.x (np.float_ removal).
-    "wandb==0.19.11",
+    # wandb 0.22.3+ supports newer W&B API key formats and works with NumPy 2.x.
+    "wandb==0.22.3",
     "tiktoken",
     "scikit-learn",
     "numpy",
@@ -93,9 +93,9 @@ sft = [
 
 # GRPO / RL / 推論
 grpo = [
-    "transformers==4.56.2",
+    "transformers==4.57.6",
     "trl==0.22.2",
-    "vllm==0.10.2",
+    "vllm==0.17.0",
     "math-verify[antlr4_13_2]",
 ]
 
