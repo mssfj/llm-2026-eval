@@ -13,6 +13,7 @@ dependencies = [
     "bitsandbytes",
     "sentencepiece",
     "evaluate",
+    # wandb 0.22.3+ supports newer W&B API key formats and works with NumPy 2.x.
     "wandb==0.22.3",
     "tiktoken",
     "scikit-learn",
