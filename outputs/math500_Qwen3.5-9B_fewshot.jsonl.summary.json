@@ -1,0 +1,13 @@
+{
+  "model_name": "Qwen/Qwen3.5-9B",
+  "lora_path": "",
+  "fewshot_path": "outputs/math_fewshot_examples.json",
+  "num_samples": 50,
+  "num_correct": 18,
+  "em": 0.36,
+  "reason_counts": {
+    "exact_match": 18,
+    "mismatch": 22,
+    "missing_final_answer": 10
+  }
+}

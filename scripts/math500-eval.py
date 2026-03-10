@@ -1,7 +1,7 @@
 #!/usr/bin/env python/
 # eval.py
 """
-Base Model + LoRA + vLLM で HuggingFaceH4/MATH-500 を評価するスクリプト。
+Base Model + vLLM で HuggingFaceH4/MATH-500 を評価するスクリプト。
 """
 
 import argparse
@@ -26,19 +26,20 @@ DATASET_NAME = "HuggingFaceH4/MATH-500"
 MODEL_NAME = "Qwen/Qwen3.5-9B"
 VLLM_TENSOR_PARALLEL_SIZE = 1
 VLLM_MAX_MODEL_LEN = 2048
-VLLM_GPU_MEMORY_UTILIZATION = 0.85
+VLLM_GPU_MEMORY_UTILIZATION = 0.9
 VLLM_BATCH_SIZE = 2
 VLLM_ENFORCE_EAGER = False
 VLLM_QUANTIZATION = "none"
 VLLM_LOAD_FORMAT = "none"
-VLLM_MAX_TOKENS = 2048
-MAX_SAMPLES = 10
+VLLM_MAX_TOKENS = 512
+MAX_SAMPLES = 50
 
 PROJECT_HOME_PATH = "/workspace/llm-2026-eval"
 SPRIT_MODEL_NAME = MODEL_NAME.rsplit("/", 1)[-1]
 #LORA_PATH = "/workspace/model/qwen3_sft_lora_openmathinst2-1000/"
 LORA_PATH = ""
 OUTPUT_PATH = f"{PROJECT_HOME_PATH}/outputs/math500_{SPRIT_MODEL_NAME}.jsonl"
+
 
 def extract_math500_gold_answer(ex: Dict[str, Any]) -> str:
     for key in ("answer", "final_answer", "expected_answer", "target"):
@@ -48,21 +49,29 @@ def extract_math500_gold_answer(ex: Dict[str, Any]) -> str:
 
     return ""
 
-def build_prompt(question: str, tokenizer) -> str:
+def build_prompt(question: str, tokenizer, final_answer_only: bool = False) -> str:
+    if final_answer_only:
+        user_content = (
+            "Solve the following math problem.\n"
+            "Return only one final line in this exact format: Final Answer: ...\n"
+            "Do not include any other text.\n\n"
+            f"Problem:\n{question}"
+        )
+    else:
+        user_content = (
+            "Solve the following math problem.\n"
+            "Keep the response short.\n"
+            "Do not include planning, self-checks, or meta commentary.\n"
+            "End with exactly one line in this format: Final Answer: ...\n\n"
+            f"Problem:\n{question}"
+        )
+
     messages = [
         {"role": "system", "content": "You are a careful mathematical problem solver."},
-        {
-            "role": "user",
-            "content": (
-                "Solve the following math problem carefully.\n"
-                "Show your reasoning step by step, but keep it brief.\n"
-                "After your reasoning, end with one line: Final Answer: ...\n\n"
-                f"Problem:\n{question}"
-            ),
-        }
+        {"role": "user", "content": user_content},
     ]
-    # トークナイザーのテンプレートを適用
     return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+
 
 def evaluate_with_vllm(
     model_name: str,
@@ -77,13 +86,9 @@ def evaluate_with_vllm(
     wandb_run=None,
     wandb_log_artifacts: bool = False,
 ) -> Dict[str, Any]:
-    
-    # --- 修正1: ここでトークナイザーをロードします ---
     print(f"Loading Tokenizer from: {model_name}")
     tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
-    # ----------------------------------------------
 
-    # データ読み込み
     ds = load_dataset(DATASET_NAME, split="test")
     if max_samples is not None:
         ds = ds.select(range(min(max_samples, len(ds))))
@@ -113,31 +118,25 @@ def evaluate_with_vllm(
     if load_format != "none":
         llm_kwargs["load_format"] = load_format
 
-    llm = LLM(
-        **llm_kwargs,
-    )
+    llm = LLM(**llm_kwargs)
 
-    # ★重要: Stop Tokenの設定変更（前回の指摘事項）
     sampling_params = SamplingParams(
         temperature=0.0,
         top_p=1.0,
         max_tokens=max_tokens,
-        stop=None, # "Final Answer:" で止まらないように削除
+        stop=None,
     )
-    
+
     gold_answers: List[str] = []
     raw_questions: List[str] = []
-    prompts: List[str] = []  # ★ここも初期化が必要です（前回の指摘事項）
+    prompts: List[str] = []
 
     for ex in ds:
         q = ex.get("problem") or ex.get("question") or ""
         gold = extract_math500_gold_answer(ex)
         raw_questions.append(q)
         gold_answers.append(gold)
-        
-        # --- 修正2: ここで tokenizer を渡します ---
-        prompts.append(build_prompt(q, tokenizer)) 
-        # ----------------------------------------
+        prompts.append(build_prompt(q, tokenizer))
 
     print("Running vLLM generation...")
     
@@ -145,33 +144,43 @@ def evaluate_with_vllm(
     if use_lora:
         lora_request = LoRARequest("adapter", 1, lora_path)
 
-    outputs: List[Any] = []
-    # vLLM は内部でスケジューリングしてくれる
-    outputs = llm.generate(prompts, sampling_params, lora_request=lora_request)
+    outputs: List[Any] = llm.generate(prompts, sampling_params, lora_request=lora_request)
 
-    # --- 以下評価ロジックは同じ ---
     config = MathVerifyConfig(use_exact=True, use_numeric=True, use_sympy=True, require_final_answer=True)
-    num_correct = 0
-    num_total = len(outputs)
-    reason_counter: Counter = Counter()
     detailed_results: List[Dict[str, Any]] = []
+    retry_indices: List[int] = []
 
     for i, (out, q, gold) in enumerate(zip(outputs, raw_questions, gold_answers)):
-        if not out.outputs:
-            pred_text = ""
-        else:
-            pred_text = out.outputs[0].text
-
+        pred_text = out.outputs[0].text if out.outputs else ""
         res: MathVerifyResult = verify_math_answer(pred_text, gold, config=config)
-        if res.is_correct:
-            num_correct += 1
-        reason_counter[res.reason] += 1
-
         detailed_results.append({
             "index": i, "question": q, "gold_answer": gold, "model_output": pred_text,
             "extracted_pred_answer": res.pred_answer, "is_correct": res.is_correct, "reason": res.reason
         })
+        if res.reason == "missing_final_answer":
+            retry_indices.append(i)
 
+    if retry_indices:
+        print(f"Retrying {len(retry_indices)} samples with strict final-answer-only prompt...")
+        retry_prompts = [build_prompt(raw_questions[i], tokenizer, final_answer_only=True) for i in retry_indices]
+        retry_outputs = llm.generate(retry_prompts, sampling_params, lora_request=lora_request)
+
+        for row_index, retry_out in zip(retry_indices, retry_outputs):
+            retry_text = retry_out.outputs[0].text if retry_out.outputs else ""
+            retry_res: MathVerifyResult = verify_math_answer(retry_text, gold_answers[row_index], config=config)
+            if retry_res.reason != "missing_final_answer":
+                detailed_results[row_index]["model_output"] = retry_text
+                detailed_results[row_index]["extracted_pred_answer"] = retry_res.pred_answer
+                detailed_results[row_index]["is_correct"] = retry_res.is_correct
+                detailed_results[row_index]["reason"] = retry_res.reason
+
+    num_correct = 0
+    reason_counter: Counter = Counter()
+    num_total = len(detailed_results)
+    for i, row in enumerate(detailed_results):
+        if row["is_correct"]:
+            num_correct += 1
+        reason_counter[row["reason"]] += 1
         if (i + 1) % 50 == 0:
             print(f"Processed {i+1}/{num_total} samples")
 
