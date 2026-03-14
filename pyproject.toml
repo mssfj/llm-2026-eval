@@ -6,10 +6,12 @@ requires-python = ">=3.10"
 
 # 共通依存
 dependencies = [
-    "transformers",
+    "transformers>=4.58.0",
     "accelerate",
     "datasets",
     "peft",
+    "optimum",
+    "gptqmodel",
     "bitsandbytes",
     "sentencepiece",
     "evaluate",
@@ -27,18 +29,6 @@ dependencies = [
 
 # グループ依存（uv の新仕様）
 [dependency-groups]
-# SFT: 今後 SFT専用をここに追加
-sft = [
-]
-
-# GRPO / RL / 推論
-grpo = [
-    "transformers==4.57.6",
-    "trl==0.22.2",
-    "vllm==0.17.0",
-    "math-verify[antlr4_13_2]",
-]
-
 # 評価系（math-verify 等）
 eval = [
 ]

@@ -12,6 +12,7 @@ __pycache__/
 uv.lock
 
 # model
+model/
 *.bin
 *.pt
 *.safetensors
