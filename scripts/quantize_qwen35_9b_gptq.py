@@ -259,6 +259,29 @@ def ensure_dependencies() -> None:
         ) from exc
 
 
+def patch_optimum_gptq_pack_model() -> None:
+    from optimum.gptq.quantizer import GPTQQuantizer
+
+    original_pack_model = GPTQQuantizer.pack_model
+    if getattr(original_pack_model, "_qwen35_hf_device_map_patch", False):
+        return
+
+    def pack_model_with_missing_device_map(self, model, quantizers):
+        if not hasattr(model, "hf_device_map"):
+            model.hf_device_map = None
+        return original_pack_model(self, model, quantizers)
+
+    pack_model_with_missing_device_map._qwen35_hf_device_map_patch = True
+    GPTQQuantizer.pack_model = pack_model_with_missing_device_map
+
+
+def cleanup_device_map_for_save(model) -> None:
+    # Some GPTQ paths on Qwen3.5 models do not populate hf_device_map, while
+    # save_pretrained() assumes that if the attribute exists it is a dict.
+    if getattr(model, "hf_device_map", None) is None and hasattr(model, "hf_device_map"):
+        delattr(model, "hf_device_map")
+
+
 def format_math_cot_sample(question: str, answer: str) -> str:
     return (
         "Solve the following math problem step by step.\n"
@@ -352,6 +375,7 @@ def build_quantization_examples(
 
 def main() -> None:
     ensure_dependencies()
+    patch_optimum_gptq_pack_model()
 
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer, GPTQConfig
@@ -408,6 +432,7 @@ def main() -> None:
     )
 
     print(f"Saving quantized model to: {output_dir}")
+    cleanup_device_map_for_save(model)
     model.save_pretrained(output_dir, safe_serialization=True)
     tokenizer.save_pretrained(output_dir)
     write_model_card(output_dir, args)
