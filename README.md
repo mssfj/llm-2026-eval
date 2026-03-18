@@ -1,28 +1,37 @@
-# LLM Eval
+# lowbit-math-reasoning
 
-Qwen3.5-9B の GPTQ 量子化スクリプトは [`scripts/quantize_qwen35_9b_gptq.py`](/workspace/llm-2026-eval/scripts/quantize_qwen35_9b_gptq.py) を使います。
+This repository explores how low-bit representations affect mathematical reasoning in large language models, with a primary focus on BitNet b1.58 and post-training quantization methods such as GPTQ.
 
-## Qwen3.5 GPTQ
+## Objective
 
-96GB GPU を前提にした推奨実行例:
+To systematically evaluate how aggressive low-bit constraints impact multi-step mathematical reasoning, using benchmarks such as GSM8K.
 
-```bash
-.venv/bin/python scripts/quantize_qwen35_9b_gptq.py \
-  --output-dir /workspace/llm-2026-eval/model/Qwen3.5-9B-GPTQ-INT8 \
-  --calibration-preset math_qa_cot \
-  --max-calibration-samples 128 \
-  --max-seq-len 8192 \
-  --bits 8
+## Scope
+
+- Post-training quantization (GPTQ, AWQ, etc.)
+- Native low-bit architectures (BitNet b1.58)
+- Mathematical reasoning benchmarks (GSM8K, MATH)
+- Failure mode analysis (reasoning collapse, arithmetic errors, hallucination)
+
+## Current Status
+
+- Qwen3.5-9B GPTQ (8-bit / 4-bit) prepared
+- GSM8K evaluation in progress
+
+## Research Questions
+
+- At what bit-width does mathematical reasoning collapse?
+- How do failure patterns change under quantization?
+- Can low-bit architectures (e.g., BitNet) preserve reasoning better than quantized models?
+
+## Repository Structure
+
+```text
+lowbit-math-reasoning/
+├── eval/ # evaluation scripts (GSM8K, etc.)
+├── quantization/ # GPTQ / AWQ configs and scripts
+├── prompts/ # reasoning prompts
+├── experiments/ # experiment logs (CRITICAL)
+├── results/ # tables / plots
+└── README.md
 ```
-
-現在のデフォルト値:
-
-- `--max-calibration-samples 128`
-- `--max-seq-len 8192`
-- `--bits 8`
-
-補足:
-
-- `math_qa_cot` の calibration サンプルは長文なので、`max-seq-len 2048` では大きく切り詰められます。
-- 量子化前に `vLLM` など GPU を占有するプロセスを停止してください。
-- `Qwen3.5` 対応のため、環境の `transformers` は GitHub 版の最新版を使います。セットアップは [`vastai-setup_uv.sh`](/workspace/llm-2026-eval/vastai-setup_uv.sh) を参照してください。

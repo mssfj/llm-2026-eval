@@ -7,7 +7,8 @@ if [ "$#" -lt 1 ]; then
   exit 1
 fi
 PROJECT_ROOT="$(realpath -m "$1")"
-BUILD_ROOT="${PROJECT_ROOT}/build"
+EVAL_ROOT="${PROJECT_ROOT}"
+QUANTIZATION_ROOT="${PROJECT_ROOT}/quantization"
 
 # ==== 0. 基本パッケージ ====
 sudo apt-get update
@@ -25,7 +26,7 @@ sudo ./aws/install --update
 aws configure
 
 mkdir -p ~/.codex
-a​ws s3 cp s3://llm-train-dev/codex/auth.json ~/.codex/auth.json
+aws s3 cp s3://llm-train-dev/codex/auth.json ~/.codex/auth.json
 
 npm cache clean -f
 npm install -g n
@@ -44,61 +45,26 @@ export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
 hash -r
 
 # ==== 2. プロジェクトディレクトリ ====
-mkdir -p "${PROJECT_ROOT}" "${BUILD_ROOT}"
+mkdir -p \
+  "${PROJECT_ROOT}" \
+  "${PROJECT_ROOT}/eval" \
+  "${QUANTIZATION_ROOT}" \
+  "${PROJECT_ROOT}/prompts" \
+  "${PROJECT_ROOT}/experiments" \
+  "${PROJECT_ROOT}/results"
 cd "${PROJECT_ROOT}"
 
-# ==== 3. ルート pyproject.toml を作成（評価用） ====
-cat > pyproject.toml << 'PYPROJECT_EVAL'
+# ==== 3. eval / quantization の uv プロジェクト ====
+if [ ! -f "${EVAL_ROOT}/pyproject.toml" ]; then
+  echo "${EVAL_ROOT}/pyproject.toml がありません。ルート pyproject.toml を eval 用 uv プロジェクトとして配置してください。" >&2
+  exit 1
+fi
+
+cat > "${QUANTIZATION_ROOT}/pyproject.toml" << PYPROJECT_QUANTIZATION
 [project]
-name = "llm-eval"
+name = "llm-quantization"
 version = "0.1.0"
-description = "LLM Eval Pipeline"
-requires-python = ">=3.10,<3.12"
-
-# 共通依存
-dependencies = [
-    "accelerate",
-    "datasets",
-    "peft",
-    "bitsandbytes",
-    "sentencepiece",
-    "evaluate",
-    "wandb==0.22.3",
-    "tiktoken",
-    "scikit-learn",
-    "numpy",
-    "einops",
-    "setuptools",
-    "sympy",
-    "unsloth",
-    "gptqmodel>=5.7.0",
-    "optimum>=2.1.0",
-]
-
-[dependency-groups]
-sft = [
-]
-
-grpo = [
-]
-
-eval = [
-    "transformers @ git+https://github.com/huggingface/transformers.git@v4.57.6",
-    "vllm==0.17.0",
-]
-
-dev = [
-    "pytest",
-    "ipykernel",
-]
-PYPROJECT_EVAL
-
-# ==== 4. build/pyproject.toml を作成（量子化・変換用） ====
-cat > "${BUILD_ROOT}/pyproject.toml" << 'PYPROJECT_BUILD'
-[project]
-name = "llm-build"
-version = "0.1.0"
-description = "Separate build environment for quantization and model conversion"
+description = "Separate quantization environment for GPTQ/AWQ and model conversion"
 requires-python = ">=3.10,<3.12"
 dependencies = [
     "transformers @ git+https://github.com/huggingface/transformers.git",
@@ -114,33 +80,32 @@ dependencies = [
 dev = [
     "ipykernel",
 ]
-PYPROJECT_BUILD
+PYPROJECT_QUANTIZATION
 
-# ==== 5. lock と sync ====
+# ==== 4. lock と sync ====
+cd "${EVAL_ROOT}"
 uv lock
 uv sync --group sft --group grpo --group dev --group eval
 
-cd "${BUILD_ROOT}"
+cd "${QUANTIZATION_ROOT}"
 uv lock
 uv sync
 cd "${PROJECT_ROOT}"
 
-# ==== 6. PyTorch (CUDA 12.1 wheel) ====
+# ==== 5. PyTorch (CUDA 12.1 wheel) ====
 uv pip install --python .venv/bin/python --index-url https://download.pytorch.org/whl/cu121 \
     "torch==2.4.0" \
     "torchvision==0.19.0" \
     "torchaudio==2.4.0"
 
-uv pip install --python "${BUILD_ROOT}/.venv/bin/python" --index-url https://download.pytorch.org/whl/cu121 \
+uv pip install --python "${QUANTIZATION_ROOT}/.venv/bin/python" --index-url https://download.pytorch.org/whl/cu121 \
     "torch==2.4.0" \
     "torchvision==0.19.0" \
     "torchaudio==2.4.0"
 
-# ==== 7. ディレクトリ構成 ====
-mkdir -p "${PROJECT_ROOT}/configs" "${PROJECT_ROOT}/outputs" "${PROJECT_ROOT}/model"
-
-# ==== 8. 動作確認 ====
-uv run --group eval python - << 'PYCODE'
+# ==== 6. 動作確認 ====
+cd "${EVAL_ROOT}"
+uv run --group eval python - << PYCODE
 import torch
 import vllm
 import transformers
@@ -152,31 +117,31 @@ print("eval transformers version:", transformers.__version__)
 PYCODE
 
 (
-  cd "${BUILD_ROOT}"
-  uv run python - << 'PYCODE'
+  cd "${QUANTIZATION_ROOT}"
+  uv run python - << PYCODE
 import torch
 import transformers
-print("build torch version:", torch.__version__)
-print("build cuda available:", torch.cuda.is_available())
-print("build cuda version:", torch.version.cuda)
-print("build transformers version:", transformers.__version__)
+print("quantization torch version:", torch.__version__)
+print("quantization cuda available:", torch.cuda.is_available())
+print("quantization cuda version:", torch.version.cuda)
+print("quantization transformers version:", transformers.__version__)
 PYCODE
 )
 
 echo "=== setup done. ==="
 echo "eval環境:"
-echo "  cd ${PROJECT_ROOT}"
-echo "  uv run --group eval python scripts/gsm8k-eval.py --model-name ./model/Qwen3.5-9B-GPTQ-INT4"
+echo "  cd ${EVAL_ROOT}"
+echo "  uv run --group eval python eval/gsm8k-eval.py --model-name ./experiments/models/Qwen3.5-9B-GPTQ-INT4"
 echo
-echo "build環境:"
-echo "  cd ${BUILD_ROOT}"
-echo "  uv run python ../scripts/quantize_qwen35_9b_gptq.py \\\n    --output-dir ${PROJECT_ROOT}/model/Qwen3.5-9B-GPTQ-INT4 \\\n    --calibration-preset math_qa_cot \\\n    --max-calibration-samples 32 \\\n    --max-seq-len 512 \\\n    --bits 4"
+echo "quantization環境:"
+echo "  cd ${QUANTIZATION_ROOT}"
+echo "  uv run python quantize_qwen35_9b_gptq.py \\\n    --output-dir ${PROJECT_ROOT}/experiments/models/Qwen3.5-9B-GPTQ-INT4 \\\n    --calibration-preset math_qa_cot \\\n    --max-calibration-samples 32 \\\n    --max-seq-len 512 \\\n    --bits 4"
 echo "  ※ vLLM など GPU を占有するプロセスは事前に停止すること。"
 
-# ==== 9. git 初期化 ====
+# ==== 7. git 初期化 ====
 git config --global user.email "mss.fujimoto@gmail.com"
 git config --global user.name "Masashi Fujimoto"
 
-# ==== 10. クリーニング ====
+# ==== 8. クリーニング ====
 rm -rf ./aws
 rm -f ./awscliv2.zip

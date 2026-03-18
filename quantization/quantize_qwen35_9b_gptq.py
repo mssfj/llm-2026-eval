@@ -3,8 +3,8 @@
 Quantize Qwen/Qwen3.5-9B to GPTQ and save it locally.
 
 Example:
-    uv run python scripts/quantize_qwen35_9b_gptq.py \
-        --output-dir /workspace/lowbit-math-reasoning/model/Qwen3.5-9B-GPTQ-INT4 \
+    uv run python quantization/quantize_qwen35_9b_gptq.py \
+        --output-dir /workspace/lowbit-math-reasoning/experiments/models/Qwen3.5-9B-GPTQ-INT4 \
         --calibration-preset math_qa_cot \
         --max-calibration-samples 128 \
         --max-seq-len 16384 \
@@ -22,7 +22,7 @@ from typing import Iterable, List, Optional
 
 
 DEFAULT_MODEL_NAME = "Qwen/Qwen3.5-9B"
-DEFAULT_OUTPUT_DIR = "/workspace/lowbit-math-reasoning/model/Qwen3.5-9B-GPTQ-INT4"
+DEFAULT_OUTPUT_DIR = "/workspace/lowbit-math-reasoning/experiments/models/Qwen3.5-9B-GPTQ-INT4"
 DEFAULT_DATASET_NAME = "zwhe99/DeepMath-103K"
 DEFAULT_DATASET_CONFIG = ""
 
@@ -89,7 +89,7 @@ This checkpoint was created to measure whether quantization degrades math reason
 ## Reproduction
 
 ```bash
-uv run python scripts/quantize_qwen35_9b_gptq.py \\
+uv run python quantize_qwen35_9b_gptq.py \\
   --model-name {args.model_name} \\
   --output-dir {args.output_dir} \\
   --dataset-name {args.dataset_name} \\

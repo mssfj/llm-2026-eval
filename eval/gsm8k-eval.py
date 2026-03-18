@@ -29,7 +29,7 @@ MODEL_NAME = "mssfj/Qwen3.5-9B-GPTQ-INT4"
 LORA_PATH = ""
 BATCH_SIZE = 8
 MAX_TOKENS = 2048
-OUTPUT_PATH = "/workspace/lowbit_math_reasning/outputs/gsm8k_eval_qwen3.5-9b-GPTQ-INT4.jsonl"
+OUTPUT_PATH = "/workspace/lowbit-math-reasoning/eval/outputs/gsm8k_eval_qwen3.5-9b-GPTQ-INT4.jsonl"
 
 
 def extract_gsm8k_gold_answer(answer_text: str) -> str:

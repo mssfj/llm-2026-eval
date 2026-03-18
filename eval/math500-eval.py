@@ -34,11 +34,11 @@ VLLM_LOAD_FORMAT = "none"
 VLLM_MAX_TOKENS = 4096
 MAX_SAMPLES = 50
 
-PROJECT_HOME_PATH = "/workspace/llm-2026-eval"
+PROJECT_HOME_PATH = "/workspace/lowbit-math-reasoning"
 SPRIT_MODEL_NAME = MODEL_NAME.rsplit("/", 1)[-1]
 #LORA_PATH = "/workspace/model/qwen3_sft_lora_openmathinst2-1000/"
 LORA_PATH = ""
-OUTPUT_PATH = f"{PROJECT_HOME_PATH}/outputs/math500_{SPRIT_MODEL_NAME}.jsonl"
+OUTPUT_PATH = f"{PROJECT_HOME_PATH}/eval/outputs/math500_{SPRIT_MODEL_NAME}.jsonl"
 
 
 def extract_math500_gold_answer(ex: Dict[str, Any]) -> str:
