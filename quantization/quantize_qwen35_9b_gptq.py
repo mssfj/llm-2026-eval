@@ -17,6 +17,7 @@ Required packages:
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 from typing import Iterable, List, Optional
 
@@ -283,6 +284,32 @@ def cleanup_device_map_for_save(model) -> None:
         delattr(model, "hf_device_map")
 
 
+def normalize_saved_qwen35_config(output_dir: Path) -> None:
+    config_path = output_dir / "config.json"
+    if not config_path.exists():
+        return
+
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    text_config = config.get("text_config")
+    if config.get("model_type") != "qwen3_5" or not isinstance(text_config, dict):
+        return
+
+    normalized_config = dict(text_config)
+    normalized_config["model_type"] = "qwen3_5_text"
+    normalized_config["architectures"] = config.get("architectures", ["Qwen3_5ForCausalLM"])
+    normalized_config["quantization_config"] = config.get("quantization_config")
+    normalized_config["bos_token_id"] = config.get("bos_token_id", text_config.get("bos_token_id"))
+    normalized_config["eos_token_id"] = config.get("eos_token_id", text_config.get("eos_token_id"))
+    normalized_config["tie_word_embeddings"] = config.get("tie_word_embeddings", text_config.get("tie_word_embeddings", False))
+    if "transformers_version" in config:
+        normalized_config["transformers_version"] = config["transformers_version"]
+
+    config_path.write_text(
+        json.dumps(normalized_config, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
 def format_math_cot_sample(question: str, answer: str) -> str:
     return (
         "Solve the following math problem step by step.\n"
@@ -435,6 +462,7 @@ def main() -> None:
     print(f"Saving quantized model to: {output_dir}")
     cleanup_device_map_for_save(model)
     model.save_pretrained(output_dir, safe_serialization=True)
+    normalize_saved_qwen35_config(output_dir)
     tokenizer.save_pretrained(output_dir)
     write_model_card(output_dir, args)
 
