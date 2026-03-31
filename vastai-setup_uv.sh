@@ -7,7 +7,7 @@ if [ "$#" -lt 1 ]; then
   exit 1
 fi
 PROJECT_ROOT="$(realpath -m "$1")"
-EVAL_ROOT="${PROJECT_ROOT}"
+EVAL_ROOT="${PROJECT_ROOT}/eval"
 QUANTIZATION_ROOT="${PROJECT_ROOT}/quantization"
 
 # ==== 0. 基本パッケージ ====
@@ -49,15 +49,31 @@ hash -r
 # ==== 2. プロジェクトディレクトリ ====
 mkdir -p \
   "${PROJECT_ROOT}" \
-  "${PROJECT_ROOT}/eval" \
-  "${QUANTIZATION_ROOT}" \
+  "${EVAL_ROOT}" \
+  "${QUANTIZATION_ROOT}"
 cd "${PROJECT_ROOT}"
 
 # ==== 3. eval / quantization の uv プロジェクト ====
-if [ ! -f "${EVAL_ROOT}/pyproject.toml" ]; then
-  echo "${EVAL_ROOT}/pyproject.toml がありません。ルート pyproject.toml を eval 用 uv プロジェクトとして配置してください。" >&2
-  exit 1
-fi
+cat > "${EVAL_ROOT}/pyproject.toml" << PYPROJECT_EVAL
+[project]
+name = "llm-eval"
+version = "0.1.0"
+description = "Separate evaluation environment for vLLM-based inference and verification"
+requires-python = ">=3.10,<3.12"
+dependencies = [
+    "vllm",
+    "transformers",
+    "datasets",
+    "sympy",
+    "peft",
+    "sentencepiece",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel",
+]
+PYPROJECT_EVAL
 
 cat > "${QUANTIZATION_ROOT}/pyproject.toml" << PYPROJECT_QUANTIZATION
 [project]
@@ -73,6 +89,10 @@ dependencies = [
     "gptqmodel>=5.7.0",
     "optimum>=2.1.0",
     "bitsandbytes",
+]
+
+[dependency-groups]
+dev = [
     "ipykernel",
 ]
 PYPROJECT_QUANTIZATION
@@ -80,23 +100,18 @@ PYPROJECT_QUANTIZATION
 # ==== 4. lock と sync ====
 cd "${EVAL_ROOT}"
 uv lock
+uv sync --dev
 
 cd "${QUANTIZATION_ROOT}"
 uv lock
+uv sync --dev
 cd "${PROJECT_ROOT}"
 
-# ==== 5. PyTorch (CUDA 12.1 wheel) ====
-uv pip install --python .venv/bin/python --index-url https://download.pytorch.org/whl/cu121 \
-    "torch==2.4.0" \
-    "torchvision==0.19.0" \
-    "torchaudio==2.4.0"
-
-uv pip install --python "${QUANTIZATION_ROOT}/.venv/bin/python" --index-url https://download.pytorch.org/whl/cu121 \
-    "torch==2.4.0" \
-    "torchvision==0.19.0" \
-    "torchaudio==2.4.0"
-
-# ==== 6. 動作確認 ====
+# ==== 5. 動作確認 ====
+# NOTE:
+# vllm / gptqmodel が互換性のある torch をそれぞれ解決するため、
+# ここで別バージョンの torch を上書きインストールしない。
+# 後から torch/cuDNN/NCCL を混在させると import error の原因になる。
 cd "${EVAL_ROOT}"
 uv run python - << PYCODE
 import torch
@@ -121,11 +136,11 @@ print("quantization transformers version:", transformers.__version__)
 PYCODE
 )
 
-# ==== 7. git 初期化 ====
+# ==== 6. git 初期化 ====
 git config --global user.email "mss.fujimoto@gmail.com"
 git config --global user.name "Masashi Fujimoto"
 
-# ==== 8. クリーニング ====
+# ==== 7. クリーニング ====
 rm -rf ./aws
 rm -f ./awscliv2.zip
 
