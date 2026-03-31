@@ -1,0 +1,24 @@
+{
+  "model_name": "Qwen/Qwen3.5-9B",
+  "lora_path": "",
+  "num_samples": 100,
+  "num_correct": 96,
+  "em": 0.96,
+  "reason_counts": {
+    "exact_match": 94,
+    "mismatch": 3,
+    "numeric_close": 2,
+    "missing_final_answer": 1
+  },
+  "avg_generation_tokens_per_second": 237.80466953395214,
+  "overall_generation_tokens_per_second": 237.80466953395214,
+  "generation_elapsed_time_seconds": 207.6410025790101,
+  "total_generation_tokens": 49378,
+  "nvidia_smi_memory_used_mb": 25486.0,
+  "nvidia_smi_memory_total_mb": 32607.0,
+  "nvidia_smi_gpu_utilization_percent": 80.0,
+  "model_loading_vram_gib": 17.66,
+  "model_loading_time_seconds": 21.027291,
+  "available_kv_cache_memory_gib": 2.02,
+  "gpu_kv_cache_size_tokens": 16368
+}

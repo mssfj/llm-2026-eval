@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # eval.py
 """
-Unsloth 4bit Base Model + LoRA + vLLM で openai/gsm8k を評価するスクリプト。
+openai/gsm8k を評価するスクリプト。
 """
 
 import argparse
@@ -26,15 +26,15 @@ from transformers import AutoTokenizer, PretrainedConfig
 
 WANDB_PROJECT = "qwen3.5-9b-gsm8k-100"
 WANDB_ENTITY = "mssfj-1"
-WANDB_RUNNAME = "qwen3.5-9b-GPTQ-INT8-2"
+WANDB_RUNNAME = "qwen3.5-9b"
 
-MODEL_NAME = "mssfj/Qwen3.5-9B-GPTQ-INT8"
+MODEL_NAME = "Qwen/Qwen3.5-9B"
 
 #LORA_PATH = "/workspace/model/qwen3_sft_lora_openmathinst2-1000/"
 LORA_PATH = ""
 BATCH_SIZE = 8
 MAX_TOKENS = 2048
-OUTPUT_PATH = "/workspace/lowbit-math-reasoning/eval/outputs/gsm8k_eval_qwen3.5-9b-GPTQ-INT8-2.jsonl"
+OUTPUT_PATH = "/workspace/lowbit-math-reasoning/eval/outputs/gsm8k_eval_qwen3.5-9b.jsonl"
 
 
 def extract_gsm8k_gold_answer(answer_text: str) -> str:
