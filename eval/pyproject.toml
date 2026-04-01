@@ -10,7 +10,7 @@ dependencies = [
     "sympy",
     "peft",
     "sentencepiece",
-    "wandb>=0.25.1",
+    "wandb",
 ]
 
 [dependency-groups]

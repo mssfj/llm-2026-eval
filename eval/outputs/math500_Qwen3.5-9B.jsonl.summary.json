@@ -1,0 +1,22 @@
+{
+  "model_name": "Qwen/Qwen3.5-9B",
+  "lora_path": "",
+  "num_samples": 500,
+  "num_correct": 426,
+  "em": 0.852,
+  "reason_counts": {
+    "exact_match": 415,
+    "mismatch": 63,
+    "missing_final_answer": 11,
+    "numeric_close": 2,
+    "sympy_equiv": 9
+  },
+  "avg_generation_tokens_per_second": 171.91246474185832,
+  "overall_generation_tokens_per_second": 171.91246474185832,
+  "generation_elapsed_time_seconds": 4106.037343248725,
+  "total_generation_tokens": 705879,
+  "model_loading_vram_gib": 17.66,
+  "model_loading_time_seconds": 5.142879,
+  "available_kv_cache_memory_gib": 4.85,
+  "gpu_kv_cache_size_tokens": 39600
+}

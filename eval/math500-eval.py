@@ -1,12 +1,16 @@
 #!/usr/bin/env python/
 # eval.py
 """
-Base Model + vLLM で HuggingFaceH4/MATH-500 を評価するスクリプト。
+vLLM で HuggingFaceH4/MATH-500 を評価するスクリプト。
 """
 
 import argparse
 import json
 import os
+import re
+import sys
+import threading
+import time
 from collections import Counter
 from typing import List, Dict, Any, Optional
 
@@ -18,12 +22,12 @@ from mymath_verify_math500 import verify_math_answer, MathVerifyConfig, MathVeri
 
 from transformers import AutoTokenizer
 
-WANDB_PROJECT = "qwen2.5-7b-instruct-math500"
+WANDB_PROJECT = "qwen3.5-9b-math500"
 WANDB_ENTITY = "mssfj-1"
-WANDB_RUNNAME = "qwen2.5-7b-instruct"
+WANDB_RUNNAME = "qwen3.5-9b"
 DATASET_NAME = "HuggingFaceH4/MATH-500"
 
-MODEL_NAME = "Qwen/Qwen2.5-7B-Instruct"
+MODEL_NAME = "Qwen/Qwen3.5-9B"
 VLLM_TENSOR_PARALLEL_SIZE = 1
 VLLM_MAX_MODEL_LEN = 8192
 VLLM_GPU_MEMORY_UTILIZATION = 0.9
@@ -68,7 +72,88 @@ def build_prompt(question: str, tokenizer, final_answer_only: bool = False) -> s
         {"role": "system", "content": "You are a careful mathematical problem solver."},
         {"role": "user", "content": user_content},
     ]
-    return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+    return tokenizer.apply_chat_template(messages, tokenize=False, enable_thinking=False, add_generation_prompt=True)
+
+
+def _forward_captured_stream(read_fd: int, target_fd: int, chunks: List[str]) -> None:
+    while True:
+        try:
+            data = os.read(read_fd, 4096)
+        except OSError:
+            break
+        if not data:
+            break
+        chunks.append(data.decode("utf-8", errors="replace"))
+        try:
+            os.write(target_fd, data)
+        except OSError:
+            pass
+
+
+def capture_vllm_init_metrics(build_llm) -> tuple[LLM, Dict[str, Optional[float]]]:
+    captured_chunks: List[str] = []
+    stdout_fd = sys.stdout.fileno()
+    stderr_fd = sys.stderr.fileno()
+    saved_stdout_fd = os.dup(stdout_fd)
+    saved_stderr_fd = os.dup(stderr_fd)
+    stdout_read_fd, stdout_write_fd = os.pipe()
+    stderr_read_fd, stderr_write_fd = os.pipe()
+
+    stdout_thread = threading.Thread(
+        target=_forward_captured_stream,
+        args=(stdout_read_fd, saved_stdout_fd, captured_chunks),
+        daemon=True,
+    )
+    stderr_thread = threading.Thread(
+        target=_forward_captured_stream,
+        args=(stderr_read_fd, saved_stderr_fd, captured_chunks),
+        daemon=True,
+    )
+    stdout_thread.start()
+    stderr_thread.start()
+
+    try:
+        sys.stdout.flush()
+        sys.stderr.flush()
+        os.dup2(stdout_write_fd, stdout_fd)
+        os.dup2(stderr_write_fd, stderr_fd)
+        llm = build_llm()
+    finally:
+        sys.stdout.flush()
+        sys.stderr.flush()
+        os.dup2(saved_stdout_fd, stdout_fd)
+        os.dup2(saved_stderr_fd, stderr_fd)
+        os.close(stdout_write_fd)
+        os.close(stderr_write_fd)
+        stdout_thread.join(timeout=5)
+        stderr_thread.join(timeout=5)
+        os.close(stdout_read_fd)
+        os.close(stderr_read_fd)
+        os.close(saved_stdout_fd)
+        os.close(saved_stderr_fd)
+
+    captured_output = "".join(captured_chunks)
+    metrics: Dict[str, Optional[float]] = {
+        "model_loading_vram_gib": None,
+        "model_loading_time_seconds": None,
+        "available_kv_cache_memory_gib": None,
+        "gpu_kv_cache_size_tokens": None,
+    }
+
+    match = re.search(r"Model loading took\s+([0-9.]+)\s+GiB memory and\s+([0-9.]+)\s+seconds", captured_output)
+    if match:
+        metrics["model_loading_vram_gib"] = float(match.group(1))
+        metrics["model_loading_time_seconds"] = float(match.group(2))
+
+    match = re.search(r"Available KV cache memory:\s*([0-9.]+)\s+GiB", captured_output)
+    if match:
+        metrics["available_kv_cache_memory_gib"] = float(match.group(1))
+
+    match = re.search(r"GPU KV cache size:\s*([0-9,]+)\s+tokens", captured_output)
+    if match:
+        metrics["gpu_kv_cache_size_tokens"] = int(match.group(1).replace(",", ""))
+
+    return llm, metrics
 
 
 def evaluate_with_vllm(
@@ -116,10 +201,10 @@ def evaluate_with_vllm(
     if load_format != "none":
         llm_kwargs["load_format"] = load_format
 
-    llm = LLM(**llm_kwargs)
+    llm, vllm_init_metrics = capture_vllm_init_metrics(lambda: LLM(**llm_kwargs))
 
     sampling_params = SamplingParams(
-        temperature=0.1,
+        temperature=0.0,
         top_p=1.0,
         max_tokens=max_tokens,
         stop=None,
@@ -142,7 +227,12 @@ def evaluate_with_vllm(
     if use_lora:
         lora_request = LoRARequest("adapter", 1, lora_path)
 
+    generation_tokens_per_second: List[float] = []
+    total_generation_tokens = 0
+    total_generation_time_seconds = 0.0
+    generation_start_time = time.perf_counter()
     outputs: List[Any] = llm.generate(prompts, sampling_params, lora_request=lora_request)
+    generation_elapsed_time_seconds = time.perf_counter() - generation_start_time
 
     config = MathVerifyConfig(use_exact=True, use_numeric=True, use_sympy=True, require_final_answer=True)
     detailed_results: List[Dict[str, Any]] = []
@@ -150,6 +240,14 @@ def evaluate_with_vllm(
 
     for i, (out, q, gold) in enumerate(zip(outputs, raw_questions, gold_answers)):
         pred_text = out.outputs[0].text if out.outputs else ""
+        generated_token_ids = list(out.outputs[0].token_ids) if out.outputs else []
+        total_generation_tokens += len(generated_token_ids)
+        if out.metrics is not None:
+            num_generation_tokens = out.metrics.num_generation_tokens or len(generated_token_ids)
+            generation_duration = out.metrics.last_token_ts - out.metrics.first_token_ts
+            if num_generation_tokens > 0 and generation_duration > 0:
+                generation_tokens_per_second.append(num_generation_tokens / generation_duration)
+                total_generation_time_seconds += generation_duration
         res: MathVerifyResult = verify_math_answer(pred_text, gold, config=config)
         detailed_results.append({
             "index": i, "question": q, "gold_answer": gold, "model_output": pred_text,
@@ -161,10 +259,20 @@ def evaluate_with_vllm(
     if retry_indices:
         print(f"Retrying {len(retry_indices)} samples with strict final-answer-only prompt...")
         retry_prompts = [build_prompt(raw_questions[i], tokenizer, final_answer_only=True) for i in retry_indices]
+        retry_start_time = time.perf_counter()
         retry_outputs = llm.generate(retry_prompts, sampling_params, lora_request=lora_request)
+        generation_elapsed_time_seconds += time.perf_counter() - retry_start_time
 
         for row_index, retry_out in zip(retry_indices, retry_outputs):
             retry_text = retry_out.outputs[0].text if retry_out.outputs else ""
+            retry_token_ids = list(retry_out.outputs[0].token_ids) if retry_out.outputs else []
+            total_generation_tokens += len(retry_token_ids)
+            if retry_out.metrics is not None:
+                num_generation_tokens = retry_out.metrics.num_generation_tokens or len(retry_token_ids)
+                generation_duration = retry_out.metrics.last_token_ts - retry_out.metrics.first_token_ts
+                if num_generation_tokens > 0 and generation_duration > 0:
+                    generation_tokens_per_second.append(num_generation_tokens / generation_duration)
+                    total_generation_time_seconds += generation_duration
             retry_res: MathVerifyResult = verify_math_answer(retry_text, gold_answers[row_index], config=config)
             if retry_res.reason != "missing_final_answer":
                 detailed_results[row_index]["model_output"] = retry_text
@@ -183,15 +291,54 @@ def evaluate_with_vllm(
             print(f"Processed {i+1}/{num_total} samples")
 
     em = num_correct / max(num_total, 1)
+    avg_generation_tokens_per_second = (
+        sum(generation_tokens_per_second) / len(generation_tokens_per_second)
+        if generation_tokens_per_second
+        else None
+    )
+    if avg_generation_tokens_per_second is None and generation_elapsed_time_seconds > 0:
+        avg_generation_tokens_per_second = total_generation_tokens / generation_elapsed_time_seconds
+
+    overall_generation_tokens_per_second = (
+        total_generation_tokens / total_generation_time_seconds
+        if total_generation_time_seconds > 0
+        else None
+    )
+    if overall_generation_tokens_per_second is None and generation_elapsed_time_seconds > 0:
+        overall_generation_tokens_per_second = total_generation_tokens / generation_elapsed_time_seconds
     print(f"\n==== Evaluation Result ====")
     print(f"Base Model: {model_name}")
     print(f"Quantization: {quantization}")
     print(f"LoRA Path: {lora_path}")
     print(f"EM: {em:.4f}")
+    if avg_generation_tokens_per_second is not None:
+        print(f"Avg generation tokens/sec: {avg_generation_tokens_per_second:.4f}")
+    if overall_generation_tokens_per_second is not None:
+        print(f"Overall generation tokens/sec: {overall_generation_tokens_per_second:.4f}")
+    if vllm_init_metrics["model_loading_vram_gib"] is not None:
+        print(
+            "vLLM model loading VRAM (GiB): "
+            f"{vllm_init_metrics['model_loading_vram_gib']:.2f}"
+        )
+
+    wandb_eval_records = [
+        {
+            "question": row["question"],
+            "gold_answer": row["gold_answer"],
+            "model_output": row["model_output"],
+            "extracted_pred_answer": row["extracted_pred_answer"],
+        }
+        for row in detailed_results
+    ]
 
     result_summary = {
         "model_name": model_name, "lora_path": lora_path, "num_samples": num_total,
         "num_correct": num_correct, "em": em, "reason_counts": dict(reason_counter),
+        "avg_generation_tokens_per_second": avg_generation_tokens_per_second,
+        "overall_generation_tokens_per_second": overall_generation_tokens_per_second,
+        "generation_elapsed_time_seconds": generation_elapsed_time_seconds,
+        "total_generation_tokens": total_generation_tokens,
+        **vllm_init_metrics,
     }
 
     if output_path:
@@ -205,18 +352,41 @@ def evaluate_with_vllm(
             json.dump(result_summary, f, ensure_ascii=False, indent=2)
 
     if wandb_run is not None:
-        log_payload = {
-            "eval/em": em,
-            "eval/num_correct": num_correct,
-            "eval/num_total": num_total,
+        import wandb
+
+        metrics_row = {
+            "model_name": model_name,
+            "lora_path": lora_path,
+            "num_samples": num_total,
+            "num_correct": num_correct,
+            "em": em,
+            "avg_generation_tokens_per_second": avg_generation_tokens_per_second,
+            "overall_generation_tokens_per_second": overall_generation_tokens_per_second,
+            "generation_elapsed_time_seconds": generation_elapsed_time_seconds,
+            "total_generation_tokens": total_generation_tokens,
+            **vllm_init_metrics,
         }
         for reason_key, reason_count in reason_counter.items():
-            log_payload[f"eval/reason/{reason_key}"] = reason_count
-        wandb_run.log(log_payload)
+            metrics_row[f"reason_{reason_key}"] = reason_count
+
+        metrics_columns = list(metrics_row.keys())
+        metrics_table = wandb.Table(columns=metrics_columns)
+        metrics_table.add_data(*[metrics_row[column] for column in metrics_columns])
+        wandb_run.log({"eval/metrics_table": metrics_table})
+
+        samples_table = wandb.Table(
+            columns=["question", "gold_answer", "model_output", "extracted_pred_answer"]
+        )
+        for row in wandb_eval_records:
+            samples_table.add_data(
+                row["question"],
+                row["gold_answer"],
+                row["model_output"],
+                row["extracted_pred_answer"],
+            )
+        wandb_run.log({"eval/samples_table": samples_table})
 
         if wandb_log_artifacts and output_path and os.path.exists(output_path):
-            import wandb
-
             artifact = wandb.Artifact("math500_eval_outputs", type="evaluation")
             artifact.add_file(output_path)
             summary_path = output_path + ".summary.json"
