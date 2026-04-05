@@ -7,12 +7,12 @@
   "reason_counts": {
     "exact_match": 1
   },
-  "avg_generation_tokens_per_second": 16.762579684770483,
-  "overall_generation_tokens_per_second": 16.762579684770483,
-  "generation_elapsed_time_seconds": 31.260104939341545,
-  "total_generation_tokens": 524,
+  "avg_generation_tokens_per_second": 8.181631174420016,
+  "overall_generation_tokens_per_second": 8.181631174420016,
+  "generation_elapsed_time_seconds": 67.10153370350599,
+  "total_generation_tokens": 549,
   "model_loading_vram_gib": 10.47,
-  "model_loading_time_seconds": 3.322959,
-  "available_kv_cache_memory_gib": 12.87,
-  "gpu_kv_cache_size_tokens": 105264
+  "model_loading_time_seconds": 3.505922,
+  "available_kv_cache_memory_gib": 11.76,
+  "gpu_kv_cache_size_tokens": 96288
 }

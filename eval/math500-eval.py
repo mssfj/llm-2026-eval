@@ -33,7 +33,7 @@ VLLM_TENSOR_PARALLEL_SIZE = 1
 VLLM_MAX_MODEL_LEN = 8192
 VLLM_GPU_MEMORY_UTILIZATION = 0.9
 VLLM_BATCH_SIZE = 2
-VLLM_ENFORCE_EAGER = True
+VLLM_ENFORCE_EAGER = False
 VLLM_QUANTIZATION = "none"
 VLLM_LOAD_FORMAT = "none"
 VLLM_MAX_TOKENS = 4096
@@ -252,7 +252,7 @@ def evaluate_with_vllm(
         temperature=0.0,
         top_p=1.0,
         max_tokens=max_tokens,
-        stop=None,
+        stop=["\n\nQ:", "\n\nProblem:", "<|im_end|>"],
     )
 
     gold_answers: List[str] = []
