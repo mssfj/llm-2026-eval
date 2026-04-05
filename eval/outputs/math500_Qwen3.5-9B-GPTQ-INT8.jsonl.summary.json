@@ -1,0 +1,18 @@
+{
+  "model_name": "mssfj/Qwen3.5-9B-GPTQ-INT8",
+  "lora_path": "",
+  "num_samples": 1,
+  "num_correct": 1,
+  "em": 1.0,
+  "reason_counts": {
+    "exact_match": 1
+  },
+  "avg_generation_tokens_per_second": 16.762579684770483,
+  "overall_generation_tokens_per_second": 16.762579684770483,
+  "generation_elapsed_time_seconds": 31.260104939341545,
+  "total_generation_tokens": 524,
+  "model_loading_vram_gib": 10.47,
+  "model_loading_time_seconds": 3.322959,
+  "available_kv_cache_memory_gib": 12.87,
+  "gpu_kv_cache_size_tokens": 105264
+}
