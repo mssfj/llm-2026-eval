@@ -20,13 +20,13 @@ sudo apt-get install -y \
 # ==== codexのインストール ====
 npm i -g @openai/codex
 
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-sudo ./aws/install --update
-aws configure
+#curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+#unzip awscliv2.zip
+#sudo ./aws/install --update
+#aws configure
 
-mkdir -p ~/.codex
-aws s3 cp s3://llm-train-dev/codex/auth.json ~/.codex/auth.json
+#mkdir -p ~/.codex
+#aws s3 cp s3://llm-train-dev/codex/auth.json ~/.codex/auth.json
 
 npm cache clean -f
 npm install -g n
@@ -38,8 +38,8 @@ hash -r
 npm install -g @openai/codex@latest
 
 # ==== gemini-cliのインストール ====
-npm install -g @google/gemini-cli
-hash -r
+#npm install -g @google/gemini-cli
+#hash -r
 
 # ==== 1. uv インストール ====
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -61,8 +61,8 @@ version = "0.1.0"
 description = "Separate evaluation environment for vLLM-based inference and verification"
 requires-python = ">=3.10,<3.12"
 dependencies = [
-    "vllm",
-    "transformers",
+    "vllm>=0.19",
+    "transformers>=5.4.0",
     "datasets",
     "sympy",
     "peft",
@@ -142,7 +142,7 @@ git config --global user.email "mss.fujimoto@gmail.com"
 git config --global user.name "Masashi Fujimoto"
 
 # ==== 7. クリーニング ====
-rm -rf ./aws
-rm -f ./awscliv2.zip
+#rm -rf ./aws
+#rm -f ./awscliv2.zip
 
 echo "=== setup done. ==="
