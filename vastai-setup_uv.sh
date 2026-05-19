@@ -13,7 +13,7 @@ QUANTIZATION_ROOT="${PROJECT_ROOT}/quantization"
 # ==== 0. 基本パッケージ ====
 sudo apt-get update
 sudo apt-get install -y \
-  git wget curl build-essential \
+  vim git wget curl build-essential \
   python3-dev python3-pip \
   pkg-config nodejs npm unzip
 
