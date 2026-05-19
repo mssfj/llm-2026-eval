@@ -43,8 +43,27 @@ npm install -g @openai/codex@latest
 
 # ==== 1. uv インストール ====
 curl -LsSf https://astral.sh/uv/install.sh | sh
-export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
+UV_BIN_DIR="${HOME}/.local/bin"
+export PATH="${UV_BIN_DIR}:/usr/local/bin:${PATH}"
 hash -r
+
+# uv は通常 ~/.local/bin に入る。Vast.ai の新しいシェルや非ログインシェルでも
+# `uv run ...` がそのまま動くよう、PATH 永続化と /usr/local/bin へのリンクを行う。
+for shell_rc in "${HOME}/.bashrc" "${HOME}/.profile"; do
+  touch "${shell_rc}"
+  if ! grep -Fq "${UV_BIN_DIR}" "${shell_rc}"; then
+    printf "\n# uv installed by vastai-setup_uv.sh\nexport PATH=\"%s:/usr/local/bin:\${PATH}\"\n" "${UV_BIN_DIR}" >> "${shell_rc}"
+  fi
+done
+
+if [ -x "${UV_BIN_DIR}/uv" ]; then
+  sudo ln -sf "${UV_BIN_DIR}/uv" /usr/local/bin/uv
+fi
+if [ -x "${UV_BIN_DIR}/uvx" ]; then
+  sudo ln -sf "${UV_BIN_DIR}/uvx" /usr/local/bin/uvx
+fi
+hash -r
+uv --version
 
 # ==== 2. プロジェクトディレクトリ ====
 mkdir -p \
