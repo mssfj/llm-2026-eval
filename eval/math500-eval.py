@@ -76,6 +76,42 @@ def build_prompt(question: str, tokenizer, final_answer_only: bool = False) -> s
     return tokenizer.apply_chat_template(messages, tokenize=False, enable_thinking=False, add_generation_prompt=True)
 
 
+def maybe_build_vllm_compat_config(model_name: str) -> Optional[tempfile.TemporaryDirectory]:
+    config_dict, _ = PretrainedConfig.get_config_dict(model_name, trust_remote_code=True)
+    if config_dict.get("model_type") != "qwen3_5_text":
+        return None
+
+    text_config = {
+        key: value
+        for key, value in config_dict.items()
+        if key not in {"architectures", "model_type", "quantization_config", "transformers_version"}
+    }
+    text_config["model_type"] = "qwen3_5_text"
+
+    compat_config = {
+        "model_type": "qwen3_5",
+        "architectures": ["Qwen3_5ForCausalLM"],
+        "text_config": text_config,
+        "quantization_config": config_dict.get("quantization_config"),
+        "bos_token_id": config_dict.get("bos_token_id"),
+        "eos_token_id": config_dict.get("eos_token_id"),
+        "tie_word_embeddings": config_dict.get("tie_word_embeddings", False),
+    }
+
+    temp_dir = tempfile.TemporaryDirectory(prefix="vllm-hf-config-")
+    with open(os.path.join(temp_dir.name, "config.json"), "w", encoding="utf-8") as f:
+        json.dump(compat_config, f, ensure_ascii=False, indent=2)
+
+    return temp_dir
+
+
+def should_force_language_model_only(config_dict: Dict[str, Any]) -> bool:
+    return (
+        config_dict.get("model_type") in {"qwen3_5", "qwen3_5_text"}
+        and config_dict.get("architectures") == ["Qwen3_5ForCausalLM"]
+    )
+
+
 def _forward_captured_stream(read_fd: int, target_fd: int, chunks: List[str]) -> None:
     while True:
         try:
