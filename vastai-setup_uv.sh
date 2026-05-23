@@ -159,6 +159,7 @@ PYCODE
 # ==== 6. git 初期化 ====
 git config --global user.email "mss.fujimoto@gmail.com"
 git config --global user.name "Masashi Fujimoto"
+git config --global credential.helper
 
 # ==== 7. クリーニング ====
 #rm -rf ./aws
