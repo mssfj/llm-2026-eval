@@ -80,13 +80,8 @@ version = "0.1.0"
 description = "Separate evaluation environment for vLLM-based inference and verification"
 requires-python = ">=3.10,<3.12"
 dependencies = [
-<<<<<<< HEAD
-    "vllm>=0.18.1",
-    "transformers",
-=======
     "vllm>=0.19",
     "transformers>=5.4.0",
->>>>>>> old-state-0401
     "datasets",
     "sympy",
     "peft",
