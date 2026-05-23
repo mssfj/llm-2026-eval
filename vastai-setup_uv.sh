@@ -20,14 +20,6 @@ sudo apt-get install -y \
 # ==== codexのインストール ====
 npm i -g @openai/codex
 
-#curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-#unzip awscliv2.zip
-#sudo ./aws/install --update
-#aws configure
-
-#mkdir -p ~/.codex
-#aws s3 cp s3://llm-train-dev/codex/auth.json ~/.codex/auth.json
-
 npm cache clean -f
 npm install -g n
 n lts
@@ -36,10 +28,6 @@ export PATH="/usr/local/bin:$HOME/.local/bin:$PATH"
 hash -r
 
 npm install -g @openai/codex@latest
-
-# ==== gemini-cliのインストール ====
-#npm install -g @google/gemini-cli
-#hash -r
 
 # ==== 1. uv インストール ====
 curl -LsSf https://astral.sh/uv/install.sh | sh
