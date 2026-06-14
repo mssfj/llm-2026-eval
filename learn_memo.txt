@@ -1,0 +1,372 @@
+Ternary LLM 検証方針
+====================
+
+1. 目的
+-------
+
+LitGPTを利用して約0.5B規模のLLMを学習し、重みのternary量子化
+（-1, 0, +1）による性能劣化を、Transformer層を増やすことで維持または
+回復できるか検証する。
+
+主な評価対象:
+
+- GSM8K test
+- MATH-500
+- 学習・検証データのloss/perplexity
+
+単に最終スコアだけでなく、モデル容量、学習計算量、メモリ、速度、
+チェックポイントサイズも記録する。
+
+
+2. 実行環境
+-----------
+
+- GPU: NVIDIA GeForce RTX 5090 32GB x 1
+- 学習精度: BF16 mixed precision
+- フレームワーク: mylitgpt内のLitGPT
+- 0.5BモデルのBF16フル学習は可能
+- sequence length 1024から開始し、安定後に2048へ拡張する
+- activation checkpointing、Flash Attention/SDPA、gradient accumulationを使用する
+
+Ternary学習でもBF16またはFP32のmaster weight、勾配、Adam状態を保持するため、
+通常のSTE実装では学習時VRAMが大きく減るとは限らない。速度・実メモリ削減は
+専用のpacked weightとCUDA/Triton kernelを実装した後の別検証とする。
+
+
+3. モデル構成
+-------------
+
+LitGPTのQwen2.5-0.5B相当構成を基準候補とする。
+
+- n_layer: 24
+- n_embd: 896
+- n_head: 14
+- n_query_groups: 2
+- intermediate_size: 4864
+- RMSNorm
+- RoPE
+- GQA
+
+スクラッチ学習ではQwenの約152K語彙をそのまま使用せず、数学・一般文書を含む
+コーパスから約32K語彙のtokenizerを学習することを検討する。語彙を小さくすると
+embeddingとlm_headのパラメータおよび計算量を削減できる。
+
+比較モデル:
+
+| ID   | 重み             | 層数 | 目的 |
+|------|------------------|------|------|
+| FP24 | BF16非量子化     | 24   | 基準モデル |
+| T24  | ternary          | 24   | 同一アーキテクチャでの量子化劣化 |
+| T36  | ternary          | 36   | 深層化による性能回復 |
+| FP36 | BF16非量子化     | 36   | 深層化自体の効果を分離する対照群 |
+
+短期ablationではT32、T48も候補とし、VRAM、速度、validation lossから本学習に
+使用する深さを決定する。FP36を入れない場合、T36の改善がternary特有の補償効果か、
+単純なモデル規模増加の効果か判別できない。
+
+
+4. Ternary量子化方式
+--------------------
+
+初期検証はweight-only ternaryとする。
+
+量子化対象:
+
+- Attention qkv projection
+- Attention output projection
+- MLP gate/up projection
+- MLP down projection
+
+初期段階では以下をBF16のまま残す。
+
+- Token embedding
+- lm_head
+- RMSNorm
+- RoPE
+- Softmax
+- Activations
+
+学習方式:
+
+- 学習用master weightはBF16またはFP32で保持
+- forward時に重みを {-1, 0, +1} へfake quantization
+- backwardはStraight-Through Estimator (STE)
+- scaleは出力チャネル単位を第一候補とする
+
+概念的な実装:
+
+    scale = weight.abs().mean(dim=1, keepdim=True).clamp_min(1e-5)
+    quantized = (weight / scale).round().clamp(-1, 1) * scale
+    weight_ste = weight + (quantized - weight).detach()
+    output = F.linear(input, weight_ste, bias)
+
+比較モデル間で量子化対象、threshold、scale方式、STE、初期化方式を統一する。
+必要に応じてtensor-wise scaleもablationする。
+
+
+5. LitGPTの変更方針
+-------------------
+
+追加・変更候補:
+
+- litgpt/ternary.py
+  - TernaryLinear
+  - ternary quantization関数
+  - scaleおよびzero ratioの集計
+
+- litgpt/config.py
+  - weight_quantization: "none" または "ternary"
+  - ternary_scale: "tensor" または "channel"
+  - ternary_lm_head: bool
+
+- litgpt/model.py
+  - nn.Linearを直接固定せず、linear factory経由で生成
+  - AttentionとMLPの対象層をTernaryLinearへ置換
+
+- config_hub/pretrain/
+  - math-fp24.yaml
+  - math-ternary24.yaml
+  - math-ternary36.yaml
+  - math-fp36.yaml
+
+最初はfake quantizationで表現力を検証する。2-bit packing、ternary専用GEMM、
+実推論高速化は表現力検証と分離する。
+
+
+6. 学習データ
+-------------
+
+完全スクラッチ学習の場合:
+
+- 最小実験: 約2B tokens
+- 初回の本格比較: 約10B tokens
+- 余裕がある場合: 15Bから20B tokens
+
+推奨構成例:
+
+- FineMath-4+などの高品質数学文書: 70%
+- 一般教育文書・百科事典・一般英文: 20%
+- Python、数式処理、計算コード: 10%
+
+数学文書だけでは問題文理解や一般言語能力が不足する可能性があるため、一般教育文書を
+混合する。
+
+数学SFT:
+
+- OpenMathInstruct-2から品質フィルタした30万から80万件
+- GSM8K trainのみ
+- MATH trainのみ
+- 必要に応じて検証済みの独自合成問題
+
+SFTサンプルには以下を含める。
+
+- 問題文
+- 簡潔で正しい途中計算
+- 機械的に抽出可能な最終回答
+- 途中式と最終回答の整合性
+
+0.5Bモデルでは極端に長い推論より、2から12ステップ程度の正確な解答を優先する。
+1024または2048 tokensを超えるサンプル、壊れたLaTeX、回答不一致、重複を除去する。
+
+
+7. 評価汚染の防止
+-----------------
+
+評価専用として学習から完全に除外する。
+
+- GSM8K test
+- MATH test
+- MATH-500全500問
+
+事前学習、SFT、合成データの全てに対して以下を実施する。
+
+1. 大文字小文字、空白、LaTeX、数値表記を正規化
+2. 完全一致を除外
+3. 問題文のn-gram一致を除外
+4. MinHashなどで近似重複を除外
+5. 埋め込み類似度で言い換え問題を確認
+6. 除外対象のhashと処理ログを保存
+
+データのsplitと除外リストを全モデルで固定する。
+
+
+8. 学習手順
+-----------
+
+Phase 0: 実装検証
+
+- 小規模モデルと少量データでforward/backward/checkpoint resumeを確認
+- FPとternaryでtensor shape、loss、gradientを確認
+- 各層のscale、zero ratio、gradient normを記録
+- NaN/Infとweight collapseがないことを確認
+
+Phase 1: 短期ablation
+
+- モデル: FP24、T24、T32、T36、T48
+- 学習量: 100Mから300M tokens
+- sequence length: 1024
+- seed: 最低3種類
+- 主な判断材料: validation loss、安定性、tokens/sec、VRAM
+
+Phase 2: 事前学習または数学継続事前学習
+
+- モデル: FP24、T24、T36、FP36
+- 全モデルで同一データと同一データ順序
+- 初回比較: 2B tokens
+- 本比較: 可能なら5Bから10B tokens
+- sequence length: 1024、余裕があれば2048
+
+Phase 3: 数学SFT
+
+- 全モデルに同一SFTデータを適用
+- 同一epoch、同一sample order、同一max sequence length
+- prompt部分はlossからmask
+- 回答形式を統一
+
+Phase 4: GSM8K/MATH-500評価
+
+- 同一prompt template
+- 同一tokenizer
+- 同一decoding設定
+- greedy decodingを基本とする
+- 必要に応じてGSM8K 0-shot/8-shotの両方を評価
+
+
+9. 固定する学習条件
+-------------------
+
+全モデルで以下を固定する。
+
+- tokenizer
+- train/validation split
+- データの順序
+- 学習token数
+- sequence length
+- global batchのtoken数
+- optimizerとweight decay
+- LR scheduler
+- warmup比率
+- gradient clipping
+- SFTデータとepoch数
+- 評価prompt
+- decoding設定
+- 回答抽出・正規化処理
+- seed一覧
+
+初期設定例:
+
+- precision: bf16-mixed
+- devices: 1
+- max_seq_length: 1024
+- micro_batch_size: 1
+- global_batch_size: 64
+- AdamW
+- gradient accumulationでglobal batchを実現
+- activation checkpointingを有効化
+
+LRはternaryで最適値が異なる可能性があるため、次の二種類を報告する。
+
+1. 全モデルで完全に同一のhyperparameter
+2. 各モデルに同じ探索予算を与えた最良hyperparameter
+
+LR探索例:
+
+- 1e-4
+- 2e-4
+- 4e-4
+
+
+10. 公平な比較方法
+-------------------
+
+以下の三種類を分けて報告する。
+
+1. 同一アーキテクチャ比較
+   - FP24 vs T24
+   - 純粋なternary量子化による性能差
+
+2. 同一学習token比較
+   - FP24 vs T24 vs T36 vs FP36
+   - 同じデータ量で深層化が量子化劣化を回復するか
+
+3. 同一学習FLOPs比較
+   - 深層モデルは1 tokenあたりの計算量が大きいため、総学習FLOPsを揃える
+   - T36が追加計算量に見合うかを確認
+
+加えて、保存時のモデルサイズを揃えた比較も検討する。Ternary重みを実際に2-bit
+packingした場合、FP24と同一ファイルサイズのternaryモデルは大幅に多くのパラメータを
+持てるため、将来的な重要比較になる。
+
+
+11. 評価指標
+------------
+
+品質:
+
+- train loss
+- validation loss/perplexity
+- GSM8K exact match
+- MATH-500 exact match
+- MATH-500のsubject別、difficulty別スコア
+
+効率:
+
+- 学習tokens
+- 推定および実測FLOPs
+- tokens/sec
+- wall-clock time
+- peak VRAM
+- checkpoint size
+- 推論tokens/sec
+
+Ternary固有:
+
+- 各層のscale
+- {-1, 0, +1}の比率
+- zero ratio
+- master weightと量子化重みの誤差
+- 各層のgradient norm
+- activation norm
+
+統計:
+
+- 最低3 seed
+- 平均と標準偏差
+- GSM8K/MATH-500では可能ならbootstrap confidence intervalも算出
+
+
+12. 合否判断
+------------
+
+主仮説:
+
+「同一24層ではternary化により性能が低下するが、36層へ深層化することで、
+BF16 24層モデルに近い、または上回る数学推論性能を得られる」
+
+成功条件の例:
+
+- T24よりT36が複数seedで一貫して高い
+- T36がFP24のGSM8K/MATH-500スコアに到達または超過
+- 同一FLOPs比較でもT36がT24またはFP24に対して競争力を持つ
+- 学習が安定し、特定層の重みが全て0または同一符号へcollapseしない
+
+解釈上の注意:
+
+- T36 > T24だけでは、量子化劣化を効率よく補償した証明にはならない
+- FP36との比較により、通常精度でも同じ深層化効果が起きるか確認する
+- 同一token比較と同一FLOPs比較の結論を混同しない
+- fake quantizationの結果から、実ハードウェア上の高速化を直接主張しない
+
+
+13. 推奨実施順
+--------------
+
+1. BF16のFP24をLitGPTで安定して学習できる状態にする
+2. TernaryLinearとSTEを実装し、極小モデルでgradient testを行う
+3. FP24とT24を100M tokensで比較する
+4. T32/T36/T48を短期ablationし、深さを決定する
+5. FP24、T24、T36、FP36を同一token条件で学習する
+6. 同一SFTを適用する
+7. GSM8K testとMATH-500を3 seedで評価する
+8. 同一FLOPs条件の比較を追加する
+9. 表現力の効果を確認後、2-bit packingと専用kernelの検証へ進む
