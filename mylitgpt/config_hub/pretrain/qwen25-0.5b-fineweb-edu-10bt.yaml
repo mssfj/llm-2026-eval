@@ -1,0 +1,75 @@
+# The name of the model to pretrain. Choose from names in ``litgpt.config``.
+model_name: Qwen2.5-0.5B
+
+# A ``litgpt.Config`` object to define the model architecture.
+model_config:
+
+# Directory in which to save checkpoints and logs.
+out_dir: out/pretrain/qwen25-0.5b-fineweb-edu-10bt
+
+# The precision to use for pretraining.
+precision: bf16-mixed
+
+# Optional path to a checkpoint directory to initialize the model from.
+initial_checkpoint_dir:
+
+# Resume from the latest checkpoint in ``out_dir`` if one exists.
+resume: auto
+
+# Data-related arguments.
+data:
+  class_path: litgpt.data.LitData
+  init_args:
+    data_path: data/fineweb-edu-10bt/qwen25
+    split_names:
+      - train
+      - train
+    num_workers: 8
+
+# Training-related arguments.
+train:
+  save_interval: 1000
+  log_interval: 1
+  global_batch_size: 512
+  micro_batch_size: 4
+  lr_warmup_steps: 1000
+  epochs:
+  max_tokens: 10000000000
+  max_steps:
+  max_seq_length: 2048
+  tie_embeddings: false
+  max_norm: 1.0
+  min_lr: 4.0e-05
+
+# Evaluation-related arguments.
+eval:
+  interval: 1000
+  max_new_tokens:
+  max_iters: 100
+  initial_validation: false
+  final_validation: false
+
+# Optimizer-related arguments.
+optimizer:
+  class_path: torch.optim.AdamW
+  init_args:
+    lr: 4.0e-04
+    weight_decay: 0.1
+    betas:
+      - 0.9
+      - 0.95
+
+# How many devices/GPUs to use. Uses all GPUs by default.
+devices: auto
+
+# How many nodes to use.
+num_nodes: 1
+
+# Optional path to the tokenizer dir that was used for preprocessing the dataset.
+tokenizer_dir: checkpoints/Qwen/Qwen2.5-0.5B
+
+# The name of the logger to send metrics to.
+logger_name: tensorboard
+
+# The random seed to use for reproducibility.
+seed: 42
