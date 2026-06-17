@@ -20,6 +20,7 @@ HF_HUB_ENABLE_HF_TRANSFER=1 huggingface-cli download HuggingFaceFW/fineweb-edu -
 # - prepare_starcoder.py と同じ DataChunkRecipe 形式
 # - *.parquet を再帰的に読み、text カラムを Qwen tokenizer で tokenize
 # - LitData chunks を data/fineweb-edu-10bt/qwen25/train に出力
+mkdir -pv data/fineweb-edu-10bt/qwen25/train
 python litgpt/data/prepare_fineweb_edu.py --input_dir data/fineweb-edu/sample-10BT --output_dir data/fineweb-edu-10bt/qwen25/train --tokenizer_path checkpoints/Qwen/Qwen2.5-0.5B
 
 # 学習開始
