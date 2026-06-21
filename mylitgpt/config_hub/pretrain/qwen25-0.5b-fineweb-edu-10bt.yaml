@@ -69,7 +69,7 @@ num_nodes: 1
 tokenizer_dir: checkpoints/Qwen/Qwen2.5-0.5B
 
 # The name of the logger to send metrics to.
-logger_name: tensorboard
+# logger_name: tensorboard
 
 # The random seed to use for reproducibility.
 seed: 42

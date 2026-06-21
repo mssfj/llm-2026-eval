@@ -1,3 +1,9 @@
+# export HF_DATASET_REPO_ID="username/fineweb-edu-10bt-qwen25"
+# export HF_MODEL_REPO_ID="username/qwen25-0.5b-fineweb-edu-10bt"
+
+huggingface-cli login
+wandb login
+
 cd /root/lowbit-math-reasoning/mylitgpt
 
 # 環境構築
