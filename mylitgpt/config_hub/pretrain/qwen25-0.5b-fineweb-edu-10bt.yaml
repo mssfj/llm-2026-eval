@@ -20,7 +20,7 @@ resume: auto
 data:
   class_path: litgpt.data.LitData
   init_args:
-    data_path: data/fineweb-edu-10bt/qwen25
+    data_path: data/fineweb-edu-10bt/qwen25/
     split_names:
       - train
       - train

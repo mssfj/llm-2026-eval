@@ -3,6 +3,7 @@
 import os
 import time
 import traceback
+from functools import partial
 from pathlib import Path
 
 from litgpt.constants import _LITDATA_AVAILABLE
@@ -50,6 +51,10 @@ class FineWebEduDataRecipe(DataChunkRecipe):
         print(f"Took {end - start:.2f} seconds total", filepath)
 
 
+def tokenize(filepath: str, tokenizer: Tokenizer):
+    yield from FineWebEduDataRecipe(tokenizer=tokenizer, chunk_size=1).prepare_item(filepath)
+
+
 def prepare(
     input_dir: Path = Path("data/fineweb-edu/sample-10BT"),
     output_dir: Path = Path("data/fineweb-edu-10bt/qwen25/train"),
@@ -57,21 +62,26 @@ def prepare(
     chunk_size: int = (2049 * 8192),
     fast_dev_run: bool = False,
 ) -> None:
-    from litdata.processing.data_processor import DataProcessor
+    from litdata import TokensLoader, optimize
 
     tokenizer_path = extend_checkpoint_dir(tokenizer_path)
     tokenizer = Tokenizer(tokenizer_path)
     data_recipe = FineWebEduDataRecipe(tokenizer=tokenizer, chunk_size=chunk_size)
-    data_processor = DataProcessor(
-        input_dir=str(input_dir),
-        output_dir=str(output_dir),
-        fast_dev_run=fast_dev_run,
-        num_workers=os.cpu_count(),
-        num_downloaders=1,
-    )
+    files = data_recipe.prepare_structure(input_dir)
+    if not files:
+        raise FileNotFoundError(f"No parquet files found under {input_dir}")
+    if fast_dev_run:
+        files = files[:1]
 
     start_time = time.time()
-    data_processor.run(data_recipe)
+    optimize(
+        fn=partial(tokenize, tokenizer=tokenizer),
+        inputs=files,
+        output_dir=str(output_dir),
+        num_workers=1 if fast_dev_run else min(len(files), os.cpu_count() or 1),
+        chunk_bytes="3GB",
+        item_loader=TokensLoader(),
+    )
     elapsed_time = time.time() - start_time
     print(f"Time taken: {elapsed_time:.2f} seconds")
 
