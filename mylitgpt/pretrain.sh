@@ -1,6 +1,6 @@
 set -euo pipefail
 
-# export HF_DATASET_REPO_ID="mssfj/qwen25-0.5b-fineweb-edu-10bt"  # 別リポジトリを使う場合は上書き
+# export HF_DATASET_REPO_ID="username/qwen25-0.5b-fineweb-edu-10bt"  # 別リポジトリを使う場合は上書き
 # export HF_MODEL_REPO_ID="username/qwen25-0.5b-fineweb-edu-10bt"
 
 # huggingface-cli login
@@ -15,6 +15,7 @@ source .venv/bin/activate
 
 pip install -e ".[all]"
 pip install datasets huggingface_hub pyarrow litdata 
+pip install -U 'wandb>=0.12.10'
 
 # huggingface_hubをlitgptのdowndload.pyにあわせダウングレード
 python -m pip install -U --force-reinstall "huggingface_hub[hf-transfer]>=0.30,<1.0" 
