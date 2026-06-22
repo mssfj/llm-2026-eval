@@ -1,7 +1,7 @@
 set -euo pipefail
 
-# export HF_DATASET_REPO_ID="username/qwen25-0.5b-fineweb-edu-10bt"  # 別リポジトリを使う場合は上書き
-# export HF_MODEL_REPO_ID="username/qwen25-0.5b-fineweb-edu-10bt"
+export HF_DATASET_REPO_ID="mssfj/qwen25-0.5b-fineweb-edu-10bt"  # 別リポジトリを使う場合は上書き
+export HF_MODEL_REPO_ID="mssfj/qwen25-0.5b-fineweb-edu-10bt"
 
 # huggingface-cli login
 hf auth login
@@ -13,12 +13,8 @@ cd /root/lowbit-math-reasoning/mylitgpt
 python -m venv .venv
 source .venv/bin/activate 
 
-pip install -e ".[all]"
-pip install datasets huggingface_hub pyarrow litdata 
-pip install -U 'wandb>=0.12.10'
-
-# huggingface_hubをlitgptのdowndload.pyにあわせダウングレード
-python -m pip install -U --force-reinstall "huggingface_hub[hf-transfer]>=0.30,<1.0" 
+pip install -e ".[extra]"
+pip install -U 'wandb>=0.12.10' 
 
 # トークナイザだけダウンロード
 litgpt download Qwen/Qwen2.5-0.5B --tokenizer_only true
@@ -44,6 +40,7 @@ litgpt download Qwen/Qwen2.5-0.5B --tokenizer_only true
 #     exit 1
 # fi
 # HF_HUB_ENABLE_HF_TRANSFER=1 huggingface-cli upload-large-folder "$HF_DATASET_REPO_ID" data/fineweb-edu-10bt/qwen25/train --repo-type dataset
+
 # Hugging Face Hubから前処理済みTokensLoaderデータセットを取得
 HF_DATASET_REPO_ID="${HF_DATASET_REPO_ID:-mssfj/qwen25-0.5b-fineweb-edu-10bt}"
 HF_DATASET_DIR="data/fineweb-edu-10bt/qwen25/train"
@@ -55,10 +52,60 @@ python -c 'import json, sys; from pathlib import Path; p = Path(sys.argv[1]) / "
 
 # 学習開始
 # 学習パラメータは.yamlに記載
-litgpt pretrain --config config_hub/pretrain/qwen25-0.5b-fineweb-edu-10bt.yaml
+litgpt pretrain \
+	--config config_hub/pretrain/qwen25-0.5b-fineweb-edu-10bt.yaml \
+	--out_dir out/pretrain/qwen25-0.5b-fineweb-edu-10bt
 
-# 学習後のHuggingface形式への変換
-litgpt convert_pretrained_checkpoint out/pretrain/qwen25-0.5b-fineweb-edu-10bt/final out/pretrain/qwen25-0.5b-fineweb-edu-10bt-hf
+# 前回の変換生成物を削除して再実行可能にする
+rm -rf \
+	out/pretrain/qwen25-0.5b-fineweb-edu-10bt-lit \
+	out/pretrain/qwen25-0.5b-fineweb-edu-10bt-hf-weights \
+	out/pretrain/qwen25-0.5b-fineweb-edu-10bt-hf
+
+# 学習後のcheckpointからoptimizer stateを除去
+litgpt convert_pretrained_checkpoint \
+	out/pretrain/qwen25-0.5b-fineweb-edu-10bt/final \
+	out/pretrain/qwen25-0.5b-fineweb-edu-10bt-lit
+
+# LitGPTの重み名をHugging Face Transformersの重み名へ変換
+litgpt convert_from_litgpt \
+	out/pretrain/qwen25-0.5b-fineweb-edu-10bt-lit \
+	out/pretrain/qwen25-0.5b-fineweb-edu-10bt-hf-weights
+
+# from_pretrained()で直接ロードできる標準Hugging Face形式に保存
+python - <<'PY'
+from pathlib import Path
+
+import torch
+from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer
+
+lit_dir = Path("out/pretrain/qwen25-0.5b-fineweb-edu-10bt-lit")
+weights_dir = Path("out/pretrain/qwen25-0.5b-fineweb-edu-10bt-hf-weights")
+hf_dir = Path("out/pretrain/qwen25-0.5b-fineweb-edu-10bt-hf")
+
+config = AutoConfig.from_pretrained(lit_dir, local_files_only=True)
+state_dict = torch.load(weights_dir / "model.pth", map_location="cpu", mmap=True, weights_only=True)
+
+with torch.device("meta"):
+    model = AutoModelForCausalLM.from_config(config)
+missing, unexpected = model.load_state_dict(state_dict, strict=False, assign=True)
+if missing or unexpected:
+    raise RuntimeError(f"State dict mismatch: missing={missing}, unexpected={unexpected}")
+
+hf_dir.mkdir(parents=True, exist_ok=True)
+model.save_pretrained(hf_dir, safe_serialization=True, max_shard_size="5GB")
+AutoTokenizer.from_pretrained(lit_dir, local_files_only=True).save_pretrained(hf_dir)
+
+# アップロード前に、実際にfrom_pretrained()でロードできることを検証
+loaded = AutoModelForCausalLM.from_pretrained(
+    hf_dir,
+    local_files_only=True,
+    low_cpu_mem_usage=True,
+)
+del loaded
+print(f"Validated Hugging Face checkpoint: {hf_dir}")
+PY
+
 
 # 学習済みモデルをHugging Face Hubへアップロード
 # 事前に書き込み権限のあるトークンでログインし、アップロード先を指定する
@@ -68,4 +115,4 @@ if [ -z "${HF_MODEL_REPO_ID:-}" ]; then
     echo "HF_MODEL_REPO_IDを設定してください（例: username/qwen25-0.5b-fineweb-edu-10bt）" >&2
     exit 1
 fi
-HF_HUB_ENABLE_HF_TRANSFER=1 huggingface-cli upload-large-folder "$HF_MODEL_REPO_ID" out/pretrain/qwen25-0.5b-fineweb-edu-10bt-hf --repo-type model
+HF_HUB_ENABLE_HF_TRANSFER=1 hf upload-large-folder "$HF_MODEL_REPO_ID" out/pretrain/qwen25-0.5b-fineweb-edu-10bt-test-hf --repo-type model

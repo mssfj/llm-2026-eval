@@ -28,15 +28,15 @@ data:
 
 # Training-related arguments.
 train:
+  global_batch_size: 512
+  micro_batch_size: 2
+  lr_warmup_steps: 1000
+  max_tokens: 10000000000
+  max_seq_length: 2048
   save_interval: 1000
   log_interval: 1
-  global_batch_size: 512
-  micro_batch_size: 4
-  lr_warmup_steps: 1000
   epochs:
-  max_tokens: 10000000000
   max_steps:
-  max_seq_length: 2048
   tie_embeddings: false
   max_norm: 1.0
   min_lr: 4.0e-05
