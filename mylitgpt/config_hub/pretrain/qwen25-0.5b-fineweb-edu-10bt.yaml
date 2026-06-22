@@ -29,7 +29,7 @@ data:
 # Training-related arguments.
 train:
   global_batch_size: 512
-  micro_batch_size: 2
+  micro_batch_size: 8 
   lr_warmup_steps: 1000
   max_tokens: 10000000000
   max_seq_length: 2048

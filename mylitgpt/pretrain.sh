@@ -115,4 +115,4 @@ if [ -z "${HF_MODEL_REPO_ID:-}" ]; then
     echo "HF_MODEL_REPO_IDを設定してください（例: username/qwen25-0.5b-fineweb-edu-10bt）" >&2
     exit 1
 fi
-HF_HUB_ENABLE_HF_TRANSFER=1 hf upload-large-folder "$HF_MODEL_REPO_ID" out/pretrain/qwen25-0.5b-fineweb-edu-10bt-test-hf --repo-type model
+HF_HUB_ENABLE_HF_TRANSFER=1 hf upload-large-folder "$HF_MODEL_REPO_ID" out/pretrain/qwen25-0.5b-fineweb-edu-10bt-hf --repo-type model
