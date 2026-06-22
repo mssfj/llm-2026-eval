@@ -33,7 +33,7 @@ train:
   lr_warmup_steps: 1000
   max_tokens: 10000000000
   max_seq_length: 2048
-  save_interval: 1000
+  save_interval: 2000
   log_interval: 1
   epochs:
   max_steps:
