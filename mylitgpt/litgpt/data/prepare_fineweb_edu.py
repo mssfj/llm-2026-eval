@@ -60,6 +60,7 @@ def prepare(
     output_dir: Path = Path("data/fineweb-edu-10bt/qwen25/train"),
     tokenizer_path: Path = Path("checkpoints/Qwen/Qwen2.5-0.5B/"),
     chunk_size: int = (2049 * 8192),
+    num_workers: int | None = None,
     fast_dev_run: bool = False,
 ) -> None:
     from litdata import TokensLoader, optimize
@@ -72,13 +73,17 @@ def prepare(
         raise FileNotFoundError(f"No parquet files found under {input_dir}")
     if fast_dev_run:
         files = files[:1]
+    if num_workers is None:
+        num_workers = min(len(files), os.cpu_count() or 1)
+    else:
+        num_workers = min(num_workers, len(files))
 
     start_time = time.time()
     optimize(
         fn=partial(tokenize, tokenizer=tokenizer),
         inputs=files,
         output_dir=str(output_dir),
-        num_workers=1 if fast_dev_run else min(len(files), os.cpu_count() or 1),
+        num_workers=1 if fast_dev_run else num_workers,
         chunk_bytes="3GB",
         item_loader=TokensLoader(),
     )

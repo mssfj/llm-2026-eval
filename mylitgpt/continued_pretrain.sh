@@ -9,6 +9,16 @@ export HF_MODEL_REPO_ID="${HF_MODEL_REPO_ID:-mssfj/qwen25-0.5b-finemath-4plus}"
 export BASE_LIT_CHECKPOINT_DIR="${BASE_LIT_CHECKPOINT_DIR:-out/pretrain/qwen25-0.5b-fineweb-edu-10bt-lit}"
 export TOKENIZER_DIR="${TOKENIZER_DIR:-checkpoints/Qwen/Qwen2.5-0.5B}"
 export RAW_DATA_DIR="${RAW_DATA_DIR:-data/finemath-4plus/raw}"
+export RAW_DATA_SHARD_DIR="${RAW_DATA_SHARD_DIR:-$RAW_DATA_DIR/shards}"
+export FINEMATH_NUM_SHARDS="${FINEMATH_NUM_SHARDS:-128}"
+export FINEMATH_TOKENIZE_WORKERS="${FINEMATH_TOKENIZE_WORKERS:-32}"
+export OMP_NUM_THREADS="${OMP_NUM_THREADS:-1}"
+export OPENBLAS_NUM_THREADS="${OPENBLAS_NUM_THREADS:-1}"
+export MKL_NUM_THREADS="${MKL_NUM_THREADS:-1}"
+export NUMEXPR_NUM_THREADS="${NUMEXPR_NUM_THREADS:-1}"
+export TOKENIZERS_PARALLELISM="${TOKENIZERS_PARALLELISM:-false}"
+export LIGHTNING_DISABLE_VERSION_CHECK="${LIGHTNING_DISABLE_VERSION_CHECK:-1}"
+export LITDATA_DISABLE_VERSION_CHECK="${LITDATA_DISABLE_VERSION_CHECK:-1}"
 export LITDATA_DIR="${LITDATA_DIR:-data/finemath-4plus/qwen25/train}"
 export OUT_DIR="${OUT_DIR:-out/pretrain/qwen25-0.5b-finemath-4plus}"
 export LIT_OUT_DIR="${LIT_OUT_DIR:-out/pretrain/qwen25-0.5b-finemath-4plus-lit}"
@@ -40,8 +50,8 @@ HF_HUB_ENABLE_HF_TRANSFER=1 hf download \
 
 python -c 'import sys; from pathlib import Path; p = Path(sys.argv[1]) / "lit_model.pth"; assert p.is_file(), f"lit_model.pth not found: {p}"; print(f"Validated base LitGPT checkpoint: {p}")' "$BASE_LIT_CHECKPOINT_DIR"
 
-# FineMath-4plus を Hugging Face Datasets の subset/config として読み込み、parquet として保存
-mkdir -pv "$RAW_DATA_DIR"
+# FineMath-4plus を Hugging Face Datasets の subset/config として読み込み、複数 parquet shard として保存
+mkdir -pv "$RAW_DATA_SHARD_DIR"
 python - <<'PY_LOAD_FINEMATH'
 import os
 from pathlib import Path
@@ -51,15 +61,31 @@ from datasets import load_dataset
 repo_id = os.environ["HF_SOURCE_DATASET_REPO_ID"]
 config_name = os.environ["HF_SOURCE_DATASET_CONFIG"]
 raw_data_dir = Path(os.environ["RAW_DATA_DIR"])
-raw_data_dir.mkdir(parents=True, exist_ok=True)
-output_file = raw_data_dir / "train.parquet"
+shard_dir = Path(os.environ["RAW_DATA_SHARD_DIR"])
+num_shards = int(os.environ["FINEMATH_NUM_SHARDS"])
 
-if output_file.exists():
-    print(f"Using existing FineMath parquet: {output_file}")
+raw_data_dir.mkdir(parents=True, exist_ok=True)
+shard_dir.mkdir(parents=True, exist_ok=True)
+expected_files = [
+    shard_dir / f"train-{index:05d}-of-{num_shards:05d}.parquet"
+    for index in range(num_shards)
+]
+existing_files = sorted(shard_dir.glob("*.parquet"))
+
+if all(path.exists() for path in expected_files) and len(existing_files) == num_shards:
+    print(f"Using existing FineMath parquet shards: {shard_dir} ({num_shards} files)")
 else:
+    if existing_files:
+        raise RuntimeError(
+            f"Found incomplete or mismatched parquet shards in {shard_dir}. "
+            "Remove that directory or set FINEMATH_NUM_SHARDS to match the existing shards."
+        )
+
     dataset = load_dataset(repo_id, config_name, split="train", num_proc=8)
-    dataset.to_parquet(str(output_file))
-    print(f"Saved FineMath parquet: {output_file}")
+    for index, output_file in enumerate(expected_files):
+        shard = dataset.shard(num_shards=num_shards, index=index, contiguous=True)
+        shard.to_parquet(str(output_file))
+        print(f"Saved FineMath parquet shard {index + 1}/{num_shards}: {output_file}")
 PY_LOAD_FINEMATH
 
 # litgptで読み込めるよう前処理
@@ -68,9 +94,10 @@ PY_LOAD_FINEMATH
 # - LitData chunks を data/finemath-4plus/qwen25/train に出力
 mkdir -pv "$LITDATA_DIR"
 python litgpt/data/prepare_fineweb_edu.py \
-  --input_dir "$RAW_DATA_DIR" \
+  --input_dir "$RAW_DATA_SHARD_DIR" \
   --output_dir "$LITDATA_DIR" \
-  --tokenizer_path "$TOKENIZER_DIR"
+  --tokenizer_path "$TOKENIZER_DIR" \
+  --num_workers "$FINEMATH_TOKENIZE_WORKERS"
 
 # TokensLoader形式とチャンク次元を検証（旧DataChunkRecipe/PyTreeLoader形式の混入を防止）
 python -c 'import json, sys; from pathlib import Path; p = Path(sys.argv[1]) / "index.json"; index = json.loads(p.read_text()); assert index["config"]["item_loader"] == "TokensLoader", index["config"]; assert all(isinstance(chunk["dim"], int) and chunk["dim"] > 0 for chunk in index["chunks"]), "invalid chunk dim"; print("Validated TokensLoader dataset:", len(index["chunks"]), "chunks")' "$LITDATA_DIR"
