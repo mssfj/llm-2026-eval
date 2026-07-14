@@ -18,16 +18,16 @@ if [ -z "${TMUX:-}" ]; then
 fi
 
 # ==== codexのインストール ====
-npm i -g @openai/codex
+sudo npm i -g @openai/codex
 
 npm cache clean -f
-npm install -g n
-n lts
+sudo npm install -g n
+sudo n lts
 
 export PATH="/usr/local/bin:$HOME/.local/bin:$PATH"
 hash -r
 
-npm install -g @openai/codex@latest
+sudo npm install -g @openai/codex@latest
 
 # ==== 1. uv インストール ====
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -68,6 +68,7 @@ description = "Separate preprocessing environment for vLLM-based inference and v
 requires-python = ">=3.10,<3.12"
 dependencies = [
     "datasets",
+    "huggingface-hub",
     "sympy",
     "sentencepiece",
 ]
@@ -79,13 +80,13 @@ dev = [
 PYPROJECT_PREPROCESSING
 
 # ==== 4. lock と sync ====
-cd "${PREPROCESSIN_ROOT}"
+cd "${PREPROCESSING_ROOT}"
 uv lock
 uv sync --dev
 
 # ==== 5. git 初期化 ====
 git config --global user.email "mss.fujimoto@gmail.com"
 git config --global user.name "Masashi Fujimoto"
-git config --global credential.helper
+git config --global --get credential.helper || true
 
 echo "=== setup done. ==="
