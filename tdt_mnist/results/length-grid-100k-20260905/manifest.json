@@ -1,0 +1,42 @@
+{
+  "lengths": [
+    3000,
+    6000,
+    12000
+  ],
+  "blocks": [
+    64,
+    128,
+    256
+  ],
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "threshold": 8,
+  "data_dir": "/tmp/tdt-mnist-data",
+  "output_dir": "/root/lowbit-math-reasoning/tdt_mnist/runs/length-grid-100k-20260905",
+  "report_dir": "/root/lowbit-math-reasoning/tdt_mnist/results/length-grid-100k-20260905",
+  "num_params": 100000,
+  "activation_precision": "a32",
+  "measurements": 64,
+  "batch_size": 128,
+  "train_size": 10000,
+  "val_size": 1000,
+  "test_size": 10000,
+  "pool_shape": [
+    9,
+    10
+  ],
+  "hidden_size": 1000,
+  "max_fires": 1,
+  "data_seed": 0,
+  "batch_seed_rule": "seed + 100000",
+  "source_sha256": {
+    "train.py": "fdf2e23d12686827473539c2baa5e0d4752652cc5c1581161f6b16f44a60980e",
+    "sweep.py": "52dd7a6f45b9ea4ea4b0166f094d9407fc5979c2548de715881952c7da32ddbc",
+    "sweep_lengths.py": "102392375d2915b92fd99e25bc7fc4f1ce097c09505d5d937e0ff1abad0a1752",
+    "activation_quantization.py": "a4d5f9bc0d6734f00719534bdd6a3e1adaee8346638eb45175acf21151354638"
+  }
+}

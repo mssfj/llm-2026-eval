@@ -11,6 +11,8 @@ import time
 
 import torch
 
+from activation_quantization import activation_description
+
 from train import (TernaryModel, candidate_pair, epoch, evaluate, load_data, loss,
                    parser as train_parser, validate)
 
@@ -82,13 +84,14 @@ def run_one(method, seed, options):
     torch.use_deterministic_algorithms(True)
     directory = args.output_dir / f"{method}-seed{seed}"
     directory.mkdir(parents=True, exist_ok=False)
-    model = TernaryModel(args.pool_size, args.hidden_size, args.zero_rate, args.gain, args.device, seed, pool_shape=args.pool_shape)
+    model = TernaryModel(args.pool_size, args.hidden_size, args.zero_rate, args.gain, args.device, seed, pool_shape=args.pool_shape, activation_precision=args.activation_precision)
     generator = torch.Generator(device=model.device).manual_seed(seed + 1)
     batches = torch.Generator(device=model.device).manual_seed(args.batch_seed)
     config = {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()}
     config.update(method=method, num_params=model.num_params, layer_scales=model.scales,
                   effective_threshold=args.threshold if method == "counter" else None,
-                  torch_version=torch.__version__, activation_precision="float32",
+                  torch_version=torch.__version__, activation_precision=args.activation_precision,
+                  activation_quantization=activation_description(args.activation_precision),
                   update_cadence="after K pairs" if method == "counter" else "after every pair",
                   block_cadence="every K pairs", normalization_cadence="every K pairs")
     (directory / "config.json").write_text(json.dumps(config, indent=2) + "\n")
@@ -199,7 +202,7 @@ def report(args, results):
              f"seed={args.seeds}、block={args.block_size}、counter閾値={args.threshold}、K={args.measurements}、{args.steps}区間。",
              f"各runは{2*args.steps*args.measurements:,}回の訓練forward。batch={args.batch_size}。",
              f"訓練{args.train_size}件・検証{args.val_size}件・テスト10,000件、分割seed={args.data_seed}で固定。",
-             "同じseedで初期重み、訓練バッチ列、摂動・確率丸め乱数列を対応させた。活性化はFP32。",
+             f"同じseedで初期重み、訓練バッチ列、摂動・確率丸め乱数列を対応させた。活性化設定は{args.activation_precision}。",
              "カウンタありはK回、重みを固定して票を蓄積し、区間末に閾値を判定して全証拠をリセット。",
              "カウンタなしは辺カウンタを作らず、各候補対の非ゼロ票から直ちに更新。閾値は適用しない。",
              "ブロック選択とS更新は両方式ともK回ごと。各更新機会の最大更新数は同じ。",
@@ -242,7 +245,7 @@ def main():
     args.output_dir.mkdir(parents=True, exist_ok=True)
     args.report_dir.mkdir(parents=True, exist_ok=True)
     manifest = {k: str(v.resolve()) if isinstance(v, Path) else v for k, v in vars(args).items()}
-    for name in ("train.py", "compare_counters.py"):
+    for name in ("train.py", "compare_counters.py", "activation_quantization.py"):
         source = Path(__file__).with_name(name)
         manifest[name + "_sha256"] = hashlib.sha256(source.read_bytes()).hexdigest()
     (args.report_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")

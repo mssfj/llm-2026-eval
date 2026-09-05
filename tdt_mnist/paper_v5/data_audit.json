@@ -1,0 +1,16 @@
+{
+  "experiment_groups": 9,
+  "condition_rows": 82,
+  "run_records": 244,
+  "includes_repeated_conditions": true,
+  "initial_loss_improved": 244,
+  "initial_accuracy_improved": 244,
+  "aggregate_recalculation_passed": true,
+  "missing_counter_distribution": [
+    "E1"
+  ],
+  "non_applicable_counter_distribution": [
+    "E3 no_counter"
+  ],
+  "date": "2026-09-05"
+}
