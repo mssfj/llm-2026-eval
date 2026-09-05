@@ -4,6 +4,7 @@ This repository provides scripts for low-bit quantization of math reasoning mode
 
 - `eval/`: vLLM-based evaluation scripts for GSM8K and MATH-500
 - `quantization/`: GPTQ quantization scripts for Qwen3.5-9B
+- `tdt_mnist/`: forward-only TDT-D ternary learning on MNIST, with exactly 1,000 trainable weights by default ([日本語の実行手順](tdt_mnist/README.md))
 - `vastai-setup_uv.sh`: helper setup script for GPU environments such as Vast.ai
 
 ## Requirements

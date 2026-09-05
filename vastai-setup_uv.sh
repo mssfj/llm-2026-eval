@@ -17,6 +17,15 @@ sudo apt-get install -y \
   python3-dev python3-pip \
   pkg-config nodejs npm unzip
 
+# ==== aws-cliのインストール（必要ならコメントアウト）
+#curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+#unzip awscliv2.zip
+#sudo ./aws/install
+
+#aws --version　 #動作確認
+
+#aws configure
+
 # ==== codexのインストール ====
 npm i -g @openai/codex
 
