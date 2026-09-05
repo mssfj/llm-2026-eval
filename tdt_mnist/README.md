@@ -235,3 +235,41 @@ uv run python plot_threshold_sweep.py results/threshold-1-32
 閾値1も区間末に64票の蓄積結果を判定する方式で、即時更新するカウンタなしとは異なります。
 `threshold_comparison.png/svg` には閾値ごとの検証精度・損失・更新数と、カウンタ分布を表示します。
 グラフ作成には `uv sync --extra plots` が必要です。
+
+
+## 10,000パラメータの2層モデル
+
+`--pool-shape HEIGHT WIDTH` で矩形の平均プーリングを指定できます。
+指定時は `--pool-size` より優先します。隠れ層ありの重み数は
+`(HEIGHT * WIDTH + 10) * hidden_size` です。バイアスはありません。
+
+9×10入力、隠れ層100で、90→100→10の2層モデルになります。
+第1層9,000重み、第2層1,000重みで、学習対象はちょうど10,000個の3値重みです。
+層間にReLUを使い、活性化・行列積・損失はFP32です。固定スケール以外の潜在高精度重みは持ちません。
+`--expected-params 10000` は実際の重み数が10,000でない場合に停止します。
+
+単発学習:
+
+```bash
+uv run python train.py --pool-shape 9 10 --hidden-size 100 --expected-params 10000 \
+  --block-size 8 --threshold 8 --measurements 64 --steps 3000 \
+  --output-dir runs/mnist-10000
+```
+
+閾値4・8・16 × ブロック1・8・32 × seed0・1・2の比較:
+
+```bash
+uv run python sweep.py --pool-shape 9 10 --hidden-size 100 --expected-params 10000 \
+  --thresholds 4 8 16 --blocks 1 8 32 --workers 4 \
+  --output-dir runs/mnist-10000-grid --report-dir results/mnist-10000-grid
+uv run python plot_sweep.py results/mnist-10000-grid
+```
+
+全条件でK=64、3,000区間、最大発火1座標です。
+同じseedでは初期重みとデータ・バッチ列を対応させます。
+`summary.json` の `layer_update_counts` と集計の `layer_0_fires` / `layer_1_fires` で
+各層の更新数も確認できます。層番号は入力側から0始まりです。
+
+さらに増やす場合は、9×10入力を固定して隠れ層200なら20,000重み、隠れ層1,000なら100,000重みになります。
+その場合は `--expected-params` と出力先も変更してください。
+前回の1,000重みモデルは隠れ層のない100→10であり、今回との比較では入力形状・層数も変わる点に注意してください。

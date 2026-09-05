@@ -11,13 +11,26 @@ import torch
 import torch.nn.functional as F
 
 
+def pooled_shape(pool_size=10, pool_shape=None):
+    shape = tuple(pool_shape) if pool_shape is not None else (pool_size, pool_size)
+    if len(shape) != 2 or any(not 1 <= side <= 28 for side in shape):
+        raise ValueError("pooled image dimensions must both be in [1, 28]")
+    return shape
+
+
+def model_parameter_count(pool_size=10, hidden_size=0, pool_shape=None):
+    inputs = math.prod(pooled_shape(pool_size, pool_shape))
+    return (inputs + 10) * hidden_size if hidden_size else inputs * 10
+
+
 class TernaryModel:
     """Bias-free linear classifier, or one-hidden-layer ReLU MLP; fixed scales."""
 
     def __init__(self, pool_size=10, hidden_size=0, zero_rate=1 / 3,
-                 gain=1.0, device="cpu", seed=0):
+                 gain=1.0, device="cpu", seed=0, pool_shape=None):
         self.device = torch.device(device)
-        inputs = pool_size ** 2
+        self.pool_shape = pooled_shape(pool_size, pool_shape)
+        inputs = math.prod(self.pool_shape)
         self.shapes = ([(hidden_size, inputs), (10, hidden_size)]
                        if hidden_size else [(10, inputs)])
         self.num_params = sum(math.prod(shape) for shape in self.shapes)
@@ -228,7 +241,7 @@ def load_data(args, device):
     def prepare(dataset, indices):
         images = dataset.data[indices].float().unsqueeze(1) / 255.0
         # Fixed preprocessing; neither pooling nor normalization has trained parameters.
-        images = F.adaptive_avg_pool2d(images, (args.pool_size, args.pool_size))
+        images = F.adaptive_avg_pool2d(images, pooled_shape(args.pool_size, args.pool_shape))
         images = ((images - 0.1307) / 0.3081).flatten(1).to(device)
         return images, dataset.targets[indices].to(device)
 
@@ -239,6 +252,8 @@ def load_data(args, device):
 def parser():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     p.add_argument("--pool-size", type=int, default=10, help="pooled image side; default model has 10*10*10=1000 weights")
+    p.add_argument("--pool-shape", nargs=2, type=int, default=None, metavar=("HEIGHT", "WIDTH"), help="rectangular pooling; overrides pool-size")
+    p.add_argument("--expected-params", type=int, default=None, help="fail unless the model has exactly this many trained weights")
     p.add_argument("--hidden-size", type=int, default=0, help="0: linear; positive: bias-free ReLU MLP")
     p.add_argument("--steps", type=int, default=5000, help="number of fixed-state accumulation epochs, not dataset passes")
     p.add_argument("--batch-size", type=int, default=128)
@@ -278,6 +293,12 @@ def validate(args, p):
             p.error(f"--{name.replace('_', '-')} must be positive")
     if not 1 <= args.pool_size <= 28 or args.hidden_size < 0:
         p.error("pool-size must be in [1, 28]; hidden-size must be nonnegative")
+    try:
+        pooled_shape(args.pool_size, args.pool_shape)
+    except ValueError as error:
+        p.error(str(error))
+    if args.expected_params is not None and args.expected_params != model_parameter_count(args.pool_size, args.hidden_size, args.pool_shape):
+        p.error("model shape does not match --expected-params")
     if not 0 <= args.zero_rate < 1 or not 0 < args.leak <= 1 or not 0 <= args.scale_ema <= 1:
         p.error("require 0 <= zero-rate < 1, 0 < leak <= 1, 0 <= scale-ema <= 1")
     if any(not math.isfinite(v) or v <= 0 for v in (args.scale, args.min_scale, args.gain)):
@@ -290,7 +311,7 @@ def validate(args, p):
         p.error("tie-tolerance must be finite and nonnegative")
     if args.threshold > min(args.measurements, 2 ** (args.counter_bits - 1) - 1):
         p.error("threshold exceeds counter capacity or votes available before epoch reset")
-    count = (args.pool_size ** 2 + 10) * args.hidden_size if args.hidden_size else 10 * args.pool_size ** 2
+    count = model_parameter_count(args.pool_size, args.hidden_size, args.pool_shape)
     if args.block_size > count or args.max_fires > args.block_size:
         p.error("require max-fires <= block-size <= number of parameters")
     if args.device == "cuda" and not torch.cuda.is_available():
@@ -310,12 +331,13 @@ def main():
     if any(args.output_dir.iterdir()):
         p.error("output-dir is not empty; choose a new experiment directory")
     model = TernaryModel(args.pool_size, args.hidden_size, args.zero_rate,
-                         args.gain, args.device, args.seed)
+                         args.gain, args.device, args.seed, pool_shape=args.pool_shape)
     generator = torch.Generator(device=model.device).manual_seed(args.seed + 1)
     batch_generator = (torch.Generator(device=model.device).manual_seed(args.batch_seed)
                        if args.batch_seed is not None else None)
     config = {key: str(value) if isinstance(value, Path) else value for key, value in vars(args).items()}
     config.update(num_params=model.num_params, shapes=model.shapes, layer_scales=model.scales,
+                  effective_pool_shape=model.pool_shape,
                   activation_precision="float32", weight_storage="int8 ternary",
                   reset_policy="all evidence discarded after every accumulation epoch",
                   torch_version=torch.__version__)
@@ -330,6 +352,7 @@ def main():
               "local_regret", "oracle_gain", "fire_delta_loss", "train_forward_calls",
               "train_forward_examples", "total_forward_calls", "total_forward_examples"] + COUNTER_FIELDS
     total_fires = 0
+    layer_update_counts = [0] * len(model.shapes)
     scale = args.scale
     final = initial
     audited_deltas = []
@@ -355,6 +378,11 @@ def main():
                                             val_y[:args.oracle_size], args.tie_tolerance))
                 if stats["fires"]:
                     audited_deltas.append(stats["fire_delta_loss"])
+            offset = 0
+            for layer, shape in enumerate(model.shapes):
+                size = math.prod(shape)
+                layer_update_counts[layer] += int((model.weights[offset:offset+size] != proposal[offset:offset+size]).sum())
+                offset += size
             model.weights.copy_(proposal)  # No validation-based acceptance filter.
             total_fires += stats["fires"]
             train_calls = 2 * args.measurements * step
@@ -376,6 +404,7 @@ def main():
     test = evaluate(model, test_x, test_y)
     summary = {"num_params": model.num_params, "initial_validation": initial,
                "final_validation": final, "test": test, "total_fires": total_fires,
+               "layer_update_counts": layer_update_counts,
                "audited_fire_events": len(audited_deltas),
                "audited_p_improve": (sum(d < 0 for d in audited_deltas) / len(audited_deltas)
                                      if audited_deltas else None),

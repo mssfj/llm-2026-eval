@@ -11,6 +11,8 @@ import statistics
 import subprocess
 import sys
 
+from train import model_parameter_count, pooled_shape
+
 
 def write_csv(path, rows):
     with path.open("w", newline="") as handle:
@@ -44,7 +46,8 @@ def make_report(args, rows, distributions):
     groups = aggregate(rows)
     write_csv(args.report_dir / "aggregate.csv", groups)
     text = ["# MNIST TDT-D: ブロック・閾値・seedの比較", "",
-            f"1,000重み、seed={args.seeds}、訓練{args.train_size}件、検証{args.val_size}件、テスト10,000件。",
+            f"{args.num_params:,}重み、seed={args.seeds}、訓練{args.train_size}件、検証{args.val_size}件、テスト10,000件。",
+            f"入力プーリング={pooled_shape(args.pool_size, args.pool_shape)}、隠れ層幅={args.hidden_size}（0は線形モデル）、バイアスなし。",
             f"全条件でK={args.measurements}、{args.steps}区間、batch={args.batch_size}、最大発火1座標。",
             f"各実験の訓練forwardは{2 * args.steps * args.measurements:,}回。測定例数も同一。",
             "データ分割seedは0で固定。同じseedでは初期重みと独立した訓練バッチ乱数列を共有。",
@@ -80,6 +83,10 @@ def make_report(args, rows, distributions):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("--pool-size", type=int, default=10)
+    p.add_argument("--pool-shape", nargs=2, type=int, default=None, metavar=("HEIGHT", "WIDTH"))
+    p.add_argument("--hidden-size", type=int, default=0)
+    p.add_argument("--expected-params", type=int, default=None)
     p.add_argument("--seeds", nargs="+", type=int, default=[0, 1, 2])
     p.add_argument("--blocks", nargs="+", type=int, default=[1, 8, 32])
     p.add_argument("--thresholds", nargs="+", type=int, default=[4, 8, 16, 32])
@@ -99,8 +106,16 @@ def main():
         p.error("steps, measurements, batch-size, workers and eval-every must be positive")
     if not 1 <= args.val_size < 60000 or not 1 <= args.train_size <= 60000 - args.val_size:
         p.error("invalid train-size or val-size")
-    if min(args.blocks) < 1 or max(args.blocks) > 1000:
-        p.error("blocks must be in [1,1000]")
+    if not 1 <= args.pool_size <= 28 or args.hidden_size < 0:
+        p.error("pool-size must be in [1,28]; hidden-size must be nonnegative")
+    try:
+        args.num_params = model_parameter_count(args.pool_size, args.hidden_size, args.pool_shape)
+    except ValueError as error:
+        p.error(str(error))
+    if args.expected_params is not None and args.expected_params != args.num_params:
+        p.error("model shape does not match --expected-params")
+    if min(args.blocks) < 1 or max(args.blocks) > args.num_params:
+        p.error("blocks must be between 1 and the model parameter count")
     if min(args.thresholds) < 1 or max(args.thresholds) > min(args.measurements, 127):
         p.error("thresholds must fit K and INT8 counter capacity")
     for name in ("seeds", "blocks", "thresholds"):
@@ -142,7 +157,10 @@ def main():
                    "--train-size", str(args.train_size), "--val-size", str(args.val_size),
                    "--eval-every", str(args.eval_every), "--oracle-every", "0",
                    "--output-dir", str(directory.resolve()), "--data-dir", str(args.data_dir.resolve()),
-                   "--no-download"]
+                   "--no-download", "--pool-size", str(args.pool_size),
+                   "--hidden-size", str(args.hidden_size), "--expected-params", str(args.num_params)]
+        if args.pool_shape is not None:
+            command.extend(["--pool-shape", *map(str, args.pool_shape)])
         environment = {**os.environ, "OMP_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1"}
         log_path = args.output_dir / (name + ".log")
         with log_path.open("w") as log:
@@ -157,9 +175,10 @@ def main():
         for future in as_completed(pending):
             try:
                 (seed, block, threshold), result = future.result()
+                assert result["num_params"] == args.num_params
                 assert result["train_forward_calls"] == 2 * args.measurements * args.steps
                 counter = result["counter_distribution"]
-                row = {"seed": seed, "block_size": block, "threshold": threshold,
+                row = {"seed": seed, "block_size": block, "threshold": threshold, "num_params": result["num_params"],
                        "initial_val_accuracy": result["initial_validation"]["accuracy"],
                        "initial_val_loss": result["initial_validation"]["loss"],
                        "val_accuracy": result["final_validation"]["accuracy"],
@@ -174,6 +193,8 @@ def main():
                             "saturated_count", "saturated_fraction", "saturation_update_count",
                             "peak_abs_during_accumulation"):
                     row["counter_" + key] = counter[key]
+                for layer, count in enumerate(result["layer_update_counts"]):
+                    row[f"layer_{layer}_fires"] = count
                 rows.append(row)
                 for value, count in counter["histogram"].items():
                     distributions.append({"seed": seed, "block_size": block, "threshold": threshold,

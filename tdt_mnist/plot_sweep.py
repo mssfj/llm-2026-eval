@@ -21,6 +21,7 @@ def main():
     parser.add_argument("report_dir", type=Path)
     args = parser.parse_args()
     rows = read_csv(args.report_dir / "per_seed.csv")
+    num_params = int(rows[0].get("num_params", 1000))
     blocks = sorted({int(r["block_size"]) for r in rows})
     thresholds = sorted({int(r["threshold"]) for r in rows})
     seeds = sorted({int(r["seed"]) for r in rows})
@@ -51,7 +52,7 @@ def main():
         ax.set(xticks=range(len(thresholds)), xticklabels=thresholds,
                yticks=range(len(blocks)), yticklabels=blocks, xlabel="Firing threshold", ylabel="Block size", title=title)
         fig.colorbar(im, ax=ax, shrink=0.7)
-    fig.suptitle(f"MNIST TDT-D / 1,000 weights / mean ± sample SD over {len(seeds)} seeds")
+    fig.suptitle(f"MNIST TDT-D / {num_params:,} weights / mean ± sample SD over {len(seeds)} seeds")
     save(fig, "comparison")
 
     hist = read_csv(args.report_dir / "counter_histograms.csv")

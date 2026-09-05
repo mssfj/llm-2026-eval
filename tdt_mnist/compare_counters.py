@@ -82,7 +82,7 @@ def run_one(method, seed, options):
     torch.use_deterministic_algorithms(True)
     directory = args.output_dir / f"{method}-seed{seed}"
     directory.mkdir(parents=True, exist_ok=False)
-    model = TernaryModel(args.pool_size, args.hidden_size, args.zero_rate, args.gain, args.device, seed)
+    model = TernaryModel(args.pool_size, args.hidden_size, args.zero_rate, args.gain, args.device, seed, pool_shape=args.pool_shape)
     generator = torch.Generator(device=model.device).manual_seed(seed + 1)
     batches = torch.Generator(device=model.device).manual_seed(args.batch_seed)
     config = {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()}
