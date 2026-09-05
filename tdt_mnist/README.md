@@ -134,3 +134,104 @@ uv run python -m unittest discover -s . -p 'test_*.py' -v
 
 ダウンロードなしで候補の合法性、境界での発火、0での競合、INT8飽和、確率丸めの平均、
 前進評価だけでの簡単な分類問題の学習を検証します。
+
+
+## 複数seed・ブロック・閾値の一括比較
+
+```bash
+uv run python sweep.py --workers 4
+```
+
+既定値はseed=0,1,2 × block=1,8,32 × threshold=4,8,16,32の36条件です。
+全条件でK=64、3,000蓄積区間、batch=128、最大発火1座標、1,000重みに統一します。
+各実験の訓練forwardは384,000回。データは訓練10,000・検証1,000・テスト10,000件です。
+データ分割seedは0で固定し、同じseedでは初期重みと訓練バッチ列もそろえます。
+バッチ列を摂動乱数から分離するため、前回の単発実験と同じseedでも結果は変わります。
+比較に不要なoracle監査を無効にし、評価回数も同じにしています。
+
+`--seeds`、`--blocks`、`--thresholds`、`--steps`、`--measurements` 等で変更できます。
+`--workers` は独立実験の同時実行数です。完了した実験を再利用する場合は `--resume` を指定します。
+設定とソースのハッシュが一致する場合のみ再利用します。途中失敗した非空の実験フォルダは
+勝手に上書きしないので、保持先へ移動してから再開してください。
+
+`runs/grid/` に各実験の詳細ログと重み、`results/grid/` に以下を保存します。
+
+- `README.md`: seed平均±標本標準偏差の比較表。
+- `per_seed.csv`: 全条件の個別結果、発火数、カウンタ統計。
+- `aggregate.csv`: 条件ごとの平均・標準偏差・検証損失が改善したseed数。
+- `counter_histograms.csv`: 条件・seed別の符号付きカウンタ分布。
+- `manifest.json`: 実験条件とソースハッシュ。
+
+カウンタ統計は各蓄積区間のリセット直前に記録します。主集計はその区間で一度以上測定した辺が対象です。
+`counter_min/max/mean` は符号付き、`counter_abs_max/abs_mean` は絶対値です。
+`counter_all_mean/all_abs_mean` は未使用のゼロを含む全2Nカウンタの平均です。
+`counter_peak_abs` は区間途中を含む最大絶対値です。
+`counter_capacity` はINT8で127、INT16で32767で、実装範囲は対称な±capacityです。
+`counter_saturated_count/fraction` は終端で絶対値がcapacityに一致した数・割合。
+既存の `saturation_rate` は更新時にcapacityを超えてクリップされた割合で、意味が異なります。
+`fires/total_fires` は座標更新数、summaryの `fire_epochs` は1件以上更新した区間数です。
+各runのsummaryには、全区間の測定済み辺をまとめた `counter_distribution` と完全なヒストグラムが入ります。
+
+K=64で毎区間リセットする今回の実験では、|C|<=64なので±127への飽和は起きません。
+閾値32での発火と、保存容量127での飽和は別の現象です。
+
+グラフも生成できます（任意）:
+
+```bash
+uv sync --extra plots
+uv run python plot_sweep.py results/grid
+```
+
+比較ヒートマップ、seed別カウンタ分布、学習曲線をPNG・SVGで保存します。
+
+
+## カウンタあり・なしの比較
+
+```bash
+uv run python compare_counters.py --workers 3
+```
+
+デフォルトはblock=8、カウンタ閾値=8、K=64、3,000区間、seed=0,1,2です。
+同じ1,000重み、FP32活性化、訓練10,000・検証1,000・テスト10,000件で比較します。
+データ分割はseed=0、各実験seedで初期重みとバッチ列・摂動・丸め乱数を対応させます。
+
+- `counter`: 既存のedgeカウンタ方式。K測定中は重みを固定し、区間末に閾値判定して最大1座標を更新。
+- `no_counter`: 辺カウンタを作らず、各測定の3値票で即時に最大1座標を更新。閾値8は適用しません。
+
+両方式ともブロックを選び直すのはK回ごと、正規化スケールSもK回ごとに同じEMA規則で更新します。
+カウンタなしの各候補対は直前の更新後の重みを基準に生成します。
+元モデルを区間中ずっと固定して最後の票だけ使う方式ではありません。
+同じseedで乱数の消費順序をそろえていますが、重み状態が違うため候補・損失・票の内容は異なります。
+Sの推移も学習軌跡に応じて変わります。
+
+測定回数は同じですが、カウンタなしの更新機会はK倍です。
+したがって、蓄積と発火待機を合わせた比較であり、更新頻度を固定したカウンタ単独効果の検証ではありません。
+更新数には同じ座標の往復も含みます。区間ごとの正味の変更座標数も別に記録します。
+
+`runs/counter-comparison/` に6実験のログ・設定・学習済み重みを、
+`results/counter-comparison/` に平均±標準偏差、seed別結果、同一seedの差、カウンタ分布を保存します。
+カウンタなしの `counter_distribution` はnullです。カウンタをゼロで保持したことにはしません。
+出力先が非空なら上書きしません。再実験は `--output-dir` と `--report-dir` に新しいパスを指定してください。
+
+グラフ作成（任意）:
+
+```bash
+uv sync --extra plots
+uv run python plot_counter_comparison.py results/counter-comparison
+```
+
+
+## 閾値1～32の連続した比較
+
+```bash
+uv run python sweep.py --blocks 8 \
+  --thresholds 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 \
+               17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 \
+  --output-dir runs/threshold-1-32 --report-dir results/threshold-1-32
+uv run python plot_threshold_sweep.py results/threshold-1-32
+```
+
+3seed×32閾値の96条件を実行します。既定のK=64・3,000区間を全条件で固定します。
+閾値1も区間末に64票の蓄積結果を判定する方式で、即時更新するカウンタなしとは異なります。
+`threshold_comparison.png/svg` には閾値ごとの検証精度・損失・更新数と、カウンタ分布を表示します。
+グラフ作成には `uv sync --extra plots` が必要です。

@@ -1,0 +1,29 @@
+{
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "blocks": [
+    1,
+    8,
+    32
+  ],
+  "thresholds": [
+    4,
+    8,
+    16,
+    32
+  ],
+  "steps": 3000,
+  "measurements": 64,
+  "batch_size": 128,
+  "train_size": 10000,
+  "val_size": 1000,
+  "eval_every": 500,
+  "data_dir": "/tmp/tdt-mnist-data",
+  "output_dir": "/root/lowbit-math-reasoning/tdt_mnist/runs/grid-20260905",
+  "report_dir": "/root/lowbit-math-reasoning/tdt_mnist/results/grid-20260905",
+  "train_sha256": "76ec13cf2269317212ad994ce77233689fb6e590d5b9bbf21225b4a16b0aa1c3",
+  "sweep_sha256": "bbe74649f06e13015f84faf6f7a08ec8f5476027941f1b53da8244f5474dc38c"
+}
