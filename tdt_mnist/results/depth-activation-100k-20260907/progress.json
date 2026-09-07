@@ -1,7 +1,7 @@
 {
   "completed": 108,
   "expected": 108,
-  "complete": false,
+  "complete": true,
   "conditions": {
     "relu-a3-threshold": {
       "completed": 36,
@@ -22,5 +22,6 @@
       "errors": []
     }
   },
-  "updated": 1788784096.139887
+  "updated": 1788784096.139887,
+  "analysis_verified": true
 }

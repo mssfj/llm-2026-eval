@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "rows": {
+    "per_seed.csv": 108,
+    "rms_h_per_seed.csv": 50400,
+    "abs_y_by_perturbed_layer.csv": 1008,
+    "layer_isolated_abs_y.csv": 2016
+  },
+  "h_l_observations": 25200,
+  "training_candidate_pairs": 82944000,
+  "independent_probe_pairs": 129024,
+  "executed_analysis_snapshots_verified": true,
+  "finalizer_sha256": "8a9bc7081ce600732a991b5629e672321c514f130e5be6860349d9f95d2ed7f1",
+  "artifact_sha256": {
+    "README.md": "548816103f4dc957739c9b995f1237f5893558af0b116bee02a0d4ac656891ac",
+    "findings.md": "aa15f94e18d2df792d6217a17b8818c1bc3ab217fcac7e00bc8b28177f10ebaf",
+    "aggregate.csv": "0fe1e77566253784f318124bf772e06b81350cd7e08aef2ac98dcacc89055ffb",
+    "rms_h_aggregate.csv": "cc5e08d54950acf3df85b752dede4188fea83016d823c578de5ddf97194f7f72",
+    "abs_y_aggregate.csv": "975558ea53bf65d8b00a8fdd14165e3c09f575e485d58859faf56ad85ddf37a7",
+    "abs_y_by_perturbed_layer_aggregate.csv": "aba5953c18ff78f2058029c8967c9b7c8b2860c152e29c3b9b8e3de70fbe3e60",
+    "layer_isolated_abs_y_aggregate.csv": "f952cee8f0d94aa4de6158e7727e01a3303b432e36c5d2956964c208cfae9172",
+    "accuracy_comparison.png": "c382389391a4c57e274fcb25672f152424a4f8f345b998341ccb382151620276",
+    "layer_rms_and_abs_y_threshold8.png": "9e0891d48c6abf0a4361b2068f85b0d6cff68fa30be0badbe71f3cdc0e84c45d"
+  }
+}
