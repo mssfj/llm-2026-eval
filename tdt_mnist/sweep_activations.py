@@ -125,7 +125,7 @@ def main():
     script = Path(__file__).with_name("train.py").resolve()
     manifest = {k: str(v.resolve()) if isinstance(v, Path) else v for k, v in vars(args).items()
                 if k not in ("workers", "resume")}
-    sources = [Path(__file__).with_name(name) for name in ("train.py", "activation_quantization.py", "sweep_activations.py")]
+    sources = [Path(__file__).with_name(name) for name in ("train.py", "activation_quantization.py", "depth_diagnostics.py", "sweep_activations.py")]
     manifest["source_sha256"] = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}
     manifest["precision_definitions"] = {precision: activation_description(precision) for precision in args.precisions}
     args.output_dir.mkdir(parents=True, exist_ok=True)

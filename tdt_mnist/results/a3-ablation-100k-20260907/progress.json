@@ -1,0 +1,86 @@
+[
+  {
+    "run": "identity-absmax-seed0",
+    "step": 12000,
+    "elapsed_seconds": 1408.9577198885381,
+    "val_step": 12000,
+    "val_accuracy": 0.764
+  },
+  {
+    "run": "identity-absmax-seed1",
+    "step": 12000,
+    "elapsed_seconds": 1287.5432063415647,
+    "val_step": 12000,
+    "val_accuracy": 0.777
+  },
+  {
+    "run": "identity-absmax-seed2",
+    "step": 12000,
+    "elapsed_seconds": 1455.2338767498732,
+    "val_step": 12000,
+    "val_accuracy": 0.775
+  },
+  {
+    "run": "identity-mean_threshold-seed0",
+    "step": 12000,
+    "elapsed_seconds": 1770.2595725543797,
+    "val_step": 12000,
+    "val_accuracy": 0.802
+  },
+  {
+    "run": "identity-mean_threshold-seed1",
+    "step": 12000,
+    "elapsed_seconds": 1643.566990710795,
+    "val_step": 12000,
+    "val_accuracy": 0.819
+  },
+  {
+    "run": "identity-mean_threshold-seed2",
+    "step": 12000,
+    "elapsed_seconds": 1827.207444474101,
+    "val_step": 12000,
+    "val_accuracy": 0.811
+  },
+  {
+    "run": "relu-absmax-seed0",
+    "step": 12000,
+    "elapsed_seconds": 1136.9027748405933,
+    "val_step": 12000,
+    "val_accuracy": 0.756
+  },
+  {
+    "run": "relu-absmax-seed1",
+    "step": 12000,
+    "elapsed_seconds": 1407.3345793932676,
+    "val_step": 12000,
+    "val_accuracy": 0.768
+  },
+  {
+    "run": "relu-absmax-seed2",
+    "step": 12000,
+    "elapsed_seconds": 1419.114082891494,
+    "val_step": 12000,
+    "val_accuracy": 0.748
+  },
+  {
+    "run": "relu-mean_threshold-seed0",
+    "step": 12000,
+    "elapsed_seconds": 1852.9937503933907,
+    "val_step": 12000,
+    "val_accuracy": 0.779
+  },
+  {
+    "run": "relu-mean_threshold-seed1",
+    "step": 12000,
+    "elapsed_seconds": 1766.8733382932842,
+    "val_step": 12000,
+    "val_accuracy": 0.793
+  },
+  {
+    "run": "relu-mean_threshold-seed2",
+    "step": 12000,
+    "elapsed_seconds": 1489.7382738925517,
+    "val_step": 12000,
+    "val_accuracy": 0.796
+  }
+]

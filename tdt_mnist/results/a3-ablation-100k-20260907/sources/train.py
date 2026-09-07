@@ -10,8 +10,6 @@ import time
 import torch
 import torch.nn.functional as F
 
-from depth_diagnostics import SignalObserver, layer_events
-
 from activation_quantization import (PRECISIONS, ActivationObserver, activation_description,
                                      encode_activation, decode_activation)
 
@@ -23,21 +21,9 @@ def pooled_shape(pool_size=10, pool_shape=None):
     return shape
 
 
-def model_shapes(pool_size=10, hidden_size=0, pool_shape=None, hidden_sizes=None):
+def model_parameter_count(pool_size=10, hidden_size=0, pool_shape=None):
     inputs = math.prod(pooled_shape(pool_size, pool_shape))
-    if hidden_sizes is not None:
-        if not hidden_sizes or any(not isinstance(w, int) or w < 1 for w in hidden_sizes):
-            raise ValueError("hidden-sizes must contain positive integers")
-        if hidden_size != 0:
-            raise ValueError("use only one of hidden-size and hidden-sizes")
-        dims = [inputs, *hidden_sizes, 10]
-    else:
-        dims = [inputs, hidden_size, 10] if hidden_size else [inputs, 10]
-    return [(out_width, in_width) for in_width, out_width in zip(dims, dims[1:])]
-
-
-def model_parameter_count(pool_size=10, hidden_size=0, pool_shape=None, hidden_sizes=None):
-    return sum(math.prod(s) for s in model_shapes(pool_size, hidden_size, pool_shape, hidden_sizes))
+    return (inputs + 10) * hidden_size if hidden_size else inputs * 10
 
 
 class TernaryModel:
@@ -45,7 +31,7 @@ class TernaryModel:
 
     def __init__(self, pool_size=10, hidden_size=0, zero_rate=1 / 3,
                  gain=1.0, device="cpu", seed=0, pool_shape=None, activation_precision="a32",
-                 hidden_activation="relu", a3_method="absmax", a3_threshold_factor=0.5, hidden_sizes=None):
+                 hidden_activation="relu", a3_method="absmax", a3_threshold_factor=0.5):
         if activation_precision not in PRECISIONS:
             raise ValueError("unsupported activation precision")
         self.activation_precision = activation_precision
@@ -57,11 +43,11 @@ class TernaryModel:
         self.a3_method = a3_method
         self.a3_threshold_factor = a3_threshold_factor
         self.activation_observer = None
-        self.signal_observer = None
         self.device = torch.device(device)
         self.pool_shape = pooled_shape(pool_size, pool_shape)
         inputs = math.prod(self.pool_shape)
-        self.shapes = model_shapes(pool_size, hidden_size, pool_shape, hidden_sizes)
+        self.shapes = ([(hidden_size, inputs), (10, hidden_size)]
+                       if hidden_size else [(10, inputs)])
         self.num_params = sum(math.prod(shape) for shape in self.shapes)
         self.scales = [gain / math.sqrt(shape[1] * (1 - zero_rate))
                        for shape in self.shapes]
@@ -86,15 +72,9 @@ class TernaryModel:
             reconstructed = decode_activation(codes, activation_scale)
             if self.activation_observer is not None:
                 self.activation_observer.record(index, x, codes, reconstructed)
-            if self.signal_observer is not None:
-                self.signal_observer.record(index, "input", reconstructed)
             x = F.linear(reconstructed, matrix)
-            if self.signal_observer is not None:
-                self.signal_observer.record(index, "pre_activation", x)
             if index < len(self.shapes) - 1 and self.hidden_activation == "relu":
                 x = F.relu(x)
-            if self.signal_observer is not None:
-                self.signal_observer.record(index, "output", x)
             offset += size
         return x
 
@@ -300,8 +280,6 @@ def parser():
     p.add_argument("--pool-size", type=int, default=10, help="pooled image side; default model has 10*10*10=1000 weights")
     p.add_argument("--pool-shape", nargs=2, type=int, default=None, metavar=("HEIGHT", "WIDTH"), help="rectangular pooling; overrides pool-size")
     p.add_argument("--expected-params", type=int, default=None, help="fail unless the model has exactly this many trained weights")
-    p.add_argument("--hidden-sizes", nargs="+", type=int, default=None, help="all hidden widths; depth includes output layer")
-    p.add_argument("--layer-diagnostics", action=argparse.BooleanOptionalAction, default=False)
     p.add_argument("--hidden-size", type=int, default=0, help="0: linear; positive: bias-free ReLU MLP")
     p.add_argument("--steps", type=int, default=5000, help="number of fixed-state accumulation epochs, not dataset passes")
     p.add_argument("--batch-size", type=int, default=128)
@@ -346,10 +324,10 @@ def validate(args, p):
     if not 1 <= args.pool_size <= 28 or args.hidden_size < 0:
         p.error("pool-size must be in [1, 28]; hidden-size must be nonnegative")
     try:
-        model_shapes(args.pool_size, args.hidden_size, args.pool_shape, args.hidden_sizes)
+        pooled_shape(args.pool_size, args.pool_shape)
     except ValueError as error:
         p.error(str(error))
-    if args.expected_params is not None and args.expected_params != model_parameter_count(args.pool_size, args.hidden_size, args.pool_shape, args.hidden_sizes):
+    if args.expected_params is not None and args.expected_params != model_parameter_count(args.pool_size, args.hidden_size, args.pool_shape):
         p.error("model shape does not match --expected-params")
     if not 0 <= args.zero_rate < 1 or not 0 < args.leak <= 1 or not 0 <= args.scale_ema <= 1:
         p.error("require 0 <= zero-rate < 1, 0 < leak <= 1, 0 <= scale-ema <= 1")
@@ -363,7 +341,7 @@ def validate(args, p):
         p.error("tie-tolerance must be finite and nonnegative")
     if args.threshold > min(args.measurements, 2 ** (args.counter_bits - 1) - 1):
         p.error("threshold exceeds counter capacity or votes available before epoch reset")
-    count = model_parameter_count(args.pool_size, args.hidden_size, args.pool_shape, args.hidden_sizes)
+    count = model_parameter_count(args.pool_size, args.hidden_size, args.pool_shape)
     if args.block_size > count or args.max_fires > args.block_size:
         p.error("require max-fires <= block-size <= number of parameters")
     if args.device == "cuda" and not torch.cuda.is_available():
@@ -384,7 +362,7 @@ def main():
         p.error("output-dir is not empty; choose a new experiment directory")
     model = TernaryModel(args.pool_size, args.hidden_size, args.zero_rate,
                          args.gain, args.device, args.seed, pool_shape=args.pool_shape, activation_precision=args.activation_precision,
-                         hidden_activation=args.hidden_activation, a3_method=args.a3_method, a3_threshold_factor=args.a3_threshold_factor, hidden_sizes=args.hidden_sizes)
+                         hidden_activation=args.hidden_activation, a3_method=args.a3_method, a3_threshold_factor=args.a3_threshold_factor)
     generator = torch.Generator(device=model.device).manual_seed(args.seed + 1)
     batch_generator = (torch.Generator(device=model.device).manual_seed(args.batch_seed)
                        if args.batch_seed is not None else None)
@@ -401,13 +379,7 @@ def main():
     (train_x, train_y), (val_x, val_y), (test_x, test_y) = load_data(args, model.device)
     started = time.perf_counter()
     model.activation_observer = ActivationObserver(len(model.shapes), args.activation_precision)
-    if args.layer_diagnostics:
-        model.signal_observer = SignalObserver()
     initial = evaluate(model, val_x, val_y)
-    signal_history = []
-    if args.layer_diagnostics:
-        signal_history.extend({"step": 0, **r} for r in model.signal_observer.summary())
-        model.signal_observer = None
     initial_activation_stats = model.activation_observer.summary()
     model.activation_observer = None
     final_activation_stats = None
@@ -420,17 +392,6 @@ def main():
     total_fires = 0
     zero_differences = 0
     layer_update_counts = [0] * len(model.shapes)
-    layer_selected_coordinates = [0] * len(model.shapes)
-    layer_selected_intervals = [0] * len(model.shapes)
-    layer_fire_intervals = [0] * len(model.shapes)
-    layer_log = None
-    if args.layer_diagnostics:
-        layer_log = (args.output_dir / "layer_metrics.csv").open("w", newline="")
-        layer_writer = csv.DictWriter(layer_log, fieldnames=["step", "layer", "parameters", "selected_coordinates",
-            "selected_interval", "fires", "fire_interval", "cumulative_fires", "cumulative_selected_coordinates",
-            "cumulative_selected_intervals", "cumulative_fire_intervals", "fire_interval_rate",
-            "fire_given_selected_interval_rate", "fires_per_selected_coordinate", "updates_per_parameter"])
-        layer_writer.writeheader()
     scale = args.scale
     final = initial
     audited_deltas = []
@@ -457,27 +418,11 @@ def main():
                                             val_y[:args.oracle_size], args.tie_tolerance))
                 if stats["fires"]:
                     audited_deltas.append(stats["fire_delta_loss"])
-            events = layer_events(model, proposal, indices)
-            for event in events:
-                layer = event["layer"]
-                layer_update_counts[layer] += event["fires"]
-                layer_selected_coordinates[layer] += event["selected_coordinates"]
-                layer_selected_intervals[layer] += event["selected_interval"]
-                layer_fire_intervals[layer] += event["fire_interval"]
-                if args.layer_diagnostics:
-                    layer_writer.writerow({"step": step, **event,
-                        "cumulative_fires": layer_update_counts[layer],
-                        "cumulative_selected_coordinates": layer_selected_coordinates[layer],
-                        "cumulative_selected_intervals": layer_selected_intervals[layer],
-                        "cumulative_fire_intervals": layer_fire_intervals[layer],
-                        "fire_interval_rate": layer_fire_intervals[layer] / step,
-                        "fire_given_selected_interval_rate": (layer_fire_intervals[layer] / layer_selected_intervals[layer]
-                                                               if layer_selected_intervals[layer] else None),
-                        "fires_per_selected_coordinate": (layer_update_counts[layer] / layer_selected_coordinates[layer]
-                                                          if layer_selected_coordinates[layer] else None),
-                        "updates_per_parameter": layer_update_counts[layer] / event["parameters"]})
-            if layer_log is not None:
-                layer_log.flush()
+            offset = 0
+            for layer, shape in enumerate(model.shapes):
+                size = math.prod(shape)
+                layer_update_counts[layer] += int((model.weights[offset:offset+size] != proposal[offset:offset+size]).sum())
+                offset += size
             model.weights.copy_(proposal)  # No validation-based acceptance filter.
             total_fires += stats["fires"]
             train_calls = 2 * args.measurements * step
@@ -487,16 +432,7 @@ def main():
             if step % args.eval_every == 0 or step == args.steps:
                 if step == args.steps:
                     model.activation_observer = ActivationObserver(len(model.shapes), args.activation_precision)
-                if args.layer_diagnostics:
-                    model.signal_observer = SignalObserver()
                 final = evaluate(model, val_x, val_y)
-                if args.layer_diagnostics:
-                    signal_history.extend({"step": step, **r} for r in model.signal_observer.summary())
-                    model.signal_observer = None
-                    with (args.output_dir / "signal_metrics.csv").open("w", newline="") as signal_file:
-                        signal_writer = csv.DictWriter(signal_file, fieldnames=list(signal_history[0]))
-                        signal_writer.writeheader()
-                        signal_writer.writerows(signal_history)
                 if step == args.steps:
                     final_activation_stats = model.activation_observer.summary()
                     model.activation_observer = None
@@ -509,8 +445,6 @@ def main():
             row.update(total_forward_calls=model.forward_calls, total_forward_examples=model.forward_examples)
             writer.writerow(row)
             handle.flush()
-    if layer_log is not None:
-        layer_log.close()
     # Test is evaluated once, after the predetermined number of training steps.
     test = evaluate(model, test_x, test_y)
     summary = {"activation_precision": args.activation_precision,
@@ -524,13 +458,6 @@ def main():
                "num_params": model.num_params, "initial_validation": initial,
                "final_validation": final, "test": test, "total_fires": total_fires,
                "layer_update_counts": layer_update_counts,
-               "layer_selected_coordinates": layer_selected_coordinates,
-               "layer_selected_intervals": layer_selected_intervals,
-               "layer_fire_intervals": layer_fire_intervals,
-               "layer_fire_interval_rates": [n/args.steps for n in layer_fire_intervals],
-               "layer_fire_given_selected_interval_rates": [f/s if s else None for f,s in zip(layer_fire_intervals,layer_selected_intervals)],
-               "layer_fires_per_selected_coordinate": [f/s if s else None for f,s in zip(layer_update_counts,layer_selected_coordinates)],
-               "layer_updates_per_parameter": [f/math.prod(shape) for f,shape in zip(layer_update_counts,model.shapes)],
                "audited_fire_events": len(audited_deltas),
                "audited_p_improve": (sum(d < 0 for d in audited_deltas) / len(audited_deltas)
                                      if audited_deltas else None),

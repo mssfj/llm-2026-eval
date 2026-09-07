@@ -1,0 +1,103 @@
+{
+  "passed": true,
+  "runs": [
+    {
+      "run": "identity-absmax-seed0",
+      "steps": 12000,
+      "train_forward_calls": 1536000,
+      "zero_difference_count": 162,
+      "checkpoint_ternary": true,
+      "passed": true
+    },
+    {
+      "run": "identity-absmax-seed1",
+      "steps": 12000,
+      "train_forward_calls": 1536000,
+      "zero_difference_count": 175,
+      "checkpoint_ternary": true,
+      "passed": true
+    },
+    {
+      "run": "identity-absmax-seed2",
+      "steps": 12000,
+      "train_forward_calls": 1536000,
+      "zero_difference_count": 123,
+      "checkpoint_ternary": true,
+      "passed": true
+    },
+    {
+      "run": "identity-mean_threshold-seed0",
+      "steps": 12000,
+      "train_forward_calls": 1536000,
+      "zero_difference_count": 21,
+      "checkpoint_ternary": true,
+      "passed": true
+    },
+    {
+      "run": "identity-mean_threshold-seed1",
+      "steps": 12000,
+      "train_forward_calls": 1536000,
+      "zero_difference_count": 13,
+      "checkpoint_ternary": true,
+      "passed": true
+    },
+    {
+      "run": "identity-mean_threshold-seed2",
+      "steps": 12000,
+      "train_forward_calls": 1536000,
+      "zero_difference_count": 15,
+      "checkpoint_ternary": true,
+      "passed": true
+    },
+    {
+      "run": "relu-absmax-seed0",
+      "steps": 12000,
+      "train_forward_calls": 1536000,
+      "zero_difference_count": 3523,
+      "checkpoint_ternary": true,
+      "passed": true
+    },
+    {
+      "run": "relu-absmax-seed1",
+      "steps": 12000,
+      "train_forward_calls": 1536000,
+      "zero_difference_count": 4230,
+      "checkpoint_ternary": true,
+      "passed": true
+    },
+    {
+      "run": "relu-absmax-seed2",
+      "steps": 12000,
+      "train_forward_calls": 1536000,
+      "zero_difference_count": 4352,
+      "checkpoint_ternary": true,
+      "passed": true
+    },
+    {
+      "run": "relu-mean_threshold-seed0",
+      "steps": 12000,
+      "train_forward_calls": 1536000,
+      "zero_difference_count": 30,
+      "checkpoint_ternary": true,
+      "passed": true
+    },
+    {
+      "run": "relu-mean_threshold-seed1",
+      "steps": 12000,
+      "train_forward_calls": 1536000,
+      "zero_difference_count": 39,
+      "checkpoint_ternary": true,
+      "passed": true
+    },
+    {
+      "run": "relu-mean_threshold-seed2",
+      "steps": 12000,
+      "train_forward_calls": 1536000,
+      "zero_difference_count": 22,
+      "checkpoint_ternary": true,
+      "passed": true
+    }
+  ],
+  "source_and_data_hashes_verified": true,
+  "equal_forward_budgets": true
+}

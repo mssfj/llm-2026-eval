@@ -84,14 +84,16 @@ def run_one(method, seed, options):
     torch.use_deterministic_algorithms(True)
     directory = args.output_dir / f"{method}-seed{seed}"
     directory.mkdir(parents=True, exist_ok=False)
-    model = TernaryModel(args.pool_size, args.hidden_size, args.zero_rate, args.gain, args.device, seed, pool_shape=args.pool_shape, activation_precision=args.activation_precision)
+    model = TernaryModel(args.pool_size, args.hidden_size, args.zero_rate, args.gain, args.device, seed, pool_shape=args.pool_shape, activation_precision=args.activation_precision,
+                         hidden_activation=args.hidden_activation, a3_method=args.a3_method, a3_threshold_factor=args.a3_threshold_factor, hidden_sizes=args.hidden_sizes)
     generator = torch.Generator(device=model.device).manual_seed(seed + 1)
     batches = torch.Generator(device=model.device).manual_seed(args.batch_seed)
     config = {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()}
     config.update(method=method, num_params=model.num_params, layer_scales=model.scales,
                   effective_threshold=args.threshold if method == "counter" else None,
                   torch_version=torch.__version__, activation_precision=args.activation_precision,
-                  activation_quantization=activation_description(args.activation_precision),
+                  activation_quantization=activation_description(args.activation_precision, args.a3_method,
+                                                                 args.a3_threshold_factor, args.hidden_activation),
                   update_cadence="after K pairs" if method == "counter" else "after every pair",
                   block_cadence="every K pairs", normalization_cadence="every K pairs")
     (directory / "config.json").write_text(json.dumps(config, indent=2) + "\n")
@@ -245,7 +247,7 @@ def main():
     args.output_dir.mkdir(parents=True, exist_ok=True)
     args.report_dir.mkdir(parents=True, exist_ok=True)
     manifest = {k: str(v.resolve()) if isinstance(v, Path) else v for k, v in vars(args).items()}
-    for name in ("train.py", "compare_counters.py", "activation_quantization.py"):
+    for name in ("train.py", "compare_counters.py", "activation_quantization.py", "depth_diagnostics.py"):
         source = Path(__file__).with_name(name)
         manifest[name + "_sha256"] = hashlib.sha256(source.read_bytes()).hexdigest()
     (args.report_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")

@@ -345,3 +345,73 @@ uv run python sweep_lengths.py --blocks 64 128 256 --lengths 3000 6000 12000 \
 全条件の`per_seed.csv`、`aggregate.csv`、`counter_histograms.csv`と比較図PNG/SVGをまとめ、
 長さ別の詳細レポート・ソースのコピー・SHA256を保存します。
 カウンタの符号付き平均・絶対値平均・最大・飽和率、発火数と層別更新数も記録します。
+
+## A3のReLU × 量子化方式の100k比較
+
+```bash
+python tdt_mnist/sweep_a3_ablation.py --workers 12 \
+  --output-dir tdt_mnist/runs/a3-ablation-100k-20260907 \
+  --report-dir tdt_mnist/results/a3-ablation-100k-20260907
+python tdt_mnist/analyze_a3_ablation.py tdt_mnist/results/a3-ablation-100k-20260907
+```
+
+上記はリポジトリルートから実行します。v5で最高平均検証精度だった100k構造
+（90→1000→10）、block=16、発火閾値8、K=64、12,000区間、最大1発火を使います。
+訓練10,000・検証1,000・テスト10,000、seed=0,1,2、分割seed=0です。
+全条件で入力と隠れ層をA3に量子化し、ReLUあり/なしとabsmax/mean_thresholdの4条件を比較します。
+
+- `--hidden-activation relu|identity`: 隠れ層のReLUを適用するか省略するか。
+- `--a3-method absmax|mean_threshold`: absmaxは既存方式。mean_thresholdは
+  各サンプル・各層で `tau=0.5*mean(abs(x))` とし、`abs(x)>tau` の値を符号±1、それ以外を0へ。
+  復元スケールは選択された値の平均絶対値（空集合なら1）。閾値係数0.5はこの実験では固定。
+- いずれも追加の接続数除算はせず、重みの固定層スケールを維持します。
+
+`metrics.csv` の `zero_difference_count/fraction` は、各区間のK候補対についてFP32損失差が
+厳密に0だった数/割合です。票が0だった割合とは異なります。
+初期・最終検証時の層別MSE・相対二乗誤差を `activation_diagnostics.csv`、
+コード−1/0/+1の個数と割合を `activation_codes.csv` に保存します。
+誤差は各モデルの量子化直前と復元後の比較で、モデル間の表現差ではありません。
+補助スケール・行列積・損失はFP32、診断集計のみ読み取り専用FP64です。
+
+解析スクリプトは全区間ログとsummaryの整合性、3値チェックポイント、各条件・計算予算、
+ソースとデータのハッシュ、診断件数を照合し、`verification.json`、
+`activation_aggregate.csv`、`paired_effects.csv`、比較図PNG/SVGを生成します。
+途中では完了runのみ集計されるため、全実験完了は `status.json` の `complete` で確認します。
+
+## 深さ4/8/16 × カウンタ閾値1/4/8/16（100k、ReLU・A32）
+
+リポジトリルートから:
+
+```bash
+python tdt_mnist/sweep_depth.py --workers 12 --no-download
+python tdt_mnist/analyze_depth.py tdt_mnist/results/depth-100k-20260907
+```
+
+データがない環境では `--no-download` を省略します。各条件seed=0,1,2の36runです。
+深さは出力層を含む線形層の数。入力は9×10へプーリングし、隠れ層の後にReLUを置きます。
+バイアスなし、残差なし、全活性化A32。次の全結合構造はいずれも全100,000重みを使用します。
+
+- 4層: 90→200→200→200→10
+- 8層: 90→120→120→121→121→121→122→123→10
+- 16層: 90→79→82→80→82→80→82→81→81→81→81→81→82→81→82→80→10
+
+block=16、K=64、12,000区間、最大1発火、batch=128、訓練10,000・検証1,000・テスト10,000。
+v5と同じgain=1、初期ゼロ率1/3、固定層スケール、INT8辺カウンタ、区間ごとの全リセットを使います。
+閾値1も各測定の即時更新ではなく、K回蓄積後に判定します。
+幅も変わるので、固定パラメータ予算の深さ・幅比較です。
+
+単発では `train.py --pool-shape 9 10 --hidden-sizes 200 200 200 --expected-params 100000 --layer-diagnostics` のように指定します。
+`--hidden-sizes` と従来の非ゼロ `--hidden-size` は併用できません。
+
+各runの `layer_metrics.csv` に全区間・全層の選択座標数、選択区間数、更新数を保存します。
+発火率は「発火区間/全区間」と「発火区間/その層が選ばれた区間」を両方記録します。
+更新数/選択座標数と更新数/層の重み数も記録し、層の大きさによる選択機会の差を区別します。
+選択機会が0なら条件付き率はnull（図はN/A）です。
+
+`signal_metrics.csv` は初期・500区間ごと・最終検証で、各層の入力、線形出力、ReLU後出力を診断します。
+RMS、平均、標準偏差、ゼロ率、負値率、最大絶対値、非有限値数、検証集合ですべて0の特徴割合を保存します。
+診断集計のみ読み取り専用FP64であり、追加forwardや検証による更新の採否選別は行いません。
+
+集計先に `layer_firing.csv`、`layer_firing_aggregate.csv`、`signal_metrics.csv`、`signal_aggregate.csv`、
+学習曲線・層別発火率・信号伝搬のPNG/SVGを保存します。`verification.json` は全層の生ログと集計の照合結果です。
+完全に設定・ソース・データが同じ完了済みrunのみ `--resume` で再利用できます。部分runは上書きしません。

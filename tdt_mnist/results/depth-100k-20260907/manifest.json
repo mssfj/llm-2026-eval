@@ -1,0 +1,105 @@
+{
+  "hidden_activation": "relu",
+  "a3_method": "absmax",
+  "a3_threshold_factor": 0.5,
+  "activation_precision": "a32",
+  "pool_size": 10,
+  "pool_shape": [
+    9,
+    10
+  ],
+  "expected_params": 100000,
+  "layer_diagnostics": true,
+  "hidden_size": 0,
+  "steps": 12000,
+  "batch_size": 128,
+  "block_size": 16,
+  "measurements": 64,
+  "max_fires": 1,
+  "counter_bits": 8,
+  "leak": 1.0,
+  "scale": 0.02,
+  "scale_ema": 0.1,
+  "min_scale": 1e-05,
+  "zero_rate": 0.3333333333333333,
+  "gain": 1.0,
+  "train_size": 10000,
+  "val_size": 1000,
+  "test_size": 0,
+  "eval_every": 500,
+  "oracle_every": 0,
+  "oracle_size": 512,
+  "tie_tolerance": 1e-05,
+  "data_seed": 0,
+  "batch_seed": null,
+  "seed": 0,
+  "device": "cpu",
+  "threads": 1,
+  "data_dir": "/tmp/tdt-mnist-data",
+  "output_dir": "/root/lowbit-math-reasoning/tdt_mnist/runs/depth-100k-20260907",
+  "download": false,
+  "depths": [
+    4,
+    8,
+    16
+  ],
+  "thresholds": [
+    1,
+    4,
+    8,
+    16
+  ],
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "report_dir": "/root/lowbit-math-reasoning/tdt_mnist/results/depth-100k-20260907",
+  "hidden_widths": {
+    "4": [
+      200,
+      200,
+      200
+    ],
+    "8": [
+      120,
+      120,
+      121,
+      121,
+      121,
+      122,
+      123
+    ],
+    "16": [
+      79,
+      82,
+      80,
+      82,
+      80,
+      82,
+      81,
+      81,
+      81,
+      81,
+      81,
+      82,
+      81,
+      82,
+      80
+    ]
+  },
+  "torch_version": "2.12.0a0+0291f960b6.nv26.04.48445190",
+  "torchvision_version": "0.26.0a0+48956e05.nv26.04.48445190",
+  "source_sha256": {
+    "train.py": "c7594fe13c6eb5bd8436c34f3b137629dded5c46bcd7cc65404d687d2a67efa5",
+    "activation_quantization.py": "22f920296f6dc83c0fe244a3019aac488878b6a031d0297c53cf8005f209b084",
+    "depth_diagnostics.py": "209a989a9ae5bba7729ec110b2324717178326d3e19c4f91f717e480a04972a7",
+    "sweep_depth.py": "c02001c36c0c9bbcd5297d99413a351f2276c44ebabea5cd5ea27e48eef937df"
+  },
+  "data_sha256": {
+    "t10k-images-idx3-ubyte": "0fa7898d509279e482958e8ce81c8e77db3f2f8254e26661ceb7762c4d494ce7",
+    "t10k-labels-idx1-ubyte": "ff7bcfd416de33731a308c3f266cc351222c34898ecbeaf847f06e48f7ec33f2",
+    "train-images-idx3-ubyte": "ba891046e6505d7aadcbbe25680a0738ad16aec93bde7f9b65e87a2fc25776db",
+    "train-labels-idx1-ubyte": "65a50cbbf4e906d70832878ad85ccda5333a97f0f4c3dd2ef09a8a9eef7101c5"
+  }
+}

@@ -39,7 +39,7 @@ def main():
                     batch_size=128, train_size=10000, val_size=1000, test_size=10000,
                     pool_shape=[9, 10], hidden_size=1000, max_fires=1,
                     data_seed=0, batch_seed_rule='seed + 100000')
-    files = ['train.py', 'sweep.py', 'sweep_lengths.py', 'activation_quantization.py']
+    files = ['train.py', 'sweep.py', 'sweep_lengths.py', 'activation_quantization.py', 'depth_diagnostics.py']
     manifest['source_sha256'] = {f: hashlib.sha256((source / f).read_bytes()).hexdigest() for f in files}
     args.output_dir.mkdir(parents=True, exist_ok=True)
     manifest_path = args.output_dir / 'manifest.json'

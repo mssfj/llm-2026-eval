@@ -126,6 +126,7 @@ def main():
     manifest = {key: str(value.resolve()) if isinstance(value, Path) else value
                 for key, value in vars(args).items() if key not in ("workers", "resume")}
     manifest["activation_quantization_sha256"] = hashlib.sha256(script.with_name("activation_quantization.py").read_bytes()).hexdigest()
+    manifest["depth_diagnostics_sha256"] = hashlib.sha256(script.with_name("depth_diagnostics.py").read_bytes()).hexdigest()
     manifest["train_sha256"] = hashlib.sha256(script.read_bytes()).hexdigest()
     manifest["sweep_sha256"] = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     args.output_dir.mkdir(parents=True, exist_ok=True)

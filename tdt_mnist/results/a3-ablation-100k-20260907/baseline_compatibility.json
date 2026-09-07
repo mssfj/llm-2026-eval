@@ -1,0 +1,16 @@
+{
+  "reference": "tdt_mnist/results/blocks-8-16-32-100k-12k-20260905/sources/train.py",
+  "checks": [
+    {
+      "precision": "a32",
+      "intervals": 8,
+      "weights_candidates_stats_scales_rng_exact_match": true
+    },
+    {
+      "precision": "a3",
+      "intervals": 8,
+      "weights_candidates_stats_scales_rng_exact_match": true
+    }
+  ],
+  "passed": true
+}
