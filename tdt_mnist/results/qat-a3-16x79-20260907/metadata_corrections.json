@@ -1,0 +1,26 @@
+[
+  {
+    "seed": 0,
+    "field": "quantization",
+    "original": "inference only, per-example per-layer threshold and reconstruction scale",
+    "corrected": "training and inference, per-example per-layer threshold and reconstruction scale",
+    "reason": "The inherited FP32 control metadata said inference only; training_activations and ste already described QAT correctly. Original files and checkpoints preserved.",
+    "effective_config_sha256": "b7d6cc7b16f539d881142b6c9d1a23bdb242f13dfa0d86732276188c39d2b5a9"
+  },
+  {
+    "seed": 1,
+    "field": "quantization",
+    "original": "inference only, per-example per-layer threshold and reconstruction scale",
+    "corrected": "training and inference, per-example per-layer threshold and reconstruction scale",
+    "reason": "The inherited FP32 control metadata said inference only; training_activations and ste already described QAT correctly. Original files and checkpoints preserved.",
+    "effective_config_sha256": "4ec7d248108d411fb42e94542747d43638fb869231972fad82766437c7f05939"
+  },
+  {
+    "seed": 2,
+    "field": "quantization",
+    "original": "inference only, per-example per-layer threshold and reconstruction scale",
+    "corrected": "training and inference, per-example per-layer threshold and reconstruction scale",
+    "reason": "The inherited FP32 control metadata said inference only; training_activations and ste already described QAT correctly. Original files and checkpoints preserved.",
+    "effective_config_sha256": "090c0e3e26732ca062b03fc2825c19974d46318e61a65423934d96d5d62ef80c"
+  }
+]

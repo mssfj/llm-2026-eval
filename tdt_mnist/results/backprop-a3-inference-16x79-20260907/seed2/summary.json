@@ -1,0 +1,62 @@
+{
+  "seed": 2,
+  "passed": true,
+  "epochs": 37,
+  "best_epoch": 17,
+  "initial_validation": {
+    "loss": 2.568192626953125,
+    "accuracy": 0.085
+  },
+  "selected_validation": {
+    "loss": 0.19582730102539062,
+    "accuracy": 0.951
+  },
+  "num_params": 95274,
+  "weights_unchanged_during_inference": true,
+  "weights_sha256": "178e8f0a045ce41671cbf0eeda332fea1fba85cb3179b14ae19772e4e390aefe",
+  "first_batch_gradient_norm_by_layer": [
+    0.9096905589103699,
+    0.7043219208717346,
+    0.8195878863334656,
+    0.8883273005485535,
+    1.072769284248352,
+    1.0752047300338745,
+    0.9596518278121948,
+    1.3612377643585205,
+    1.2035415172576904,
+    1.4755305051803589,
+    1.4578676223754883,
+    1.3269264698028564,
+    1.1983742713928223,
+    1.440521001815796,
+    1.185304880142212,
+    1.7180333137512207
+  ],
+  "elapsed_seconds": 16.368504390120506,
+  "checks": [
+    {
+      "split": "validation",
+      "modes": 33,
+      "examples": 1000,
+      "duplicate_mode_identical": true
+    },
+    {
+      "split": "test",
+      "modes": 33,
+      "examples": 10000,
+      "duplicate_mode_identical": true
+    }
+  ],
+  "evaluation_rows": 66,
+  "signal_rows": 3168,
+  "activation_rows": 304,
+  "output_sha256": {
+    "config.json": "cc943a3de7e5356dbb366dd65c7c7f6531b79941b144f958e4146a0f6f17bc06",
+    "best_model.pt": "a022a5d7b5ec5326a24304c6237f517be9c9f2bc1ec15f1ec17c60ee15e4811f",
+    "training.csv": "08ccbdb969cec5aaf353e6c1cded4773689ac825e587a247f068b1fd9a0c1c62",
+    "inference.csv": "3b1478745f5d9dfd1a57925b1234462a77bfd894763af07cc91c35bf2a39dc6a",
+    "signal_metrics.csv": "e3fc44cf5c872e70aa6cbb2c389a2f63f120a59746872dca740e008a584c089d",
+    "activation_metrics.csv": "5c4cb78da8ae973748a79102731c4cf47e98b52a84a9491ea1b43140165cb1f1",
+    "predictions.npz": "98f4cd980e541ab785c0ad52a3d8e7d103c354e977c530a89cef9f1367bdcc36"
+  }
+}

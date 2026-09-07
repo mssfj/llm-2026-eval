@@ -68,7 +68,7 @@ class ActivationObserver:
     def __init__(self, layers, precision):
         self.precision = precision
         self.rows = [{"count": 0, "zeros": 0, "squared_error": 0.0,
-                      "input_squared": 0.0, "code_histogram": {}} for _ in range(layers)]
+                      "input_squared": 0.0, "code_histogram": {}, "cosine_sum": 0., "cosine_valid": 0, "cosine_undefined": 0} for _ in range(layers)]
 
     def record(self, layer, original, codes, reconstructed):
         row = self.rows[layer]
@@ -77,6 +77,12 @@ class ActivationObserver:
         # FP64 here is diagnostic only; these sums never enter the model or optimizer.
         row["squared_error"] += float((original.double() - reconstructed.double()).square().sum())
         row["input_squared"] += float(original.double().square().sum())
+        a=original.double();b=reconstructed.double()
+        denominator=a.square().sum(-1).sqrt()*b.square().sum(-1).sqrt()
+        valid=denominator>0
+        row["cosine_sum"] += float(((a*b).sum(-1)[valid]/denominator[valid]).sum())
+        row["cosine_valid"] += int(valid.sum())
+        row["cosine_undefined"] += int((~valid).sum())
         if self.precision in QMAX:
             values, counts = torch.unique(codes, return_counts=True)
             for value, count in zip(values.tolist(), counts.tolist()):
@@ -88,5 +94,7 @@ class ActivationObserver:
                  "zero_fraction": r["zeros"] / r["count"],
                  "mse": r["squared_error"] / r["count"],
                  "relative_squared_error": r["squared_error"] / max(r["input_squared"], 1e-300),
-                 "code_histogram": dict(sorted(r["code_histogram"].items(), key=lambda kv: int(kv[0])))}
+                 "code_histogram": dict(sorted(r["code_histogram"].items(), key=lambda kv: int(kv[0]))),
+                 "cosine_mean_valid": r["cosine_sum"]/r["cosine_valid"] if r["cosine_valid"] else None,
+                 "cosine_valid_examples": r["cosine_valid"], "cosine_undefined_examples": r["cosine_undefined"]}
                 for i, r in enumerate(self.rows) if r["count"]]

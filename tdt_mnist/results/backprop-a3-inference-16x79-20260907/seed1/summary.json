@@ -1,0 +1,62 @@
+{
+  "seed": 1,
+  "passed": true,
+  "epochs": 30,
+  "best_epoch": 9,
+  "initial_validation": {
+    "loss": 2.53508642578125,
+    "accuracy": 0.114
+  },
+  "selected_validation": {
+    "loss": 0.2689627075195313,
+    "accuracy": 0.932
+  },
+  "num_params": 95274,
+  "weights_unchanged_during_inference": true,
+  "weights_sha256": "0e40e84a32896e32335c5085319feed8342d40ba7321b97a40f53db7effae141",
+  "first_batch_gradient_norm_by_layer": [
+    0.9404745101928711,
+    1.1282016038894653,
+    1.381190299987793,
+    1.2439539432525635,
+    1.4230042695999146,
+    1.4266372919082642,
+    1.3680647611618042,
+    1.5473849773406982,
+    1.5940337181091309,
+    1.3887995481491089,
+    1.2561813592910767,
+    1.1917610168457031,
+    1.1253108978271484,
+    0.9532583951950073,
+    1.0436458587646484,
+    1.5903255939483643
+  ],
+  "elapsed_seconds": 15.389577832072973,
+  "checks": [
+    {
+      "split": "validation",
+      "modes": 33,
+      "examples": 1000,
+      "duplicate_mode_identical": true
+    },
+    {
+      "split": "test",
+      "modes": 33,
+      "examples": 10000,
+      "duplicate_mode_identical": true
+    }
+  ],
+  "evaluation_rows": 66,
+  "signal_rows": 3168,
+  "activation_rows": 304,
+  "output_sha256": {
+    "config.json": "df39a1b0e7b9d90f895b2284b1157b1d9d71ef1f89cbb2c95022975f81f52916",
+    "best_model.pt": "92f89d1e4ed2df6591da8f39739a9266095a8c82696878808fce96a8390a0973",
+    "training.csv": "cf526ccf5f24501be6ea2c4fcb4da8b71d1b73abcc6476713849cd59e6bbf518",
+    "inference.csv": "9de70fdb8a5330bb2bc8b35fd81b814846a543ff136877612b65df51b281cf59",
+    "signal_metrics.csv": "640f63c6c6094c5217657bffe15df78c1aa105e92ecba0bcd5aae4fcd4630367",
+    "activation_metrics.csv": "c50434b3e3ea7c8be1e088f11ace440368a76f05dc3d6ee3ae651c44a3106e58",
+    "predictions.npz": "4cede1a5bd52c0abd43f608757b365923202236bf33ebd867bc4880a0f523a24"
+  }
+}

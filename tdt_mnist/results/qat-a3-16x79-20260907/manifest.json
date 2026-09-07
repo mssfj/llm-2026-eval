@@ -1,0 +1,16 @@
+{
+  "sources": {
+    "qat_a3_backprop.py": "091598ccfaf1140e554a7088c7c23ef124ba487d94079fa1657ef4ef3659a3d9",
+    "backprop_a3_inference.py": "663d827416ebfdf0fa9e7df13efb72610fbd7eb238a902a1502e57f98e8294c8",
+    "activation_quantization.py": "96eb70ce744cf3833cc4b058b1cc3f3dc24df24284321a7a0546eaeb31f260b5",
+    "depth_diagnostics.py": "209a989a9ae5bba7729ec110b2324717178326d3e19c4f91f717e480a04972a7",
+    "train.py": "c8bd627ff7adcd74d05991aa22c8a71f4b281ec9b8149339d39d740f33b20cbb"
+  },
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "smoke": false,
+  "control_manifest_sha256": "5bc57b6e1a66177d115ec9b111d27d93e672550c59a361b6d1a6450478e8410d"
+}

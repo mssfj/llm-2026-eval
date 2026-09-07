@@ -1,0 +1,415 @@
+{
+  "passed": true,
+  "new_runs": 9,
+  "controls": 3,
+  "checks": [
+    {
+      "condition": "a16",
+      "seed": 0,
+      "passed": true,
+      "layer_rows": 192000,
+      "signal_rows": 1200,
+      "abs_y_count": 768000,
+      "abs_y_sha256": "688842a9dbaf07390e5b6d45e23ad6ab0ce6561381ba50634b9c59b080fa405c"
+    },
+    {
+      "condition": "a16",
+      "seed": 1,
+      "passed": true,
+      "layer_rows": 192000,
+      "signal_rows": 1200,
+      "abs_y_count": 768000,
+      "abs_y_sha256": "d3d88e0668ff26974691f97e33f6d53a73eb887fb7ae05592094d439eb22ce90"
+    },
+    {
+      "condition": "a16",
+      "seed": 2,
+      "passed": true,
+      "layer_rows": 192000,
+      "signal_rows": 1200,
+      "abs_y_count": 768000,
+      "abs_y_sha256": "caae66dd72ad5065a04d033dfb05942f976fb71586c9648fd858fb5f39d8ac5f"
+    },
+    {
+      "condition": "a4",
+      "seed": 1,
+      "passed": true,
+      "layer_rows": 192000,
+      "signal_rows": 1200,
+      "abs_y_count": 768000,
+      "abs_y_sha256": "0a3f64098c4d3f99e2b442108d634e63bf7a10670003364adecd065c5d59557a"
+    },
+    {
+      "condition": "a8",
+      "seed": 1,
+      "passed": true,
+      "layer_rows": 192000,
+      "signal_rows": 1200,
+      "abs_y_count": 768000,
+      "abs_y_sha256": "102a489d1d3eb4e9278f0fdab1fad3c89dad442cf2ed800f3cd9793ed8fe15da"
+    },
+    {
+      "condition": "a8",
+      "seed": 2,
+      "passed": true,
+      "layer_rows": 192000,
+      "signal_rows": 1200,
+      "abs_y_count": 768000,
+      "abs_y_sha256": "35ce0853133f576e81b9b7e5cbc273fc9d2d06375148793dc812550c5a217148"
+    },
+    {
+      "condition": "a4",
+      "seed": 2,
+      "passed": true,
+      "layer_rows": 192000,
+      "signal_rows": 1200,
+      "abs_y_count": 768000,
+      "abs_y_sha256": "1e956fc5ce02d7ddda0e9f67149df7f5c54a861aae334d3aed8cc84fbcaa11df"
+    },
+    {
+      "condition": "a4",
+      "seed": 0,
+      "passed": true,
+      "layer_rows": 192000,
+      "signal_rows": 1200,
+      "abs_y_count": 768000,
+      "abs_y_sha256": "d801760bac30565f7faaf3743bbfe303cae56d2eabb6c29fe61bf48efc8dd5f5"
+    },
+    {
+      "condition": "a8",
+      "seed": 0,
+      "passed": true,
+      "layer_rows": 192000,
+      "signal_rows": 1200,
+      "abs_y_count": 768000,
+      "abs_y_sha256": "4f4254da67bb58575f3bba60a7bbc7fc0a25a96d3120f72d3ffb86552544217b"
+    },
+    {
+      "condition": "a32",
+      "seed": 0,
+      "passed": true,
+      "layer_rows": 192000,
+      "signal_rows": 1200,
+      "abs_y_count": 768000,
+      "abs_y_sha256": "92986a3ee8be989614a9316445bd65dac509fe036f6a4152ff688539fd8b4647"
+    },
+    {
+      "condition": "a32",
+      "seed": 1,
+      "passed": true,
+      "layer_rows": 192000,
+      "signal_rows": 1200,
+      "abs_y_count": 768000,
+      "abs_y_sha256": "e784e027e4847f554e6c62ec48645a138e9dbb91a935d19522ce5c3b85f6774f"
+    },
+    {
+      "condition": "a32",
+      "seed": 2,
+      "passed": true,
+      "layer_rows": 192000,
+      "signal_rows": 1200,
+      "abs_y_count": 768000,
+      "abs_y_sha256": "7f3266bfcf33ae26361440bf06853ed62c05773c316fa735a172a59019665aea"
+    }
+  ],
+  "diagnostics": [
+    {
+      "passed": true,
+      "run": "/root/lowbit-math-reasoning/tdt_mnist/runs/depth-precision-16layer-100k-20260907/a16-seed0",
+      "validation_replay": [
+        {
+          "stage": "initial",
+          "loss": 2.578446533203125,
+          "accuracy": 0.105
+        },
+        {
+          "stage": "final",
+          "loss": 0.46002554321289063,
+          "accuracy": 0.869
+        }
+      ],
+      "probe_pairs": 2048,
+      "probe_forward_calls": 4096,
+      "checkpoint_sha256": "e403ff3003a0d497f2694f153aa3d9e1a31b4bfe019472cc8d738a5fd72c1458",
+      "output_sha256": {
+        "activation.csv": "34732e51f289538d91ddf51f8a0e00d5de9cf71ef58cbb05aa3f335f66c1cc55",
+        "signals.csv": "5fe8f964835b3ff31ec16ff19375595ea944a34896e5dc7d2d238539377d3ee9",
+        "probes.csv": "33c12f9ede7916671457b231f3ae0cefbac400349142a391773e7faa56a34859"
+      }
+    },
+    {
+      "passed": true,
+      "run": "/root/lowbit-math-reasoning/tdt_mnist/runs/depth-precision-16layer-100k-20260907/a16-seed1",
+      "validation_replay": [
+        {
+          "stage": "initial",
+          "loss": 2.374783447265625,
+          "accuracy": 0.112
+        },
+        {
+          "stage": "final",
+          "loss": 0.4891810913085938,
+          "accuracy": 0.858
+        }
+      ],
+      "probe_pairs": 2048,
+      "probe_forward_calls": 4096,
+      "checkpoint_sha256": "338898ca92b80ba3b3918b812e9115e5d6098b56384fc598f2cf722680eacaed",
+      "output_sha256": {
+        "activation.csv": "3fce0417a209871c84e04374b351dcdcea3c07789c2f4fd17cba72a2af75e366",
+        "signals.csv": "863ee4caca26c5b85e7135b700e6f23e9058c5d7900bed40552201138bc87b9b",
+        "probes.csv": "e5111efa19d8af6f62044928836427aa0e3e2870f969bfc3c9b493ee129ffbaf"
+      }
+    },
+    {
+      "passed": true,
+      "run": "/root/lowbit-math-reasoning/tdt_mnist/runs/depth-precision-16layer-100k-20260907/a16-seed2",
+      "validation_replay": [
+        {
+          "stage": "initial",
+          "loss": 2.599361083984375,
+          "accuracy": 0.069
+        },
+        {
+          "stage": "final",
+          "loss": 0.48069964599609377,
+          "accuracy": 0.859
+        }
+      ],
+      "probe_pairs": 2048,
+      "probe_forward_calls": 4096,
+      "checkpoint_sha256": "4a05ec3c3b7e0a269971b4bd9bbae5e0c6d41da756e0288845692038039d932b",
+      "output_sha256": {
+        "activation.csv": "9eac60de6d2d5a76e6e14796d7eebad29114865837844742e4468756ce128f1a",
+        "signals.csv": "640b36a3a972e90a47998187a14854b141be2648b9569c639779746cc8cf7a65",
+        "probes.csv": "29135f01ff9ecf6d433b921955bd2c6235c115cf1aa1c7ba51f181f941470742"
+      }
+    },
+    {
+      "passed": true,
+      "run": "/root/lowbit-math-reasoning/tdt_mnist/runs/depth-precision-16layer-100k-20260907/a4-seed1",
+      "validation_replay": [
+        {
+          "stage": "initial",
+          "loss": 2.41064501953125,
+          "accuracy": 0.11
+        },
+        {
+          "stage": "final",
+          "loss": 1.03219677734375,
+          "accuracy": 0.659
+        }
+      ],
+      "probe_pairs": 2048,
+      "probe_forward_calls": 4096,
+      "checkpoint_sha256": "6171270eca09f1b1b798670e385509bbf5b6b33c06356829b26b1e00b8a1c516",
+      "output_sha256": {
+        "activation.csv": "d209e60c420d8ffdb0f4619eb4f2bf027c6e9d3cfc64728ff989f6ab49764c49",
+        "signals.csv": "c8aaa10913114627e65ab8aeb21bfc5dbe3051471d44f6cf5fadac9b18b15655",
+        "probes.csv": "7b3789fbc159fd5ffe160d2a5f4b1fd31708c416507863ee0c4472e87f00996b"
+      }
+    },
+    {
+      "passed": true,
+      "run": "/root/lowbit-math-reasoning/tdt_mnist/runs/depth-precision-16layer-100k-20260907/a8-seed1",
+      "validation_replay": [
+        {
+          "stage": "initial",
+          "loss": 2.37486767578125,
+          "accuracy": 0.112
+        },
+        {
+          "stage": "final",
+          "loss": 0.49392739868164065,
+          "accuracy": 0.856
+        }
+      ],
+      "probe_pairs": 2048,
+      "probe_forward_calls": 4096,
+      "checkpoint_sha256": "f9c1b147c021667a6bdfa5259cb501cdd472c9dc5dd75ecea1d151aa3e882bb6",
+      "output_sha256": {
+        "activation.csv": "030da7b9bdf096b8941721576c089f475d06115d36a2a6bfa873b1e4d53f00fa",
+        "signals.csv": "c8370092f24b6150d9a86155061dd80ff6ec9c719d4beae10c6a846922f8a7a6",
+        "probes.csv": "bd12e09eb88e1f7df74880868b5a22676d8ab91a0bb72e0aca2fe667f50971cb"
+      }
+    },
+    {
+      "passed": true,
+      "run": "/root/lowbit-math-reasoning/tdt_mnist/runs/depth-precision-16layer-100k-20260907/a8-seed2",
+      "validation_replay": [
+        {
+          "stage": "initial",
+          "loss": 2.599860107421875,
+          "accuracy": 0.074
+        },
+        {
+          "stage": "final",
+          "loss": 0.4864726257324219,
+          "accuracy": 0.853
+        }
+      ],
+      "probe_pairs": 2048,
+      "probe_forward_calls": 4096,
+      "checkpoint_sha256": "602b2cc9c63021e7be62ad2971f54c227df01ae05b739c24810b0b5c13100d50",
+      "output_sha256": {
+        "activation.csv": "07464ac1113f4fb17274e49e2c3b8926829761c6ddb86b4ddd5397dbd3def8b8",
+        "signals.csv": "38e712624981e7e1a7bdbe184da8efa16e9c43b196745e9ee9100113b46f3295",
+        "probes.csv": "6f53b8662aabc7e6a9f8f2db07fa4643bf29adbb1fd137270ef7b2a6ae499e09"
+      }
+    },
+    {
+      "passed": true,
+      "run": "/root/lowbit-math-reasoning/tdt_mnist/runs/depth-precision-16layer-100k-20260907/a4-seed2",
+      "validation_replay": [
+        {
+          "stage": "initial",
+          "loss": 2.631957275390625,
+          "accuracy": 0.086
+        },
+        {
+          "stage": "final",
+          "loss": 1.0145553588867187,
+          "accuracy": 0.667
+        }
+      ],
+      "probe_pairs": 2048,
+      "probe_forward_calls": 4096,
+      "checkpoint_sha256": "8c7541b15b02a8b63dea680e53dc64b38b76ac0b321fdf53c7adcca866de25eb",
+      "output_sha256": {
+        "activation.csv": "4a82b473332fd035198ae588db4edc570273284c8ca2ca4c6301a12d9a089369",
+        "signals.csv": "ace4f2f9e07d7e201069aef17ba3229ba2af47286318c234396e97044cd669c7",
+        "probes.csv": "22460bba896c90a203a01eded375c8307337e96ec67fcabeb3b98a43ab2d8f89"
+      }
+    },
+    {
+      "passed": true,
+      "run": "/root/lowbit-math-reasoning/tdt_mnist/runs/depth-precision-16layer-100k-20260907/a4-seed0",
+      "validation_replay": [
+        {
+          "stage": "initial",
+          "loss": 2.61305224609375,
+          "accuracy": 0.085
+        },
+        {
+          "stage": "final",
+          "loss": 1.089105224609375,
+          "accuracy": 0.648
+        }
+      ],
+      "probe_pairs": 2048,
+      "probe_forward_calls": 4096,
+      "checkpoint_sha256": "840d8a21d9091231f599db716d6d9ea519ab13cabaf35ec241c79bf9c6ffb038",
+      "output_sha256": {
+        "activation.csv": "22e04f6dfb332f5f18f0ebe767debfe8115f3b00b86d687aad282decbd449695",
+        "signals.csv": "a53593b7ff5bded89edc47285db7c13bae7bce80e83930e8ca67cdc799cab1b8",
+        "probes.csv": "9b1ccd5e05085d98d6a27d2b0c0d78c230a98164d04c4908c0a9c1b01a681c88"
+      }
+    },
+    {
+      "passed": true,
+      "run": "/root/lowbit-math-reasoning/tdt_mnist/runs/depth-precision-16layer-100k-20260907/a8-seed0",
+      "validation_replay": [
+        {
+          "stage": "initial",
+          "loss": 2.578001953125,
+          "accuracy": 0.103
+        },
+        {
+          "stage": "final",
+          "loss": 0.48606649780273437,
+          "accuracy": 0.847
+        }
+      ],
+      "probe_pairs": 2048,
+      "probe_forward_calls": 4096,
+      "checkpoint_sha256": "0b724d313ac8b32fe44355b6554946e172513f80d9f8365b84740bcd2906928b",
+      "output_sha256": {
+        "activation.csv": "0b1f593cb2b2b222210982e407421b4ce51aa88104701d260ed19ec016607f34",
+        "signals.csv": "bce92cd7affbd6437e59e46b881c9831eec9397d9e9af3dfde71ed230fc3d407",
+        "probes.csv": "cdd05527faed03f08146818ebebbbbd2171bee0721e59c4f38f2d8182da59a7d"
+      }
+    },
+    {
+      "passed": true,
+      "run": "/root/lowbit-math-reasoning/tdt_mnist/runs/depth-activation-100k-20260907/identity-a32/depth16-threshold8-seed0",
+      "validation_replay": [
+        {
+          "stage": "initial",
+          "loss": 2.578424072265625,
+          "accuracy": 0.105
+        },
+        {
+          "stage": "final",
+          "loss": 0.4737726745605469,
+          "accuracy": 0.856
+        }
+      ],
+      "probe_pairs": 2048,
+      "probe_forward_calls": 4096,
+      "checkpoint_sha256": "c7b70d3baa0fd939e412d33dbc1e002c5142ea293f56b79e341d7da5db391af9",
+      "output_sha256": {
+        "activation.csv": "0d96ddf64a9376430ea871ba4ebab9b0fd9df39599b5f4542c2a8c437557c78d",
+        "signals.csv": "9d8b0b074a720ae2d32a36af76c52cd1248c2689625af869aec13e62756bcd36",
+        "probes.csv": "cc60efe0eb751d794c610b64041cb6970a48e7b7a8a125651754ce6eeecf8f63"
+      }
+    },
+    {
+      "passed": true,
+      "run": "/root/lowbit-math-reasoning/tdt_mnist/runs/depth-activation-100k-20260907/identity-a32/depth16-threshold8-seed1",
+      "validation_replay": [
+        {
+          "stage": "initial",
+          "loss": 2.37475927734375,
+          "accuracy": 0.112
+        },
+        {
+          "stage": "final",
+          "loss": 0.48450439453125,
+          "accuracy": 0.859
+        }
+      ],
+      "probe_pairs": 2048,
+      "probe_forward_calls": 4096,
+      "checkpoint_sha256": "63c72edc05c7a10028e343a2f3060aab5389b6bd7f106217f562015e4947b645",
+      "output_sha256": {
+        "activation.csv": "0d96ddf64a9376430ea871ba4ebab9b0fd9df39599b5f4542c2a8c437557c78d",
+        "signals.csv": "f1cc8445daff983b30b59d3546a5144748d3a92e7cbb268310f572ead95ebbf8",
+        "probes.csv": "1059c16642402a4df73819f87e9d0ccac46c341e8d751db80dced39adc9f3d4a"
+      }
+    },
+    {
+      "passed": true,
+      "run": "/root/lowbit-math-reasoning/tdt_mnist/runs/depth-activation-100k-20260907/identity-a32/depth16-threshold8-seed2",
+      "validation_replay": [
+        {
+          "stage": "initial",
+          "loss": 2.599349365234375,
+          "accuracy": 0.068
+        },
+        {
+          "stage": "final",
+          "loss": 0.47719158935546874,
+          "accuracy": 0.859
+        }
+      ],
+      "probe_pairs": 2048,
+      "probe_forward_calls": 4096,
+      "checkpoint_sha256": "7a8ddbc39d9ab41316126e903915388070e254360d4e7ef25ae2d4b025937801",
+      "output_sha256": {
+        "activation.csv": "0d96ddf64a9376430ea871ba4ebab9b0fd9df39599b5f4542c2a8c437557c78d",
+        "signals.csv": "09b7652234150235c998a6692761410aad5c480e9bab3e4e0d5c553dae799e06",
+        "probes.csv": "a1d55b70edf0265fcdd7d8f2dc5f086f9fa2c8e823d0ea243bd7e8ea0373b78e"
+      }
+    }
+  ],
+  "new_training_pairs": 6912000,
+  "all_training_pairs_with_controls": 9216000,
+  "independent_probe_pairs": 24576,
+  "paired_layer_selection_verified": true,
+  "exact_parameter_counts_and_checkpoint_replay_verified": true,
+  "analysis_sources": {
+    "analyze_depth_precision.py": "71db087a8537eb38d7e4aad095c0621c6d7b4396ccc528c56e3a679710008266",
+    "diagnose_depth_precision.py": "69111e46e6298e2c196c4589ffdce81fb5a24b5790b4699e9ee6849579666c85",
+    "run_depth_precision.py": "aa4c26166dc87065444b5360ec81eb222eb3161d5eba86a32e617f2f0a8eb64e"
+  }
+}

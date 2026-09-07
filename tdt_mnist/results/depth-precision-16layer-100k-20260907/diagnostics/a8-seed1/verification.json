@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "run": "/root/lowbit-math-reasoning/tdt_mnist/runs/depth-precision-16layer-100k-20260907/a8-seed1",
+  "validation_replay": [
+    {
+      "stage": "initial",
+      "loss": 2.37486767578125,
+      "accuracy": 0.112
+    },
+    {
+      "stage": "final",
+      "loss": 0.49392739868164065,
+      "accuracy": 0.856
+    }
+  ],
+  "probe_pairs": 2048,
+  "probe_forward_calls": 4096,
+  "checkpoint_sha256": "f9c1b147c021667a6bdfa5259cb501cdd472c9dc5dd75ecea1d151aa3e882bb6",
+  "output_sha256": {
+    "activation.csv": "030da7b9bdf096b8941721576c089f475d06115d36a2a6bfa873b1e4d53f00fa",
+    "signals.csv": "c8370092f24b6150d9a86155061dd80ff6ec9c719d4beae10c6a846922f8a7a6",
+    "probes.csv": "bd12e09eb88e1f7df74880868b5a22676d8ab91a0bb72e0aca2fe667f50971cb"
+  }
+}

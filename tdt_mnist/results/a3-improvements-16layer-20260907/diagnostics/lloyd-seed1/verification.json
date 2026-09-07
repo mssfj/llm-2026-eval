@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "run": "/root/lowbit-math-reasoning/tdt_mnist/runs/a3-improvements-16layer-20260907/lloyd-seed1",
+  "validation_replay": [
+    {
+      "stage": "initial",
+      "loss": 2.303400146484375,
+      "accuracy": 0.11
+    },
+    {
+      "stage": "final",
+      "loss": 2.29954443359375,
+      "accuracy": 0.112
+    }
+  ],
+  "probe_pairs": 2048,
+  "probe_forward_calls": 4096,
+  "checkpoint_sha256": "ef291b7bd198efa5fe9d39072adf541cadc7088297e7d2733466f69bf1a2b108",
+  "output_sha256": {
+    "activation.csv": "74c5bbb8c9533dd4f6774ce216dc8c153f1ed742b7fb62cd9ea58a6af7ea33e8",
+    "signals.csv": "829785600e8d2da8cfcdbad1ee8b4b4b5458af5f5917d5744919df4dc39f67f9",
+    "probes.csv": "cd7bbab22c17e139d2b46587cd8fc0ff63a9ad9d3b940fa0869863ddf26361ae"
+  }
+}

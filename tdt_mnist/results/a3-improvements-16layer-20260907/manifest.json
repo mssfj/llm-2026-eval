@@ -1,0 +1,34 @@
+{
+  "conditions": [
+    "rmsnorm",
+    "residual",
+    "lloyd"
+  ],
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "depth": 16,
+  "threshold": 8,
+  "smoke": false,
+  "baseline_root": "/root/lowbit-math-reasoning/tdt_mnist/runs/depth-activation-100k-20260907/identity-a3-threshold",
+  "sources": {
+    "train.py": "c8bd627ff7adcd74d05991aa22c8a71f4b281ec9b8149339d39d740f33b20cbb",
+    "activation_quantization.py": "96eb70ce744cf3833cc4b058b1cc3f3dc24df24284321a7a0546eaeb31f260b5",
+    "depth_diagnostics.py": "209a989a9ae5bba7729ec110b2324717178326d3e19c4f91f717e480a04972a7",
+    "a3_improvements.py": "e3ac1efa9563293f691ee9125e93ea1284ff147ee5a8c96f90ca837cefa06b2b",
+    "run_a3_improvements.py": "8efea14205e2666e70016d0f53e72a5a2a64202e293f48b0d2d7c7e2fa4969d7"
+  },
+  "baseline_config_sha256": {
+    "0": "f70e27db9c498ff5df801f8b8fb7a31363bf90d130a8eec89715e57553d7ca31",
+    "1": "c3e02ec379d4220cf5c10cc50d4ed86ff8d51f952adce37a8c0e94ef832cf9d3",
+    "2": "39e4c1c96cf4328b2516552879c3a681389f9ec19f7d20f4ccb315fe5d1ea0e4"
+  },
+  "data_sha256": {
+    "t10k-images-idx3-ubyte": "0fa7898d509279e482958e8ce81c8e77db3f2f8254e26661ceb7762c4d494ce7",
+    "t10k-labels-idx1-ubyte": "ff7bcfd416de33731a308c3f266cc351222c34898ecbeaf847f06e48f7ec33f2",
+    "train-images-idx3-ubyte": "ba891046e6505d7aadcbbe25680a0738ad16aec93bde7f9b65e87a2fc25776db",
+    "train-labels-idx1-ubyte": "65a50cbbf4e906d70832878ad85ccda5333a97f0f4c3dd2ef09a8a9eef7101c5"
+  }
+}

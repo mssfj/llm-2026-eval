@@ -45,9 +45,17 @@ class TernaryModel:
 
     def __init__(self, pool_size=10, hidden_size=0, zero_rate=1 / 3,
                  gain=1.0, device="cpu", seed=0, pool_shape=None, activation_precision="a32",
-                 hidden_activation="relu", a3_method="absmax", a3_threshold_factor=0.5, hidden_sizes=None):
+                 hidden_activation="relu", a3_method="absmax", a3_threshold_factor=0.5, hidden_sizes=None, a3_improvement="none"):
         if activation_precision not in PRECISIONS:
             raise ValueError("unsupported activation precision")
+        if a3_improvement not in ("none", "rmsnorm", "residual", "lloyd"):
+            raise ValueError("invalid A3 improvement")
+        self.a3_improvement = a3_improvement
+        self.extended_diagnostics = a3_improvement != "none"
+        self.improvement_ops = None
+        if a3_improvement != "none":
+            import a3_improvements
+            self.improvement_ops = a3_improvements
         self.activation_precision = activation_precision
         if hidden_activation not in ("relu", "identity"):
             raise ValueError("unknown hidden activation")
@@ -82,13 +90,36 @@ class TernaryModel:
         for index, (shape, scale) in enumerate(zip(self.shapes, self.scales)):
             size = math.prod(shape)
             matrix = weights[offset:offset + size].view(shape).to(torch.float32) * scale
-            codes, activation_scale = encode_activation(x, self.activation_precision, self.a3_method, self.a3_threshold_factor)
+            original = x
+            if self.signal_observer is not None and self.extended_diagnostics:
+                self.signal_observer.record(index, "pre_quantization", original)
+            if self.a3_improvement == "lloyd":
+                codes, activation_scale, info = self.improvement_ops.lloyd_encode(x, diagnostics=self.signal_observer is not None)
+                if info is not None:
+                    for stage, values in info.items():
+                        self.signal_observer.record(index, stage, values)
+            else:
+                codes, activation_scale = encode_activation(x, self.activation_precision, self.a3_method, self.a3_threshold_factor)
             reconstructed = decode_activation(codes, activation_scale)
             if self.activation_observer is not None:
                 self.activation_observer.record(index, x, codes, reconstructed)
+            if self.a3_improvement == "rmsnorm" and index > 0:
+                if self.signal_observer is not None:
+                    self.signal_observer.record(index, "quantized_before_norm", reconstructed)
+                reconstructed, norm_gain = self.improvement_ops.renormalize(reconstructed)
+                if self.signal_observer is not None:
+                    self.signal_observer.record(index, "normalization_gain", norm_gain)
             if self.signal_observer is not None:
                 self.signal_observer.record(index, "input", reconstructed)
             x = F.linear(reconstructed, matrix)
+            if self.a3_improvement == "residual" and 0 < index < len(self.shapes) - 1:
+                bypass = self.improvement_ops.shortcut(original, shape[0])
+                if self.signal_observer is not None:
+                    self.signal_observer.record(index, "residual_branch", x)
+                    self.signal_observer.record(index, "shortcut", bypass)
+                    ratio=x.square().mean(-1,keepdim=True).sqrt()/bypass.square().mean(-1,keepdim=True).sqrt().clamp_min(1e-8)
+                    self.signal_observer.record(index, "branch_shortcut_rms_ratio", ratio)
+                x = bypass + x
             if self.signal_observer is not None:
                 self.signal_observer.record(index, "pre_activation", x)
             if index < len(self.shapes) - 1 and self.hidden_activation == "relu":
@@ -294,6 +325,7 @@ def load_data(args, device):
 
 def parser():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    p.add_argument("--a3-improvement", choices=("none", "rmsnorm", "residual", "lloyd"), default="none")
     p.add_argument("--hidden-activation", choices=("relu", "identity"), default="relu")
     p.add_argument("--a3-method", choices=("absmax", "mean_threshold"), default="absmax")
     p.add_argument("--a3-threshold-factor", type=float, default=0.5)
@@ -338,6 +370,8 @@ def parser():
 
 
 def validate(args, p):
+    if args.a3_improvement != "none" and (args.activation_precision != "a3" or args.hidden_activation != "identity" or args.a3_method != "mean_threshold"):
+        p.error("A3 interventions require identity activation and mean_threshold A3 base")
     if not math.isfinite(args.a3_threshold_factor) or args.a3_threshold_factor <= 0:
         p.error("a3-threshold-factor must be finite and positive")
     if args.a3_method != "absmax" and args.activation_precision != "a3":
@@ -387,7 +421,7 @@ def main():
         p.error("output-dir is not empty; choose a new experiment directory")
     model = TernaryModel(args.pool_size, args.hidden_size, args.zero_rate,
                          args.gain, args.device, args.seed, pool_shape=args.pool_shape, activation_precision=args.activation_precision,
-                         hidden_activation=args.hidden_activation, a3_method=args.a3_method, a3_threshold_factor=args.a3_threshold_factor, hidden_sizes=args.hidden_sizes)
+                         hidden_activation=args.hidden_activation, a3_method=args.a3_method, a3_threshold_factor=args.a3_threshold_factor, hidden_sizes=args.hidden_sizes, a3_improvement=args.a3_improvement)
     generator = torch.Generator(device=model.device).manual_seed(args.seed + 1)
     batch_generator = (torch.Generator(device=model.device).manual_seed(args.batch_seed)
                        if args.batch_seed is not None else None)
@@ -399,6 +433,12 @@ def main():
                   weight_storage="int8 ternary",
                   reset_policy="all evidence discarded after every accumulation epoch",
                   torch_version=torch.__version__)
+    config["intervention_description"] = {
+        "none": "Legacy forward path",
+        "rmsnorm": "Hidden decoded activations normalized to RMS=1 with epsilon=1e-8; first input and logits unchanged; no learned gain",
+        "residual": "FP32 pre-quantization shortcut plus A3 branch at internal hidden layers, coefficient=1; zero-pad or truncate channels; first/last linear layers plain",
+        "lloyd": "Overrides base quantizer at all linear inputs: symmetric ternary Lloyd, initial threshold=0.6 population std, centroid/midpoint updates max 5, no input centering"
+    }[args.a3_improvement]
     (args.output_dir / "config.json").write_text(json.dumps(config, indent=2) + "\n")
     print(f"TDT-D: {model.num_params} ternary weights, shapes={model.shapes}, device={model.device}", flush=True)
     (train_x, train_y), (val_x, val_y), (test_x, test_y) = load_data(args, model.device)

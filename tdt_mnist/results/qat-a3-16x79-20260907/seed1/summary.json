@@ -1,0 +1,30 @@
+{
+  "seed": 1,
+  "passed": true,
+  "epochs": 30,
+  "best_epoch": 6,
+  "initial_validation": {
+    "loss": 2.303205810546875,
+    "accuracy": 0.114
+  },
+  "selected_validation": {
+    "loss": 2.302585205078125,
+    "accuracy": 0.085
+  },
+  "num_params": 95274,
+  "initialization_matches_fp32_control": true,
+  "exact_a3_forward_matches_reference": true,
+  "weights_unchanged_during_inference": true,
+  "weights_sha256": "68e417034b2a0be4e25bfa282d489a00be2be1651a424bf44d392a2aea89213d",
+  "elapsed_seconds": 8.946136984974146,
+  "output_sha256": {
+    "config.json": "00dabe53714afa0ac26f3c0df65cada6286d1fce6877519beb10c2ecac6d37ad",
+    "best_model.pt": "9fe4dc82bb4e91f9e056b12166d5c7d5c4843a5bd7ec3d628b97a67d09a442ef",
+    "training.csv": "7bd2b1e177be9d50871a6b45f3e9a44fbec92e14441357e9b5fd90889b43fa2e",
+    "gradient_metrics.csv": "b8145c012be0ee530975511b13f0209acc38aeef7c1a33735338db75e0f189d9",
+    "inference.csv": "0ba7c1d2486d6ad50c54675a269ebd69cad7c5df1126012209e37e4bf725e8c1",
+    "signal_metrics.csv": "4108f88276f4787be9f9130eb7c23f992e3d1899d51078f68cb17c0f2647faa8",
+    "activation_metrics.csv": "7acfde742f911a5dc07780412afced8fcfe55b119e65f72c5395e4439080d128",
+    "predictions.npz": "4e523704e91ebf1bcbbfbb4a6d14a3dda5353be1dfb537b7f465fc84496ec10b"
+  }
+}

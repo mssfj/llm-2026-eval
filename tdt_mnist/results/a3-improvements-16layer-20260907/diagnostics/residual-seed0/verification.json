@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "run": "/root/lowbit-math-reasoning/tdt_mnist/runs/a3-improvements-16layer-20260907/residual-seed0",
+  "validation_replay": [
+    {
+      "stage": "initial",
+      "loss": 52.10472265625,
+      "accuracy": 0.096
+    },
+    {
+      "stage": "final",
+      "loss": 23.659982421875,
+      "accuracy": 0.163
+    }
+  ],
+  "probe_pairs": 2048,
+  "probe_forward_calls": 4096,
+  "checkpoint_sha256": "9cd8b691f94b47623796789288b9a9bc3ffb04b2753bc7d2d19eee8e59472796",
+  "output_sha256": {
+    "activation.csv": "85edd6eee28e0c566efd70f6e48e01e6afb8d0a27238a92980337506820be27f",
+    "signals.csv": "730c5109ca7b4182e5c013aa5adf03dbfadc056cd8678a404e689b87d1605ba8",
+    "probes.csv": "c89956b800a5a0ae03cc41cacbece2a23402acf9733b6160e0f266c6fb390de4"
+  }
+}

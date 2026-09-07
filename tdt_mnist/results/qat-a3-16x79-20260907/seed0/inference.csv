@@ -1,0 +1,5 @@
+seed,split,mode,loss,accuracy
+0,validation,qat_a3,2.302585205078125,0.085
+0,validation,fp32_ablation,15299530.752,0.124
+0,test,qat_a3,2.3025851440429688,0.098
+0,test,fp32_ablation,16339399.2704,0.1135

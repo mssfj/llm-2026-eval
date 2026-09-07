@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "run": "/root/lowbit-math-reasoning/tdt_mnist/runs/depth-activation-100k-20260907/identity-a3-threshold/depth16-threshold8-seed1",
+  "validation_replay": [
+    {
+      "stage": "initial",
+      "loss": 2.30274462890625,
+      "accuracy": 0.103
+    },
+    {
+      "stage": "final",
+      "loss": 2.289878173828125,
+      "accuracy": 0.13
+    }
+  ],
+  "probe_pairs": 2048,
+  "probe_forward_calls": 4096,
+  "checkpoint_sha256": "f313a2cf0b3fd8923eac0770f1b624e6d82f1cc1df971fc63528da885b2d3484",
+  "output_sha256": {
+    "activation.csv": "785a16f7fe9891fd0c7445bd086a8433812e77bd855fd2b8d36ca481ca7358c9",
+    "signals.csv": "d28183e1994eced05dea3f89013d2d2cc0e3518bd4989674a552f8c7370f05f8",
+    "probes.csv": "633a5c9071c45b7eda1bc8f94389568b180a90dd338e2976e9b771722c245a73"
+  }
+}
