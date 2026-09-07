@@ -415,3 +415,13 @@ RMS、平均、標準偏差、ゼロ率、負値率、最大絶対値、非有�
 集計先に `layer_firing.csv`、`layer_firing_aggregate.csv`、`signal_metrics.csv`、`signal_aggregate.csv`、
 学習曲線・層別発火率・信号伝搬のPNG/SVGを保存します。`verification.json` は全層の生ログと集計の照合結果です。
 完全に設定・ソース・データが同じ完了済みrunのみ `--resume` で再利用できます。部分runは上書きしません。
+
+## 深さ × 活性化方式：RMSと摂動対象層別の損失差
+
+`run_depth_activation.py` は ReLU+A3閾値分離、ReLUなし+A32、ReLUなし+A3閾値分離の3方式を、深さ4/8/16・カウンタ閾値1/4/8/16・seed0/1/2で比較します。100,000重み、12,000区間などの条件は前回の深さ実験を継承します。
+
+- `--loss-diagnostics`：各候補対のFP32損失差の絶対値を `abs_y.npy`（区間×候補対、float32）に保存し、各区間の要約を `metrics.csv` に記録します。
+- `--layer-diagnostics`：`signal_metrics.csv` の `stage=output` が各層の量子化前の h_l、`stage=input` が量子化・復元後の線形層入力です。RMSは検証集合全体で集計します。
+- `analyze_depth_activation.py`：全runを監査し、摂動対象層に条件付けた |y| と、初期・最終モデルの層単独摂動プローブを集計します。複数層を同時摂動した損失差を層の単独寄与と解釈しないよう区別します。
+
+出力：`tdt_mnist/results/depth-activation-100k-20260907/`。完了は `status.json` と `verification.json`、実行中の進捗は `progress.json` を確認してください。

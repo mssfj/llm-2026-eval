@@ -1,0 +1,11 @@
+{
+  "previous_driver_exit": {
+    "complete": false,
+    "error": "CalledProcessError(-15, ['/usr/bin/python', '/root/lowbit-math-reasoning/tdt_mnist/sweep_depth_activation.py', '--hidden-activation', 'relu', '--activation-precision', 'a3', '--a3-method', 'mean_threshold', '--workers', '4', '--report-dir', '/root/lowbit-math-reasoning/tdt_mnist/results/depth-activation-100k-20260907/relu-a3-threshold', '--output-dir', '/root/lowbit-math-reasoning/tdt_mnist/runs/depth-activation-100k-20260907/relu-a3-threshold'])"
+  },
+  "reason": "Schedulers drained and replaced with six-worker resume; active training subprocesses completed normally.",
+  "runtime_files": [
+    "relu-a3-threshold/runtime_workers.json",
+    "identity-a3-threshold/runtime_workers.json"
+  ]
+}

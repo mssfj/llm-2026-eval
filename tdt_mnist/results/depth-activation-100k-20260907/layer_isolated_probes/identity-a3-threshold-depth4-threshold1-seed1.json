@@ -1,0 +1,1 @@
+{"run": "/root/lowbit-math-reasoning/tdt_mnist/runs/depth-activation-100k-20260907/identity-a3-threshold/depth4-threshold1-seed1", "probe_pairs": 512, "probe_forward_calls": 1024, "checkpoint_sha256": "efe84f79b5d76f57f1c7402f09347f448d3bbfdd7fd6a7ebccddacdfb7968233", "csv_sha256": "d5316a7412794ea4510814c6f5ae3b573fbdc1b20fe72e09c5936cdfea40f6b8"}

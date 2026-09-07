@@ -1,0 +1,1 @@
+{"run": "/root/lowbit-math-reasoning/tdt_mnist/runs/depth-activation-100k-20260907/relu-a3-threshold/depth4-threshold8-seed0", "probe_pairs": 512, "probe_forward_calls": 1024, "checkpoint_sha256": "45bb552d2fbe224d9b65cc13ebab22f600e01e7d9ce28a04460578e798021f15", "csv_sha256": "21e0046bdda58b28a324fe2dedf640ebee21f064300ce9dcd23ca0f54b39c7ec"}
