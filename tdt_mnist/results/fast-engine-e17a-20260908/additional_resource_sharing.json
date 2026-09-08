@@ -1,0 +1,10 @@
+{
+  "recorded_unix_time": 1788869995.6206572,
+  "overlapping_workload": "tdt_mnist/results/allocation-ablations-16blocks-20260908",
+  "reason": "User requested independent 16-block restoration-cache and candidate-copy ablations while fast seed0 reproduction was already active.",
+  "benchmark_affinity": [
+    15
+  ],
+  "existing_reproduction_unchanged": true,
+  "limitation": "Full fast seed0 runtime is not exclusive-machine timing; later report must disclose this overlap."
+}

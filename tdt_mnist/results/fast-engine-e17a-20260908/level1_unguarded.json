@@ -1,0 +1,169 @@
+{
+  "cases": [
+    {
+      "case": "global",
+      "max_relative_error": 0.0003490410163067281,
+      "loss_failures": 76,
+      "vote_mismatches": 1,
+      "counter_mismatches": 1,
+      "fire_mismatches": 0
+    },
+    {
+      "case": "matrix0",
+      "max_relative_error": 0.0003786540182773024,
+      "loss_failures": 57,
+      "vote_mismatches": 2,
+      "counter_mismatches": 2,
+      "fire_mismatches": 0
+    },
+    {
+      "case": "matrix1",
+      "max_relative_error": 8.492569031659514e-05,
+      "loss_failures": 8,
+      "vote_mismatches": 0,
+      "counter_mismatches": 0,
+      "fire_mismatches": 0
+    },
+    {
+      "case": "matrix2",
+      "max_relative_error": 0.00039367261342704296,
+      "loss_failures": 20,
+      "vote_mismatches": 0,
+      "counter_mismatches": 0,
+      "fire_mismatches": 0
+    },
+    {
+      "case": "matrix3",
+      "max_relative_error": 0.0004247540491633117,
+      "loss_failures": 61,
+      "vote_mismatches": 1,
+      "counter_mismatches": 1,
+      "fire_mismatches": 0
+    },
+    {
+      "case": "matrix4",
+      "max_relative_error": 0.0002882858389057219,
+      "loss_failures": 14,
+      "vote_mismatches": 0,
+      "counter_mismatches": 0,
+      "fire_mismatches": 0
+    },
+    {
+      "case": "matrix5",
+      "max_relative_error": 8.832878961584356e-08,
+      "loss_failures": 0,
+      "vote_mismatches": 0,
+      "counter_mismatches": 0,
+      "fire_mismatches": 0
+    },
+    {
+      "case": "matrix6",
+      "max_relative_error": 0.00016066711395978928,
+      "loss_failures": 9,
+      "vote_mismatches": 0,
+      "counter_mismatches": 0,
+      "fire_mismatches": 0
+    },
+    {
+      "case": "matrix7",
+      "max_relative_error": 0.0002097982505802065,
+      "loss_failures": 15,
+      "vote_mismatches": 0,
+      "counter_mismatches": 0,
+      "fire_mismatches": 0
+    },
+    {
+      "case": "matrix8",
+      "max_relative_error": 0.0007644769502803683,
+      "loss_failures": 8,
+      "vote_mismatches": 0,
+      "counter_mismatches": 0,
+      "fire_mismatches": 0
+    },
+    {
+      "case": "matrix9",
+      "max_relative_error": 0.0,
+      "loss_failures": 0,
+      "vote_mismatches": 0,
+      "counter_mismatches": 0,
+      "fire_mismatches": 0
+    },
+    {
+      "case": "matrix10",
+      "max_relative_error": 0.00017125095473602414,
+      "loss_failures": 4,
+      "vote_mismatches": 0,
+      "counter_mismatches": 0,
+      "fire_mismatches": 0
+    },
+    {
+      "case": "matrix11",
+      "max_relative_error": 9.495756239630282e-05,
+      "loss_failures": 9,
+      "vote_mismatches": 0,
+      "counter_mismatches": 0,
+      "fire_mismatches": 0
+    },
+    {
+      "case": "matrix12",
+      "max_relative_error": 6.262664828682318e-05,
+      "loss_failures": 3,
+      "vote_mismatches": 0,
+      "counter_mismatches": 0,
+      "fire_mismatches": 0
+    },
+    {
+      "case": "matrix13",
+      "max_relative_error": 8.245258504757658e-05,
+      "loss_failures": 2,
+      "vote_mismatches": 0,
+      "counter_mismatches": 0,
+      "fire_mismatches": 0
+    },
+    {
+      "case": "matrix14",
+      "max_relative_error": 0.0,
+      "loss_failures": 0,
+      "vote_mismatches": 0,
+      "counter_mismatches": 0,
+      "fire_mismatches": 0
+    },
+    {
+      "case": "matrix15",
+      "max_relative_error": 8.815316476784574e-08,
+      "loss_failures": 0,
+      "vote_mismatches": 0,
+      "counter_mismatches": 0,
+      "fire_mismatches": 0
+    },
+    {
+      "case": "matrix16",
+      "max_relative_error": 8.804351381286324e-08,
+      "loss_failures": 0,
+      "vote_mismatches": 0,
+      "counter_mismatches": 0,
+      "fire_mismatches": 0
+    },
+    {
+      "case": "matrix17",
+      "max_relative_error": 1.7719258949000505e-07,
+      "loss_failures": 0,
+      "vote_mismatches": 0,
+      "counter_mismatches": 0,
+      "fire_mismatches": 0
+    },
+    {
+      "case": "same_output_row",
+      "max_relative_error": 0.00019625743152573705,
+      "loss_failures": 12,
+      "vote_mismatches": 0,
+      "counter_mismatches": 0,
+      "fire_mismatches": 0
+    }
+  ],
+  "max_relative_error": 0.0007644769502803683,
+  "rng_equal": true,
+  "real_epoch_proposal_equal": true,
+  "real_epoch_scale_absolute_difference": 0.0,
+  "passed": false
+}

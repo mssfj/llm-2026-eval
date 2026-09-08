@@ -1,0 +1,37 @@
+{
+  "workers": 2,
+  "seed0_isolated_after_full_naive_benchmark": true,
+  "threads_per_worker": 1,
+  "cpu_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "cpu_max": "1536000 100000",
+  "events": [
+    {
+      "seed": 1,
+      "pid": 35596,
+      "start_time": 1788871995.9138865
+    },
+    {
+      "seed": 2,
+      "pid": 35597,
+      "start_time": 1788871995.914231
+    }
+  ],
+  "benchmarks_sequential_before_training": true
+}

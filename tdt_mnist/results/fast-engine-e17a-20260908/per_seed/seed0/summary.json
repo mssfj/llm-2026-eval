@@ -1,0 +1,25 @@
+{
+  "seed": 0,
+  "engine": "fast",
+  "test_percent": 91.11,
+  "naive_test_percent": 91.11,
+  "delta_pp": 0.0,
+  "first_firing_divergence": null,
+  "first_numeric_difference": null,
+  "certified_original_loss_intervals": 12000,
+  "independently_replayed_intervals": 0,
+  "historical_mismatches": [],
+  "final_weights_equal_historical": true,
+  "train_elapsed_seconds": 4289.906833909452,
+  "engine_seconds": 4281.871273130178,
+  "reference_replay_seconds": 0,
+  "guard_fallback_fraction": 1.0,
+  "rss_before_training": 739909632,
+  "peak_rss": 944414720,
+  "logical_weights_bytes": 100016,
+  "logical_counter_bytes": 1000160,
+  "test": {
+    "loss": 0.33631305084228513,
+    "accuracy": 0.9111
+  }
+}

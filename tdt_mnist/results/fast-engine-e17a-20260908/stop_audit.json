@@ -1,0 +1,42 @@
+{
+  "runs": [
+    {
+      "seed": 0,
+      "logged_intervals": 12000,
+      "checkpoint_interval": 12000,
+      "last_validation_percent": 90.10000000000001,
+      "test_percent": 91.11,
+      "historical_metric_mismatch_count": 0,
+      "historical_abs_y_prefix_exact": true,
+      "all_candidates_fallback": true,
+      "firing_rows": 12000,
+      "layer_rows": 216000
+    },
+    {
+      "seed": 1,
+      "logged_intervals": 5282,
+      "checkpoint_interval": 5000,
+      "last_validation_percent": 85.9,
+      "test_percent": null,
+      "historical_metric_mismatch_count": 0,
+      "historical_abs_y_prefix_exact": true,
+      "all_candidates_fallback": true,
+      "firing_rows": 5282,
+      "layer_rows": 95076
+    },
+    {
+      "seed": 2,
+      "logged_intervals": 5465,
+      "checkpoint_interval": 5000,
+      "last_validation_percent": 85.9,
+      "test_percent": null,
+      "historical_metric_mismatch_count": 0,
+      "historical_abs_y_prefix_exact": true,
+      "all_candidates_fallback": true,
+      "firing_rows": 5465,
+      "layer_rows": 98370
+    }
+  ],
+  "partial_array_rule": "Only abs_y.npy rows [0:logged_intervals] are valid. Partial seed model state is saved at checkpoint_interval, not the last logged interval.",
+  "comparison_scope": "Shared metric fields and candidate absolute loss differences compared against original E17a; no new test evaluation."
+}

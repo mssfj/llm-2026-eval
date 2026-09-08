@@ -1,0 +1,49 @@
+{
+  "complete": false,
+  "training_complete": false,
+  "experiment_closed": true,
+  "stopped": true,
+  "status": "stopped_by_user",
+  "completed": 1,
+  "expected": 3,
+  "active_seeds": [],
+  "final_three_seed_verdict": "not_evaluable",
+  "runs": [
+    {
+      "seed": 0,
+      "logged_intervals": 12000,
+      "checkpoint_interval": 12000,
+      "last_validation_percent": 90.10000000000001,
+      "test_percent": 91.11,
+      "historical_metric_mismatch_count": 0,
+      "historical_abs_y_prefix_exact": true,
+      "all_candidates_fallback": true,
+      "firing_rows": 12000,
+      "layer_rows": 216000
+    },
+    {
+      "seed": 1,
+      "logged_intervals": 5282,
+      "checkpoint_interval": 5000,
+      "last_validation_percent": 85.9,
+      "test_percent": null,
+      "historical_metric_mismatch_count": 0,
+      "historical_abs_y_prefix_exact": true,
+      "all_candidates_fallback": true,
+      "firing_rows": 5282,
+      "layer_rows": 95076
+    },
+    {
+      "seed": 2,
+      "logged_intervals": 5465,
+      "checkpoint_interval": 5000,
+      "last_validation_percent": 85.9,
+      "test_percent": null,
+      "historical_metric_mismatch_count": 0,
+      "historical_abs_y_prefix_exact": true,
+      "all_candidates_fallback": true,
+      "firing_rows": 5465,
+      "layer_rows": 98370
+    }
+  ]
+}
