@@ -1,0 +1,25 @@
+{
+  "blocks": 8,
+  "seed": 0,
+  "steps": 24000,
+  "num_params": 100016,
+  "validation": {
+    "loss": 0.2891517028808594,
+    "accuracy": 0.916
+  },
+  "total_fires": 20654,
+  "fire_fraction": 0.8605833333333334,
+  "fires_per_parameter": 0.20650695888657813,
+  "intervals_per_parameter": 0.23996160614301712,
+  "selected_coordinates_per_parameter": 3.839385698288274,
+  "unique_updated_coordinates": 18494,
+  "unique_updated_fraction": 0.1849104143337066,
+  "branch_ratio_exceed": 6,
+  "branch_ratio_total": 8,
+  "logits_rms": 2.1834294222516637,
+  "logits_rms_exceed": false,
+  "engine_seconds": 229.40469462797046,
+  "elapsed_seconds": 241.89456858485937,
+  "model_sha256": "673043b1e34ea50408b7f04f878c4b9e82e92e1bbd0563083e9e4b8c7b75b127",
+  "test_evaluated": false
+}

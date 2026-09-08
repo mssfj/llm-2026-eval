@@ -1,0 +1,14 @@
+{
+  "tdt_mnist/results/residual-stream-a8-e17-20260908/per_seed/E17a-seed0/model.pt": "3741b24f2488fe5536dc4732ce72cc4fd4d54ce26f2a2f2a367d7b2d4c57fcda",
+  "tdt_mnist/results/residual-followups-e18-e20-20260908/per_seed/E18c-seed0/model.pt": "1745b29c3240eb9595d77616569f1ea77860962c020bba638796dcd8483c8540",
+  "tdt_mnist/results/gpu-e17a-reproduction-20260908/per_seed/seed0/model.pt": "42a10e0eb9e7bf737abfed6aba5a30a208ff63a9183d927ac9381c8976f9da83",
+  "tdt_mnist/results/gpu-e17a-reproduction-20260908/per_seed/seed0/candidate_losses.npy": "24a85db7f247f7593a71ba920296069b218d5bce96eea073b0068a13dfa00349",
+  "tdt_mnist/results/residual-stream-a8-e17-20260908/per_seed/E17a-seed1/model.pt": "141a6b5a2aa887e2edac140ff1451d3e413a39ea499053fe0243d7dc5c029f1f",
+  "tdt_mnist/results/residual-followups-e18-e20-20260908/per_seed/E18c-seed1/model.pt": "987c88620ccb2d975dbe1a1a069ed862a324e5c4d75b24c57e9e93b2689e1cbb",
+  "tdt_mnist/results/gpu-e17a-reproduction-20260908/per_seed/seed1/model.pt": "f84ab5b8c4f581076f409385353f3d7faaefd963e620fbbcddf211e15c767c5f",
+  "tdt_mnist/results/gpu-e17a-reproduction-20260908/per_seed/seed1/candidate_losses.npy": "4e7f8d3bcec2e12afa6fe78ab4bd49222a62b266a614c7be239a1909b9ed8ecb",
+  "tdt_mnist/results/residual-stream-a8-e17-20260908/per_seed/E17a-seed2/model.pt": "af7249228bcebff321af697a1ca5e9f5275166e26c52e19a3fb56eb90a2ebdf8",
+  "tdt_mnist/results/residual-followups-e18-e20-20260908/per_seed/E18c-seed2/model.pt": "ec19f97b28a4e4968fc02aaa72f90ce933b03d87241020ef823a94d681e4d7bb",
+  "tdt_mnist/results/gpu-e17a-reproduction-20260908/per_seed/seed2/model.pt": "7a5eb140af667f1f127a7f2c4f880f63e354df881c14461f5246f4a5bedccc0c",
+  "tdt_mnist/results/gpu-e17a-reproduction-20260908/per_seed/seed2/candidate_losses.npy": "a65863b7f6199386564dd9cad8635993a2089de3a4e890deda2098babc5f503d"
+}

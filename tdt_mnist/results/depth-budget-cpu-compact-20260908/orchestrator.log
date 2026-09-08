@@ -1,0 +1,7 @@
+preflight 8 blocks seed0 passed, initialval=9.800%
+preflight 8 blocks seed1 passed, initialval=14.600%
+preflight 8 blocks seed2 passed, initialval=9.100%
+preflight 32 blocks seed0 passed, initialval=5.100%
+preflight 32 blocks seed1 passed, initialval=7.400%
+preflight 32 blocks seed2 passed, initialval=7.200%
+[{"blocks": 8, "intervals": 100, "seconds_per_interval": 0.009498135298490524, "estimated_training_seconds_per_seed": 455.9104943275451}, {"blocks": 32, "intervals": 100, "seconds_per_interval": 0.013818917460739613, "estimated_training_seconds_per_seed": 1326.6160762310028}]

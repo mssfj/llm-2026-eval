@@ -1,0 +1,39 @@
+{
+  "time": "2026-09-08T16:49:34Z",
+  "request": "いったん実行をとめてください",
+  "stopped_pids": [
+    46336,
+    46346
+  ],
+  "remaining_processes": [],
+  "previous_status": {
+    "complete": false,
+    "stage": "training",
+    "completed_trajectories": 0,
+    "expected_trajectories": 6,
+    "active": {
+      "blocks": 8,
+      "seed": 0,
+      "target": 48000
+    },
+    "test_evaluated": false
+  },
+  "progress": {
+    "per_seed/blocks8-seed0/progress.json": {
+      "blocks": 8,
+      "seed": 0,
+      "step": 39500,
+      "target": 48000,
+      "validation": {
+        "loss": 0.2562071228027344,
+        "accuracy": 0.927
+      },
+      "cumulative_fires": 33762,
+      "fires_per_parameter": 0.3375659894416893,
+      "elapsed_seconds": 398.35068889707327,
+      "engine_seconds": 378.7274298593402,
+      "test_evaluated": false
+    }
+  },
+  "automatic_resume": false
+}
