@@ -189,6 +189,23 @@ def bp_audit(root,c,seed):
     return s,dict(condition=c,seed=seed,passed=True,attempts=audits,initial_weight_sha256=initial_hash)
 
 
+def tdt_audit_cached(root,c,seed):
+    import hashlib,inspect
+    out=root/'per_seed'/f'{c}-seed{seed}'
+    verify_manifest(out)
+    source_digest=hashlib.sha256(inspect.getsource(tdt_audit).encode()).hexdigest()
+    inputs=sha(out/'manifest.json')
+    cache=root/'audit_cache'/f'{c}-seed{seed}.json'
+    if cache.exists():
+        saved=json.loads(cache.read_text())
+        if saved['input_manifest_sha256']==inputs and saved['audit_function_sha256']==source_digest:
+            return json.loads((out/'summary.json').read_text()),saved['firing'],saved['conditioned'],saved['audit']
+    summary,firing,conditioned,audit=tdt_audit(root,c,seed)
+    dump(cache,dict(input_manifest_sha256=inputs,audit_function_sha256=source_digest,
+        firing=firing,conditioned=conditioned,audit=audit))
+    return summary,firing,conditioned,audit
+
+
 def bp_audit_cached(root,c,seed):
     import hashlib,inspect
     out=root/'per_seed'/f'{c}-seed{seed}'
@@ -221,7 +238,7 @@ def main(root):
     for c in ALL_CONDITIONS:
         for seed in range(3):
             if c in TDT_CONDITIONS:
-                s,fr,co,au=tdt_audit(root,c,seed)
+                s,fr,co,au=tdt_audit_cached(root,c,seed)
                 firing.extend(fr);conditioned.extend(co)
                 out=root/'per_seed'/f'{c}-seed{seed}'
                 b,d,p,n=TDT_CONDITIONS[c]
