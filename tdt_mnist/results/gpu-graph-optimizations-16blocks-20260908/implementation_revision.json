@@ -1,0 +1,7 @@
+{
+  "preregistration": "5e27fdc",
+  "implementation": "e1b1792",
+  "baseline_source_unchanged": true,
+  "measured_runs": 15,
+  "notes": "Standalone CPU bookkeeping group and three independent GPU changes; no combined condition."
+}

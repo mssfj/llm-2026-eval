@@ -1,0 +1,20 @@
+{
+  "seed": 0,
+  "engine": "gpu_graph",
+  "intervals": 100,
+  "seconds": 1.7795690707862377,
+  "seconds_per_interval": 0.017795690707862376,
+  "gpu_workflow_milliseconds_mean": 2.1395961451530456,
+  "schedule_seconds_mean": 0.003606768324971199,
+  "setup_seconds": 0.43606533110141754,
+  "warmup_seconds": 0.05983341485261917,
+  "final_weights_sha256": "bd9f623e9828a53f12323eab805ef9d0553aeebbbe560ba6234e2295c2f8eece",
+  "final_scale": 0.001875809326609751,
+  "generator_sha256": "fef1f971a527c42f3e7ac09fa7a9b005302cb05d4cccf5244e3ea880a8c6d5f4",
+  "batch_generator_sha256": "ff99baf6d192cd5d2176eb862c4edc9a06a9f2a9878259ff704c61fca4554d4b",
+  "gpu_peak_allocated_bytes": 72594432,
+  "gpu_peak_reserved_bytes": 234881024,
+  "rss_before": 1554595840,
+  "peak_rss": 1555734528,
+  "rss_peak_reset": true
+}

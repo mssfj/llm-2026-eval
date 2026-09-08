@@ -1,0 +1,5 @@
+engine,cases,loss_comparisons,max_relative_loss_error,loss_bit_mismatches,relative_error_failures,vote_mismatches,counter_mismatches,action_mismatch_cases
+cpu_compact,18,2304,0.0,0,0,0,0,0
+persistent_candidates,18,2304,0.0,0,0,0,0,0
+transfer_buffers,18,2304,0.0,0,0,0,0,0
+fused_graph,18,2304,0.002529899589717388,2304,2212,270,5782,1

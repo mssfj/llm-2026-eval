@@ -1,0 +1,30 @@
+{
+  "sequential": true,
+  "cpu_affinity": [
+    15
+  ],
+  "processes": "    PID     ELAPSED COMMAND\n      1    10:52:50 bash /.launch\n    309    10:52:46 sshd: /usr/sbin/sshd -E /proc/1/fd/1 [listener] 0 of 10-100 startups\n    315    10:52:46 ssh -i /etc/forward_key -R *:30168:localhost:22 -R *:30169:localhost:8080 -N -o TCPKeepAlive=yes -o ServerAliveInterval=10 -o ServerAliveCountMax=2 ubuntu@ssh7.vast.ai -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o RequestTTY=no -o ExitOnForwardFailure=yes\n    524    10:52:22 tmux new-session -s ssh_tmux\n    525    10:52:22 -bash\n   9656    10:42:38 node /usr/local/bin/codex\n   9663    10:42:38 /usr/local/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/bin/codex\n  12958    10:40:03 /usr/local/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/bin/codex-code-mode-host\n  19677    09:20:38 -bash\n  32525    02:48:58 sshd: root@pts/0\n  32536    02:48:57 -bash\n  32573    02:48:57 tmux attach-session -t ssh_tmux\n  43240       00:01 eval/.venv/bin/python tdt_mnist/benchmark_gpu_graph_optimizations.py run\n  43330       00:00 ps -eo pid,etime,args\n",
+  "order": [
+    [
+      "gpu_graph",
+      "cpu_compact",
+      "persistent_candidates",
+      "transfer_buffers",
+      "fused_graph"
+    ],
+    [
+      "cpu_compact",
+      "persistent_candidates",
+      "transfer_buffers",
+      "fused_graph",
+      "gpu_graph"
+    ],
+    [
+      "persistent_candidates",
+      "transfer_buffers",
+      "fused_graph",
+      "gpu_graph",
+      "cpu_compact"
+    ]
+  ]
+}

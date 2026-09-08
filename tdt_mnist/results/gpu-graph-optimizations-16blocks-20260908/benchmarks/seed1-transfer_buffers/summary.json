@@ -1,0 +1,20 @@
+{
+  "seed": 1,
+  "engine": "transfer_buffers",
+  "intervals": 100,
+  "seconds": 1.7637236379086971,
+  "seconds_per_interval": 0.01763723637908697,
+  "gpu_workflow_milliseconds_mean": 2.1471663975715636,
+  "schedule_seconds_mean": 0.003595082052052021,
+  "setup_seconds": 0.43368836119771004,
+  "warmup_seconds": 0.05903104320168495,
+  "final_weights_sha256": "ac2b707d813080430791975c4b2ce6853a1f0961a67153d5de5c4a94dc9f4411",
+  "final_scale": 0.001787698955819706,
+  "generator_sha256": "b549d19e7901a2f137c35e96ed1478e4475a4de50965dfcfcd101f503b348a4f",
+  "batch_generator_sha256": "9760b81fe50b0883cfb4c52648da280675b2150ae005860fb39b73d6c6513453",
+  "gpu_peak_allocated_bytes": 72591872,
+  "gpu_peak_reserved_bytes": 234881024,
+  "rss_before": 1556951040,
+  "peak_rss": 1557774336,
+  "rss_peak_reset": true
+}
