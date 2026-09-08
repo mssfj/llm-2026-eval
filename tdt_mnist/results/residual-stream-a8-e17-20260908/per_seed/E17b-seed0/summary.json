@@ -1,0 +1,250 @@
+{
+  "condition": "E17b",
+  "seed": 0,
+  "initial_validation": {
+    "loss": 2.694166015625,
+    "accuracy": 0.054
+  },
+  "final_validation": {
+    "loss": 0.45198080444335936,
+    "accuracy": 0.872
+  },
+  "test": {
+    "loss": 0.4141019500732422,
+    "accuracy": 0.8932
+  },
+  "train_forward_calls": 1536000,
+  "diagnostic_probe_forward_calls": 4608,
+  "total_forward_calls": 1540643,
+  "total_forward_examples": 197232824,
+  "test_evaluations": 1,
+  "elapsed_seconds": 2173.968960661441,
+  "layer_totals": [
+    {
+      "fires": 696,
+      "selected_intervals": 8135,
+      "fire_intervals": 696,
+      "selected_coordinates": 13008
+    },
+    {
+      "fires": 582,
+      "selected_intervals": 7380,
+      "fire_intervals": 582,
+      "selected_coordinates": 11135
+    },
+    {
+      "fires": 584,
+      "selected_intervals": 7436,
+      "fire_intervals": 584,
+      "selected_coordinates": 11240
+    },
+    {
+      "fires": 535,
+      "selected_intervals": 7352,
+      "fire_intervals": 535,
+      "selected_coordinates": 11076
+    },
+    {
+      "fires": 637,
+      "selected_intervals": 7350,
+      "fire_intervals": 637,
+      "selected_coordinates": 11059
+    },
+    {
+      "fires": 597,
+      "selected_intervals": 7321,
+      "fire_intervals": 597,
+      "selected_coordinates": 10981
+    },
+    {
+      "fires": 593,
+      "selected_intervals": 7356,
+      "fire_intervals": 593,
+      "selected_coordinates": 10950
+    },
+    {
+      "fires": 637,
+      "selected_intervals": 7341,
+      "fire_intervals": 637,
+      "selected_coordinates": 11097
+    },
+    {
+      "fires": 641,
+      "selected_intervals": 7370,
+      "fire_intervals": 641,
+      "selected_coordinates": 11130
+    },
+    {
+      "fires": 636,
+      "selected_intervals": 7294,
+      "fire_intervals": 636,
+      "selected_coordinates": 11013
+    },
+    {
+      "fires": 609,
+      "selected_intervals": 7384,
+      "fire_intervals": 609,
+      "selected_coordinates": 11115
+    },
+    {
+      "fires": 658,
+      "selected_intervals": 7398,
+      "fire_intervals": 658,
+      "selected_coordinates": 11143
+    },
+    {
+      "fires": 612,
+      "selected_intervals": 7389,
+      "fire_intervals": 612,
+      "selected_coordinates": 11154
+    },
+    {
+      "fires": 591,
+      "selected_intervals": 7424,
+      "fire_intervals": 591,
+      "selected_coordinates": 11155
+    },
+    {
+      "fires": 570,
+      "selected_intervals": 7285,
+      "fire_intervals": 570,
+      "selected_coordinates": 11017
+    },
+    {
+      "fires": 608,
+      "selected_intervals": 7338,
+      "fire_intervals": 608,
+      "selected_coordinates": 11071
+    },
+    {
+      "fires": 642,
+      "selected_intervals": 7394,
+      "fire_intervals": 642,
+      "selected_coordinates": 11175
+    },
+    {
+      "fires": 115,
+      "selected_intervals": 1402,
+      "fire_intervals": 115,
+      "selected_coordinates": 1481
+    }
+  ],
+  "counter_histogram": {
+    "-21": 244,
+    "-12": 2547,
+    "-8": 6626,
+    "-6": 9966,
+    "-5": 11488,
+    "-2": 15784,
+    "-1": 16222,
+    "1": 16513,
+    "2": 15649,
+    "3": 14421,
+    "12": 2648,
+    "-11": 3315,
+    "-3": 14355,
+    "0": 16718,
+    "4": 13044,
+    "6": 9654,
+    "11": 3370,
+    "-4": 13086,
+    "8": 6783,
+    "9": 5413,
+    "-16": 902,
+    "-10": 4374,
+    "5": 11360,
+    "10": 4274,
+    "15": 1103,
+    "-9": 5355,
+    "-7": 8131,
+    "13": 1993,
+    "23": 152,
+    "-14": 1555,
+    "16": 894,
+    "-27": 39,
+    "20": 322,
+    "-45": 6,
+    "-15": 1154,
+    "7": 8099,
+    "17": 696,
+    "-19": 390,
+    "22": 176,
+    "-22": 207,
+    "-13": 1984,
+    "18": 485,
+    "14": 1498,
+    "21": 204,
+    "-20": 309,
+    "19": 407,
+    "24": 115,
+    "26": 83,
+    "-17": 667,
+    "-37": 18,
+    "52": 4,
+    "27": 55,
+    "-25": 83,
+    "-32": 25,
+    "-28": 41,
+    "28": 44,
+    "29": 43,
+    "-33": 22,
+    "25": 98,
+    "-23": 161,
+    "-24": 104,
+    "-18": 512,
+    "36": 20,
+    "35": 13,
+    "32": 17,
+    "34": 14,
+    "38": 8,
+    "-36": 13,
+    "40": 11,
+    "30": 34,
+    "-40": 8,
+    "45": 6,
+    "39": 4,
+    "-52": 2,
+    "-41": 8,
+    "41": 6,
+    "-26": 72,
+    "43": 3,
+    "-39": 12,
+    "-42": 4,
+    "31": 16,
+    "-30": 34,
+    "-38": 5,
+    "-29": 40,
+    "-34": 22,
+    "37": 16,
+    "-31": 31,
+    "-35": 4,
+    "-64": 1,
+    "33": 19,
+    "44": 5,
+    "-44": 5,
+    "-48": 1,
+    "-47": 4,
+    "61": 1,
+    "56": 3,
+    "64": 1,
+    "53": 1,
+    "50": 2,
+    "-54": 1,
+    "-60": 1,
+    "59": 1,
+    "49": 2,
+    "55": 1,
+    "-51": 1,
+    "47": 2,
+    "46": 6,
+    "-55": 2,
+    "-46": 1,
+    "48": 3,
+    "-43": 2,
+    "54": 1,
+    "-56": 1,
+    "-57": 1,
+    "-50": 2
+  },
+  "num_params": 100016
+}

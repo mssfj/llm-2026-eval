@@ -1,0 +1,894 @@
+diff --git a/tdt_mnist/E17_EXECUTION.md b/tdt_mnist/E17_EXECUTION.md
+new file mode 100644
+index 0000000..97aa707
+--- /dev/null
++++ b/tdt_mnist/E17_EXECUTION.md
+@@ -0,0 +1,36 @@
++# E17実行と保存形式
++
++事前登録: E17_PREREGISTRATION.md、commit `1ad7b12`。実装・preflight: commit `46a25f8`。
++既存train.py、activation_quantization.py、depth_diagnostics.pyは無変更。
++
++リポジトリルートから実行する。
++
++```bash
++eval/.venv/bin/python -m unittest discover -s tdt_mnist -p test_residual_stream.py -v
++eval/.venv/bin/python tdt_mnist/run_residual_e17.py preflight
++OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 eval/.venv/bin/python tdt_mnist/run_residual_e17.py run
++eval/.venv/bin/python tdt_mnist/audit_residual_e17.py
++eval/.venv/bin/python tdt_mnist/plot_residual_e17.py
++```
++
++既存結果は上書きしない。再現時はpreflight/runの両方で同じ`--root PATH`を指定し、監査にもPATHを位置引数で渡す。`--data PATH`でMNISTキャッシュを指定できる。条件・学習設定を変更するCLIは設けていない。各runのCPU threadsは1。
++
++結果先: `results/residual-stream-a8-e17-20260908/`。
++
++- `preflight.json`, `per_seed/initial_validation.csv`: test未評価の事前確認。
++- `per_seed/E17*-seed*/config.json`: 実行条件、実際のshapes、固定スケール、行列名、ソースハッシュ。モデル構造はarchitecture=residual_streamとwidth/blocks/shapesで定義し、旧CLIのhidden_size/hidden_sizesはこのモデルに使わない。
++- `metrics.csv`: 区間1〜12,000の全更新診断、S、mean abs(y)、厳密ゼロ率。初期validationは上記CSVおよびsummaryに保存。
++- `abs_y.npy`: 12,000×64のFP32候補損失差絶対値。
++- `layer_metrics.csv`: 全区間×18行列の選択座標数、選択区間フラグ、発火数。
++- `signal.csv`: 初期・500区間ごと。stream_before/afterはブロック加算前後、branch_outputはW2出力、branch_activationはReLU/identity後。outputは各行列の線形出力であり、W1のReLU後はbranch_activationを参照。layer17のoutputはlogits。
++- `rms_ratios.csv`: 検証集合全体の枝RMS/加算前ストリームRMS。サンプルごとの比の平均とは異なる。
++- `activation.csv`: 18行列入力の量子化相対二乗誤差・有効例平均コサイン・未定義例数・コード分布。FP32条件も同じ観測点を記録。
++- `probes.csv`: 初期・最終×18行列×64候補対、各16辺摂動。訓練データ・専用乱数を用いる。
++- `checkpoint.pt`: 直近500区間の重み・更新/バッチ乱数・S。自動resumeは実装していない。
++- `model.pt`, `summary.json`: 最終重みと最終testを含む結果。test評価は各run完了時の1回のみ。全run完了前の判断に読まない。
++- `aggregate`, `signal`, `activation`, `firing`: 9run完了後のCSV集計。README.mdとLAYER_TABLES.mdに比較・層別一覧。
++- `manifest.json`, `sources/`: 学習開始時のソースコピーとSHA-256、Git commit、MNIST rawハッシュ。
++- `audit.json`: 全区間のS更新・発火・候補値・乱数対応を照合。初期・最終validation/診断/probesを再現し、testは再評価しない。
++- `artifacts_sha256.json`: 完成成果物のSHA-256。監査スクリプトもsourcesに保存する。
++
++RMSNormは学習パラメータを持たないが非線形である。E17a−E17bはこの構造でReLUを追加する効果として解釈する。E17c−E17aは学習経路の変化を含むA8の効果であり、同一重みを量子化した推論誤差だけを意味しない。
+diff --git a/tdt_mnist/E17_PREREGISTRATION.md b/tdt_mnist/E17_PREREGISTRATION.md
+new file mode 100644
+index 0000000..bdc51d7
+--- /dev/null
++++ b/tdt_mnist/E17_PREREGISTRATION.md
+@@ -0,0 +1,29 @@
++# E17 事前登録（2026-09-08）
++
++実験前に本ファイルをコミットする。3条件×seed 0,1,2を各12,000区間まで実行し、条件探索・early stoppingを行わない。testは各runの最終モデルで一度だけ評価し、全9run完了後の報告のみに使用する。
++
++- E17a: 幅76、8ブロックのFP32残差ストリーム、パラメータなしpre-RMSNorm、A8、ReLU。
++- E17b: E17aのReLUを恒等関数に置換。
++- E17c: E17aの全A8をFP32に置換。
++- 入力射影90→76、各枝76→76→76、出力76→10。18行列、100,016三値重み。RMSNorm=h/sqrt(mean(h²)+1e-8)、最終出力前にも適用。枝係数1、バイアス・学習ゲインなし。
++- A8は既存E16の各例各点absmax/127、符号付き[-127,127]、最近傍丸め、FP32復元。量子化は18行列の入力のみ。ストリームは量子化しない。
++- MNIST、9×10 adaptive average pooling、(x/255−0.1307)/0.3081、train10,000/validation1,000/test10,000、data_seed=0。既存load_dataを再利用。
++- 既存epochを再利用：閾値8、block16、K64、12,000区間、batch128、最大1発火、C8、leak1、区間末全リセット、S初期0.02/EMA0.1/下限1e-5。
++- INT8三値重み、初期ゼロ確率1/3、gain1、固定scale=1/sqrt(fan-in×2/3)。復元・行列積・logits・損失FP32。backprop/STE/潜在FP32重み/optimizer禁止。
++- seed0/1/2、batch_seed=seed+100000、摂動乱数seed+1、CPU threads=1。validationは初期および500区間ごと。
++
++## 固定判定
++
++1. E17a test平均が90.31%以上（固定対照87.31%に対し+3.0ポイント以上）、かつ全3seedが87.31%を上回る場合「非線形性が機能した」。対応seed対照が取得できる場合、その差も併記するが判定は変えない。
++2. E17a−E17bを同一seedの差と平均±標本標準偏差で報告する。これはReLU導入の効果であり、E17bにもRMSNormおよび動的量子化の非線形性が残る。
++3. E17c−E17aを同様にA8量子化のコストとして報告する。
++4. 最終validationのいずれかのブロックで枝RMS/加算前ストリームRMS>0.5、またはlogits RMS>10ならスケール暴走の兆候を記録する。判定失敗の追加条件にはしない。
++5. testを途中判断・モデル選択・条件選択に使用しない。
++
++## 診断・監査
++
++初期と500区間ごとのvalidationで各ブロックの加算前/後ストリームと枝出力RMS、各量子化点の相対二乗誤差・コサインを保存。RMS比は検証集合全体の枝RMS/加算前ストリームRMSとする。
++初期・最終に各18行列のみを16辺摂動する64候補対を固定訓練バッチ・学習と分離した乱数で測定。学習中の全|y|、mean|y|、ゼロ率、行列別選択と発火を保存。
++結果はtdt_mnist/results/residual-stream-a8-e17-20260908/にper_seed/aggregate/signal/activation/firing CSV、config、実行ソース、SHA-256マニフェスト、最終モデルを保存。
++E16 A32 87.31%±0.471、A8 87.03%±0.104と既存記録で比較。E14 FP32 backprop 93.89%は学習則・パラメータ数が異なる参考値。対照を再学習しない。
++実行前に100,016重み、ゼロ枝恒等性、初期validation、既存epochの128 forward/区間を実測する。行列積MACは1例100,016（既存100,000比1.00016）。実時間にはRMSNorm・量子化等の差があり、別途実測する。
+diff --git a/tdt_mnist/audit_residual_e17.py b/tdt_mnist/audit_residual_e17.py
+new file mode 100644
+index 0000000..708f23c
+--- /dev/null
++++ b/tdt_mnist/audit_residual_e17.py
+@@ -0,0 +1,219 @@
++"""Independent E17 final audit and detailed tables; never evaluates test data."""
++import csv
++import json
++from pathlib import Path
++import shutil
++import statistics
++import sys
++import numpy as np
++import torch
++from run_residual_e17 import (ROOT, HERE, CONDITIONS, config, setup, sha, dump,
++                              write_csv, observe, probes)
++from train import load_data
++from residual_stream import ResidualStreamModel
++
++
++def read(path):
++    with path.open() as f:
++        return list(csv.DictReader(f))
++
++
++def grouped(rows, keys, metrics):
++    groups = {}
++    for r in rows:
++        key = tuple(r[k] for k in keys)
++        groups.setdefault(key, []).append(r)
++    result = []
++    for key, values in sorted(groups.items()):
++        row = dict(zip(keys, key))
++        row['seeds'] = len(values)
++        assert len(values) == 3
++        for metric in metrics:
++            numbers = [float(r[metric]) for r in values]
++            row[metric+'_mean'] = statistics.mean(numbers)
++            row[metric+'_sample_std'] = statistics.stdev(numbers)
++        result.append(row)
++    return result
++
++
++def main(root):
++    setup()
++    assert json.loads((root/'status.json').read_text())['complete'], 'Wait for all nine runs'
++    manifest = json.loads((root/'manifest.json').read_text())
++    old = HERE/'results/depth-precision-16layer-100k-20260907'
++    old_manifest = json.loads((old/'manifest.json').read_text())
++    assert manifest['data_sha256'] == old_manifest['data_sha256']
++    for name, digest in manifest['sources'].items():
++        assert sha(root/'sources'/name) == digest
++        assert sha(HERE/name) == digest, f'Live source changed: {name}'
++    for name in ['train.py', 'activation_quantization.py', 'depth_diagnostics.py']:
++        assert manifest['sources'][name] == old_manifest['sources'][name]
++    curves = []; windows = []; conditioned = []; audits = []; selections = {}
++    for c, (precision, activation) in CONDITIONS.items():
++        for seed in range(3):
++            out = root/'per_seed'/f'{c}-seed{seed}'
++            cfg = json.loads((out/'config.json').read_text())
++            s = json.loads((out/'summary.json').read_text())
++            for name, digest in json.loads((out/'manifest.json').read_text()).items():
++                assert sha(out/name) == digest, (out, name)
++            a = config(seed, cfg['data_dir'])
++            for key in ['pool_shape','steps','measurements','block_size','threshold','batch_size',
++                        'max_fires','counter_bits','leak','scale','scale_ema','min_scale','zero_rate','gain',
++                        'train_size','val_size','test_size','data_seed','seed','batch_seed','threads','eval_every','oracle_every']:
++                assert cfg[key] == getattr(a, key), (out, key)
++            assert cfg['activation_precision']==precision and cfg['hidden_activation']==activation
++            assert cfg['rmsnorm_eps']==1e-8 and cfg['rmsnorm_trainable'] is False
++            for name, digest in manifest['data_sha256'].items():
++                assert sha(Path(a.data_dir)/'MNIST/raw'/name) == digest
++            metrics = read(out/'metrics.csv')
++            layer_rows = read(out/'layer_metrics.csv')
++            assert len(metrics)==12000 and len(layer_rows)==12000*18
++            selected = np.zeros((12000,18), dtype=np.int64)
++            fires = np.zeros_like(selected)
++            for index, r in enumerate(layer_rows):
++                step, layer = divmod(index,18)
++                assert int(r['step'])==step+1 and int(r['layer'])==layer
++                selected[step,layer] = int(r['selected_coordinates'])
++                fires[step,layer] = int(r['fires'])
++                assert int(r['selected_interval']) == int(selected[step,layer]>0)
++                assert int(r['fire_interval']) == int(fires[step,layer]>0)
++            assert (selected.sum(1)==16).all() and (fires.sum(1)<=1).all()
++            assert (fires<=selected).all()
++            if seed in selections:
++                assert np.array_equal(selected, selections[seed]), 'Paired selection RNG diverged'
++            else:
++                selections[seed]=selected
++            y = np.load(out/'abs_y.npy').astype('float64')
++            assert np.isfinite(y).all() and (y>=0).all()
++            scale=.02
++            histogram_count=0
++            for i,r in enumerate(metrics):
++                assert int(r['step']) == i+1
++                assert float(r['scale']) == scale
++                scale=max(1e-5,.9*scale+.1*sorted(y[i])[32])
++                assert int(r['fires']) == int(fires[i].sum())
++                assert int(r['train_forward_calls']) == 128*(i+1)
++                assert float(r['abs_y_mean']) == float(y[i].mean())
++                assert int(r['zero_difference_count']) == int((y[i]==0).sum())
++                assert float(r['zero_difference_fraction']) == float((y[i]==0).mean())
++                assert int(r['counter_capacity'])==127 and int(r['counter_peak_abs'])<=64
++                assert float(r['saturation_rate'])==0
++                histogram_count += int(r['counter_count'])
++                assert bool(r['val_accuracy']) == ((i+1)%500==0)
++                if r['val_accuracy']:
++                    curves.append(dict(condition=c,seed=seed,step=i+1,
++                        val_accuracy=float(r['val_accuracy']),val_loss=float(r['val_loss'])))
++            assert sum(s['counter_histogram'].values())==histogram_count
++            assert s['train_forward_calls']==1536000 and s['diagnostic_probe_forward_calls']==4608
++            assert s['total_forward_calls']==1536000+4608+25+10
++            assert s['total_forward_examples']==1536000*128+4608*128+25000+10000
++            for layer,t in enumerate(s['layer_totals']):
++                assert t['fires']==int(fires[:,layer].sum())
++                assert t['selected_coordinates']==int(selected[:,layer].sum())
++                assert t['selected_intervals']==int((selected[:,layer]>0).sum())
++                assert t['fire_intervals']==int((fires[:,layer]>0).sum())
++                values = y[selected[:,layer]>0].ravel()
++                conditioned.append(dict(condition=c,seed=seed,layer=layer,matrix=cfg['matrix_names'][layer],
++                    selected_intervals=len(values)//64,candidate_pairs=len(values),
++                    mean_abs_y=float(values.mean()),zero_fraction=float((values==0).mean()),
++                    scope='mixed-layer block conditioned on selection; not isolated contribution'))
++            for start in range(0,12000,500):
++                values=y[start:start+500].ravel()
++                windows.append(dict(condition=c,seed=seed,start_step=start+1,end_step=start+500,
++                    mean_abs_y=float(values.mean()),median_abs_y=float(np.median(values)),
++                    p90_abs_y=float(np.quantile(values,.9)),zero_fraction=float((values==0).mean())))
++            m = ResidualStreamModel(seed,precision,activation)
++            (x,labels),(vx,vy),_=load_data(a,m.device)
++            checkpoint=torch.load(out/'model.pt',map_location='cpu',weights_only=False)
++            assert json.loads(json.dumps(checkpoint['config']))==cfg
++            expected_probes=read(out/'probes.csv')
++            assert len(expected_probes)==2304
++            replay=[]
++            for stage,step in [('initial',0),('final',12000)]:
++                if stage=='final':
++                    m.weights.copy_(checkpoint['weights'])
++                val,signals,activations,ratios=observe(m,vx,vy,step)
++                assert val==s[stage+'_validation'], (out,stage,'validation replay')
++                for filename,rows in [('signal.csv',signals),('activation.csv',activations),('rms_ratios.csv',ratios)]:
++                    expected=[r for r in read(out/filename) if int(r['step'])==step]
++                    assert len(rows)==len(expected)
++                    for actual,saved in zip(rows,expected):
++                        assert {k: '' if v is None else str(v) for k,v in actual.items()} == saved, (out,stage,filename)
++                actual_probes=probes(m,x,labels,seed,stage)
++                saved_probes=[r for r in expected_probes if r['stage']==stage]
++                for actual,saved in zip(actual_probes,saved_probes):
++                    assert {k:str(v) for k,v in actual.items()}==saved, (out,stage,'probe replay')
++                replay.append(dict(stage=stage,validation=val,probe_pairs=len(actual_probes)))
++            curves.append(dict(condition=c,seed=seed,step=0,val_accuracy=s['initial_validation']['accuracy'],
++                               val_loss=s['initial_validation']['loss']))
++            audits.append(dict(condition=c,seed=seed,passed=True,validation_and_probe_replay=replay,
++                audit_forward_calls=m.forward_calls,test_evaluated_during_audit=False))
++            print(f'Audited {c} seed{seed}: full logs, initial/final validation and probes match',flush=True)
++    write_csv(root/'aggregate/validation_curves.csv',curves)
++    write_csv(root/'signal/abs_y_windows.csv',windows)
++    write_csv(root/'signal/abs_y_by_selected_matrix.csv',conditioned)
++    group_specs=[('firing/matrices.csv',['condition','layer','matrix'],
++                  ['fires','selected_intervals','all_interval_firing_rate','selected_interval_firing_rate']),
++                 ('signal/rms_ratios.csv',['condition','step','block'],
++                  ['stream_rms','branch_rms','branch_stream_rms_ratio']),
++                 ('signal/isolated_candidates.csv',['condition','stage','layer','matrix'],['mean_abs_y','zero_fraction']),
++                 ('signal/metrics.csv',['condition','step','layer','matrix','stage'],['rms','zero_fraction','nonfinite_count']),
++                 ('activation/metrics.csv',['condition','step','layer','matrix'],['relative_squared_error','cosine_mean_valid'])]
++    for name,keys,metrics in group_specs:
++        path=root/name
++        write_csv(path.with_name(path.stem+'_aggregate.csv'),grouped(read(path),keys,metrics))
++    historical=[]
++    for r in read(HERE/'results/depth-activation-100k-20260907/identity-a32/per_seed.csv'):
++        if r['depth']=='16' and r['threshold']=='8':
++            historical.append(dict(condition='E16_A32',seed=int(r['seed']),test_accuracy_percent=100*float(r['test_accuracy'])))
++    for r in read(old/'per_seed.csv'):
++        if r['condition']=='a8':
++            historical.append(dict(condition='E16_A8',seed=int(r['seed']),test_accuracy_percent=100*float(r['test_accuracy'])))
++    assert len(historical)==6
++    write_csv(root/'aggregate/historical_controls.csv',historical)
++    current=read(root/'per_seed/results.csv')
++    comparison=[]
++    for c in CONDITIONS:
++        for base in ('E16_A32','E16_A8'):
++            diffs=[float(next(r['test_accuracy_percent'] for r in current if r['condition']==c and int(r['seed'])==seed))-
++                   next(r['test_accuracy_percent'] for r in historical if r['condition']==base and r['seed']==seed) for seed in range(3)]
++            comparison.append(dict(condition=c,control=base,mean_difference_pp=statistics.mean(diffs),
++                sample_std_difference_pp=statistics.stdev(diffs),seed0_pp=diffs[0],seed1_pp=diffs[1],seed2_pp=diffs[2]))
++    write_csv(root/'aggregate/historical_paired_differences.csv',comparison)
++    lines=['# E17 層別一覧（3seed平均）','','全区間発火率と選択時発火率は異なる分母。行列番号は0始まり。', '']
++    for c in CONDITIONS:
++        lines += [f'## {c}', '', '| block | stream RMS | branch RMS | branch/stream |', '| --- | ---: | ---: | ---: |']
++        for r in read(root/'signal/rms_ratios_aggregate.csv'):
++            if r['condition']==c and r['step']=='12000':
++                lines.append(f"| {r['block']} | {float(r['stream_rms_mean']):.5f} | {float(r['branch_rms_mean']):.5f} | {float(r['branch_stream_rms_ratio_mean']):.5f} |")
++        lines += ['', '| 行列 | 全区間発火率 % | 選択時発火率 % | 発火数 | 初期 単独mean abs(y) | 最終 単独mean abs(y) |',
++                  '| --- | ---: | ---: | ---: | ---: | ---: |']
++        ps=read(root/'signal/isolated_candidates_aggregate.csv')
++        for r in sorted(read(root/'firing/matrices_aggregate.csv'),key=lambda r:int(r['layer'])):
++            if r['condition']!=c: continue
++            candidate=[next(float(t['mean_abs_y_mean']) for t in ps if t['condition']==c and t['layer']==r['layer'] and t['stage']==stage) for stage in ('initial','final')]
++            lines.append(f"| {r['matrix']} | {100*float(r['all_interval_firing_rate_mean']):.4f} | {100*float(r['selected_interval_firing_rate_mean']):.4f} | {float(r['fires_mean']):.2f} | {candidate[0]:.7f} | {candidate[1]:.7f} |")
++        lines.append('')
++    (root/'LAYER_TABLES.md').write_text('\n'.join(lines)+'\n')
++    primary_values=[float(r['test_accuracy_percent']) for r in current if r['condition']=='E17a']
++    primary=dict(mean_test_percent=statistics.mean(primary_values), fixed_control_percent=87.31,
++        mean_improvement_pp=statistics.mean(primary_values)-87.31,
++        seed_improvements_pp=[v-87.31 for v in primary_values],
++        passed=statistics.mean(primary_values)>=90.31 and all(v>87.31 for v in primary_values))
++    dump(root/'aggregate/primary_criterion.json',primary)
++    shutil.copy2(Path(__file__),root/'sources'/Path(__file__).name)
++    dump(root/'audit.json',dict(passed=True,runs=audits,legacy_source_hashes_match=True,
++        mnist_hashes_match=True,paired_selection_rng_matches=True,test_evaluated=False,
++        audit_source_sha256=sha(Path(__file__))))
++    with (root/'README.md').open('a') as f:
++        f.write('\n独立監査: audit.json。全区間ログ・S更新・発火集計・ソース/データハッシュを照合し、初期/最終validationと全層単独プローブを完全再現。監査でtestは評価していない。\n\n層別平均の一覧は[LAYER_TABLES.md](LAYER_TABLES.md)。各CSVの*_aggregate.csvに標本標準偏差を併記。\n')
++    with (root/'README.md').open('a') as f:
++        f.write('\nE17aの固定対照87.31%への平均差: '+str(primary['mean_improvement_pp'])+'ポイント。各seed差: '+str(primary['seed_improvements_pp'])+'ポイント。\n')
++        f.write('\nE16の丸め前平均はA32 87.313333…%、A8 87.03%。主判定は事前登録の87.31%を固定使用。既存seed別の対応差はaggregate/historical_paired_differences.csv。E14は95,274個の連続重み、93.89±0.551%の参考値。\n')
++        f.write('\n三値重み100,016個、18行列、FP32ストリーム幅76、8ブロック。学習forwardは1run 1,536,000回、9run合計13,824,000回。初期・最終の層単独診断は1run 4,608 forwardで別計上。\n')
++    dump(root/'artifacts_sha256.json',{str(p.relative_to(root)):sha(p) for p in sorted(root.rglob('*'))
++                                      if p.is_file() and p.name!='artifacts_sha256.json'})
++
++
++if __name__=='__main__':
++    main(Path(sys.argv[1]) if len(sys.argv)>1 else ROOT)
+diff --git a/tdt_mnist/plot_residual_e17.py b/tdt_mnist/plot_residual_e17.py
+new file mode 100644
+index 0000000..70700ed
+--- /dev/null
++++ b/tdt_mnist/plot_residual_e17.py
+@@ -0,0 +1,99 @@
++"""Final E17 figures, derived solely from audited CSVs; no model evaluation."""
++import csv
++import json
++from pathlib import Path
++import shutil
++import statistics
++import sys
++import matplotlib
++matplotlib.use('Agg')
++import matplotlib.pyplot as plt
++from run_residual_e17 import ROOT, sha, dump
++
++COLORS={'E17a':'#2166ac','E17b':'#b2182b','E17c':'#168b55'}
++LABELS={'E17a':'E17a: A8 + ReLU','E17b':'E17b: A8 + identity','E17c':'E17c: FP32 + ReLU'}
++
++
++def read(path):
++    with path.open() as f:
++        return list(csv.DictReader(f))
++
++
++def line(ax, rows, xkey, ykey, condition, factor=1., label=None):
++    groups={}
++    for r in rows:
++        if r['condition']==condition:
++            groups.setdefault(int(r[xkey]),[]).append(factor*float(r[ykey]))
++    xs=sorted(groups)
++    means=[statistics.mean(groups[x]) for x in xs]
++    stds=[statistics.stdev(groups[x]) for x in xs]
++    ax.plot(xs,means,color=COLORS[condition],label=label or LABELS[condition])
++    ax.fill_between(xs,[m-s for m,s in zip(means,stds)], [m+s for m,s in zip(means,stds)],
++                    color=COLORS[condition],alpha=.15)
++
++
++def save(fig, path):
++    fig.tight_layout()
++    fig.savefig(path.with_suffix('.png'),dpi=180,bbox_inches='tight')
++    fig.savefig(path.with_suffix('.svg'),bbox_inches='tight')
++    plt.close(fig)
++
++
++def main(root):
++    assert json.loads((root/'audit.json').read_text())['passed']
++    plt.rcParams.update({'font.size':9, 'axes.spines.top':False,'axes.spines.right':False})
++    out=root/'figures';out.mkdir(exist_ok=True)
++    curve=read(root/'aggregate/validation_curves.csv')
++    scores=read(root/'per_seed/results.csv')
++    fig,ax=plt.subplots(1,2,figsize=(11,4))
++    for c in COLORS: line(ax[0],curve,'step','val_accuracy',c,100)
++    ax[0].set(xlabel='TDT interval',ylabel='Validation accuracy (%)',title='Validation: mean +/- sample SD (3 seeds)')
++    ax[0].legend(loc='lower right')
++    for i,c in enumerate(COLORS):
++        vals=[float(r['test_accuracy_percent']) for r in scores if r['condition']==c]
++        ax[1].errorbar(i,statistics.mean(vals),yerr=statistics.stdev(vals),fmt='o',capsize=6,color=COLORS[c])
++        ax[1].scatter([i-.12,i,i+.12],vals,color=COLORS[c],s=16,alpha=.6)
++    ax[1].axhline(87.31,ls='--',color='gray',label='E16 A32: 87.31%')
++    ax[1].axhline(90.31,ls=':',color='black',label='E17a preregistered mean cutoff: 90.31%')
++    ax[1].set(xticks=range(3),xticklabels=list(COLORS),ylabel='Final test accuracy (%)',title='Final interval 12,000; no model selection')
++    ax[1].legend(fontsize=8)
++    save(fig,out/'accuracy')
++    ratios=read(root/'signal/rms_ratios.csv')
++    signals=read(root/'signal/metrics.csv')
++    firing=read(root/'firing/matrices.csv')
++    isolated=read(root/'signal/isolated_candidates.csv')
++    activation=read(root/'activation/metrics.csv')
++    fig,ax=plt.subplots(2,3,figsize=(15,8))
++    for c in COLORS:
++        line(ax[0,0],[r for r in ratios if r['step']=='12000'],'block','stream_rms',c)
++        line(ax[0,1],[r for r in ratios if r['step']=='12000'],'block','branch_stream_rms_ratio',c)
++        line(ax[0,2],[r for r in signals if r['layer']=='17' and r['stage']=='output'],'step','rms',c)
++        line(ax[1,0],firing,'layer','all_interval_firing_rate',c,100)
++        line(ax[1,1],[r for r in isolated if r['stage']=='final'],'layer','mean_abs_y',c)
++        line(ax[1,2],[r for r in activation if r['step']=='12000'],'layer','relative_squared_error',c)
++    ax[0,0].set(xlabel='Block (0-based)',ylabel='RMS',title='Final FP32 stream before branch addition')
++    ax[0,1].set(xlabel='Block (0-based)',ylabel='Branch RMS / stream RMS',title='Final branch / stream ratio')
++    ax[0,1].axhline(.5,color='gray',ls='--')
++    ax[0,2].set(xlabel='TDT interval',ylabel='Logits RMS',title='Validation logits amplitude')
++    ax[0,2].axhline(10,color='gray',ls='--')
++    ax[1,0].set(xlabel='Matrix (0-based; 0=input, 17=output)',ylabel='Firing intervals / 12,000 (%)',title='Firing across all training intervals')
++    ax[1,1].set(xlabel='Matrix (0-based)',ylabel='Mean |loss(+) - loss(-)|',title='Final isolated probes: 64 pairs, 16 edges')
++    ax[1,2].set(xlabel='Quantization point / matrix (0-based)',ylabel='Relative squared error',title='Final per-point quantization error')
++    for axis in ax[1]:
++        axis.set_xticks([0,2,4,6,8,10,12,14,16,17])
++    ax[0,0].legend(fontsize=8)
++    fig.suptitle('E17 diagnostics: means and sample SD across 3 seeds',y=1.02)
++    save(fig,out/'diagnostics')
++    shutil.copy2(Path(__file__),root/'sources'/Path(__file__).name)
++    dump(out/'manifest.json',dict(matplotlib_version=matplotlib.__version__,source_sha256=sha(Path(__file__)),
++         files={p.name:sha(p) for p in out.iterdir() if p.suffix in ('.png','.svg')}))
++    note='\n図: [精度比較](figures/accuracy.png)、[層別診断](figures/diagnostics.png)。同名SVGも保存。帯は3seedの標本標準偏差。\n'
++    if note not in (root/'README.md').read_text():
++        with (root/'README.md').open('a') as f:
++            f.write(note)
++    dump(root/'artifacts_sha256.json',{str(p.relative_to(root)):sha(p) for p in sorted(root.rglob('*'))
++                                      if p.is_file() and p.name!='artifacts_sha256.json'})
++
++
++if __name__=='__main__':
++    main(Path(sys.argv[1]) if len(sys.argv)>1 else ROOT)
+diff --git a/tdt_mnist/residual_stream.py b/tdt_mnist/residual_stream.py
+new file mode 100644
+index 0000000..86c3ed5
+--- /dev/null
++++ b/tdt_mnist/residual_stream.py
+@@ -0,0 +1,69 @@
++"""E17: FP32 residual stream with ternary branch matrices; legacy TDT API."""
++import math
++import torch
++import torch.nn.functional as F
++from train import TernaryModel
++from activation_quantization import encode_activation, decode_activation
++
++
++class ResidualStreamModel(TernaryModel):
++    def __init__(self, seed=0, precision='a8', activation='relu'):
++        # 17 hidden widths give exactly the 18 required matrix shapes. Reuse
++        # the legacy INT8 initialization, fixed scales, and flat coordinate map.
++        super().__init__(pool_shape=(9, 10), hidden_sizes=[76]*17,
++                         seed=seed, activation_precision=precision,
++                         hidden_activation=activation)
++        self.matrix_names = ['W_in'] + [f'block{b}.{w}' for b in range(8)
++                                                    for w in ('W1', 'W2')] + ['W_out']
++        assert self.num_params == 100016
++
++    @staticmethod
++    def rmsnorm(h):
++        return h / torch.sqrt(h.square().mean(-1, keepdim=True) + 1e-8)
++
++    def record(self, layer, stage, x):
++        if self.signal_observer is not None:
++            self.signal_observer.record(layer, stage, x)
++
++    def linear(self, x, index, matrices):
++        codes, scale = encode_activation(x, self.activation_precision)
++        decoded = decode_activation(codes, scale)
++        if self.activation_observer is not None:
++            self.activation_observer.record(index, x, codes, decoded)
++        self.record(index, 'pre_quantization', x)
++        self.record(index, 'input', decoded)
++        out = F.linear(decoded, matrices[index])
++        self.record(index, 'output', out)
++        return out
++
++    def block(self, h, block, matrices):
++        index = 1 + 2*block
++        self.record(index, 'stream_before', h)
++        z = self.linear(self.rmsnorm(h), index, matrices)
++        if self.hidden_activation == 'relu':
++            z = F.relu(z)
++        self.record(index, 'branch_activation', z)
++        branch = self.linear(z, index+1, matrices)
++        self.record(index, 'branch_output', branch)
++        out = h + branch
++        self.record(index, 'stream_after', out)
++        return out
++
++    def matrices(self, weights):
++        result = []
++        offset = 0
++        for shape, scale in zip(self.shapes, self.scales):
++            size = math.prod(shape)
++            result.append(weights[offset:offset+size].view(shape).float()*scale)
++            offset += size
++        return result
++
++    @torch.no_grad()
++    def __call__(self, x, weights=None):
++        self.forward_calls += 1
++        self.forward_examples += len(x)
++        matrices = self.matrices(self.weights if weights is None else weights)
++        h = self.linear(x, 0, matrices)
++        for b in range(8):
++            h = self.block(h, b, matrices)
++        return self.linear(self.rmsnorm(h), 17, matrices)
+diff --git a/tdt_mnist/run_residual_e17.py b/tdt_mnist/run_residual_e17.py
+new file mode 100644
+index 0000000..2f74bc1
+--- /dev/null
++++ b/tdt_mnist/run_residual_e17.py
+@@ -0,0 +1,346 @@
++"""Fixed E17 protocol. Preflight first, then nine independent CPU processes."""
++import argparse
++import csv
++import hashlib
++import json
++import math
++import os
++from pathlib import Path
++import shutil
++import statistics
++import subprocess
++import sys
++import time
++from concurrent.futures import ProcessPoolExecutor, as_completed
++import numpy as np
++import torch
++from train import parser, load_data, evaluate, epoch, candidate_pair, loss, TernaryModel
++from residual_stream import ResidualStreamModel
++from depth_diagnostics import SignalObserver, layer_events, DEPTH_WIDTHS
++from activation_quantization import ActivationObserver
++
++HERE = Path(__file__).resolve().parent
++ROOT = HERE/'results/residual-stream-a8-e17-20260908'
++CONDITIONS = {'E17a': ('a8', 'relu'), 'E17b': ('a8', 'identity'), 'E17c': ('a32', 'relu')}
++
++
++def dump(path, value):
++    path.parent.mkdir(parents=True, exist_ok=True)
++    temp = path.with_suffix(path.suffix+'.tmp')
++    temp.write_text(json.dumps(value, indent=2, allow_nan=False)+'\n')
++    temp.replace(path)
++
++
++def write_csv(path, rows):
++    path.parent.mkdir(parents=True, exist_ok=True)
++    with path.open('w', newline='') as f:
++        w = csv.DictWriter(f, fieldnames=list(rows[0]))
++        w.writeheader()
++        w.writerows(rows)
++
++
++def sha(path):
++    return hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++def setup():
++    torch.set_num_threads(1)
++    torch.set_grad_enabled(False)
++    torch.use_deterministic_algorithms(True)
++
++
++def config(seed, data):
++    a = parser().parse_args([])
++    for k, v in dict(pool_shape=[9, 10], steps=12000, measurements=64,
++        block_size=16, threshold=8, batch_size=128, max_fires=1,
++        counter_bits=8, leak=1., scale=.02, scale_ema=.1, min_scale=1e-5,
++        train_size=10000, val_size=1000, test_size=10000, data_seed=0,
++        seed=seed, batch_seed=seed+100000, threads=1, eval_every=500,
++        oracle_every=0, data_dir=Path(data), download=False,
++        loss_diagnostics=True, layer_diagnostics=True).items():
++        setattr(a, k, v)
++    return a
++
++
++def observe(m, vx, vy, step):
++    m.signal_observer = SignalObserver()
++    m.activation_observer = ActivationObserver(18, m.activation_precision)
++    val = evaluate(m, vx, vy)
++    signals = [{'step': step, 'matrix': m.matrix_names[r['layer']], **r}
++               for r in m.signal_observer.summary()]
++    activation = []
++    for r in m.activation_observer.summary():
++        r['code_histogram'] = json.dumps(r['code_histogram'], sort_keys=True)
++        activation.append({'step': step, 'matrix': m.matrix_names[r['layer']], **r})
++    ratios = []
++    for b in range(8):
++        rows = {r['stage']: r for r in signals if r['layer'] == 1+2*b}
++        stream = rows['stream_before']['rms']
++        branch = rows['branch_output']['rms']
++        ratios.append(dict(step=step, block=b, stream_rms=stream, branch_rms=branch,
++                           branch_stream_rms_ratio=branch/stream if stream else None))
++    m.signal_observer = m.activation_observer = None
++    return val, signals, activation, ratios
++
++
++def probes(m, x, y, seed, stage):
++    rows = []
++    offset = 0
++    before = m.weights.clone()
++    for layer, shape in enumerate(m.shapes):
++        size = math.prod(shape)
++        g = torch.Generator().manual_seed(700000+seed*1000+18*20+layer)
++        bg = torch.Generator().manual_seed(900000+seed*1000+18*20+layer)
++        for pair in range(64):
++            indices = torch.randperm(size, generator=g)[:16]+offset
++            plus, minus, _, _ = candidate_pair(m.weights, indices, g)
++            batch = torch.randint(len(x), (128,), generator=bg)
++            lp = loss(m, x[batch], y[batch], plus)
++            lm = loss(m, x[batch], y[batch], minus)
++            rows.append(dict(stage=stage, layer=layer, matrix=m.matrix_names[layer],
++                pair=pair, perturbed_coordinates=16, loss_plus=float(lp),
++                loss_minus=float(lm), abs_y=float((lp-lm).abs())))
++        offset += size
++    assert torch.equal(before, m.weights)
++    return rows
++
++
++def preflight(root, data):
++    setup()
++    root.mkdir(parents=True, exist_ok=True)
++    assert not (root/'preflight.json').exists(), 'Preflight already exists; do not overwrite'
++    a = config(0, data)
++    a.download = True
++    (x, y), (vx, vy), _ = load_data(a, torch.device('cpu'))
++    rows = []
++    for condition, (precision, activation) in CONDITIONS.items():
++        for seed in range(3):
++            m = ResidualStreamModel(seed, precision, activation)
++            val = evaluate(m, vx, vy)
++            rows.append(dict(condition=condition, seed=seed, **val))
++    timings = []
++    for label, m in [('E17a', ResidualStreamModel()),
++                     ('E16_A8', TernaryModel(pool_shape=(9, 10), hidden_sizes=DEPTH_WIDTHS[16],
++                         activation_precision='a8', hidden_activation='identity'))]:
++        a.download = False
++        g = torch.Generator().manual_seed(1)
++        bg = torch.Generator().manual_seed(100000)
++        start_calls = m.forward_calls
++        start = time.perf_counter()
++        epoch(m, x, y, a, g, .02, bg)  # Disposable model; no update or test evaluation.
++        elapsed = time.perf_counter()-start
++        assert m.forward_calls-start_calls == 128
++        timings.append(dict(model=label, forwards=128, seconds=elapsed,
++                            matrix_macs_per_example=m.num_params))
++    write_csv(root/'per_seed/initial_validation.csv', rows)
++    dump(root/'preflight.json', dict(initial_validation=rows, timings=timings,
++        num_params=100016, matrices=18, test_evaluated=False,
++        data_sha256={p.name: sha(p) for p in sorted((Path(data)/'MNIST/raw').glob('*-ubyte'))}))
++    print(json.dumps(dict(initial_validation=rows, timings=timings), indent=2), flush=True)
++
++
++def train_run(condition, seed, root, data):
++    setup()
++    a = config(seed, data)
++    precision, activation = CONDITIONS[condition]
++    m = ResidualStreamModel(seed, precision, activation)
++    out = root/'per_seed'/f'{condition}-seed{seed}'
++    out.mkdir(parents=True, exist_ok=False)
++    cfg = {k: str(v) if isinstance(v, Path) else v for k, v in vars(a).items()}
++    cfg.update(condition=condition, architecture='residual_stream', width=76, blocks=8,
++        activation_precision=precision, hidden_activation=activation, num_params=m.num_params,
++        shapes=m.shapes, layer_scales=m.scales, matrix_names=m.matrix_names,
++        rmsnorm_eps=1e-8, rmsnorm_trainable=False, stream_dtype='float32',
++        weight_storage='int8 ternary', torch_version=torch.__version__,
++        source_sha256=json.loads((root/'manifest.json').read_text())['sources'])
++    dump(out/'config.json', cfg)
++    (x, y), (vx, vy), (tx, ty) = load_data(a, m.device)
++    g = torch.Generator().manual_seed(seed+1)
++    bg = torch.Generator().manual_seed(seed+100000)
++    initial, signals, activations, ratios = observe(m, vx, vy, 0)
++    expected = [r for r in json.loads((root/'preflight.json').read_text())['initial_validation']
++                if r['condition'] == condition and r['seed'] == seed][0]
++    assert initial == {k: expected[k] for k in ('loss', 'accuracy')}
++    probe_rows = probes(m, x, y, seed, 'initial')
++    write_csv(out/'probes.csv', probe_rows)
++    write_csv(out/'signal.csv', signals)
++    write_csv(out/'activation.csv', activations)
++    write_csv(out/'rms_ratios.csv', ratios)
++    abs_y = np.lib.format.open_memmap(out/'abs_y.npy', mode='w+', dtype='float32', shape=(12000,64))
++    totals = [dict(fires=0, selected_intervals=0, fire_intervals=0, selected_coordinates=0) for _ in range(18)]
++    scale = .02
++    calls = 0
++    started = time.perf_counter()
++    histogram = {}
++    with (out/'metrics.csv').open('w', newline='') as mf, (out/'layer_metrics.csv').open('w', newline='') as lf:
++        mw = None
++        lw = csv.DictWriter(lf, fieldnames=['step','layer','parameters','selected_coordinates','selected_interval','fires','fire_interval'])
++        lw.writeheader()
++        for step in range(1, 12001):
++            before = m.forward_calls
++            proposal, indices, stats, scale = epoch(m, x, y, a, g, scale, bg)
++            assert m.forward_calls-before == 128
++            calls += 128
++            values = np.asarray(stats.pop('abs_y_values'), dtype=np.float32)
++            assert np.isfinite(values).all()
++            abs_y[step-1] = values
++            for k, v in stats.pop('counter_histogram').items():
++                histogram[k] = histogram.get(k, 0)+v
++            for e in layer_events(m, proposal, indices):
++                lw.writerow(dict(step=step, **e))
++                t = totals[e['layer']]
++                for dst, src in [('fires','fires'), ('selected_intervals','selected_interval'),
++                                 ('fire_intervals','fire_interval'), ('selected_coordinates','selected_coordinates')]:
++                    t[dst] += e[src]
++            m.weights.copy_(proposal)
++            row = dict(step=step, elapsed_seconds=time.perf_counter()-started,
++                train_forward_calls=calls, abs_y_mean=float(values.astype('float64').mean()),
++                val_loss=None, val_accuracy=None, **stats)
++            if step % 500 == 0:
++                final, sr, ar, rr = observe(m, vx, vy, step)
++                signals.extend(sr); activations.extend(ar); ratios.extend(rr)
++                row.update(val_loss=final['loss'], val_accuracy=final['accuracy'])
++                write_csv(out/'signal.csv', signals)
++                write_csv(out/'activation.csv', activations)
++                write_csv(out/'rms_ratios.csv', ratios)
++                abs_y.flush()
++                torch.save(dict(weights=m.weights, step=step, scale=scale, generator=g.get_state(),
++                    batch_generator=bg.get_state(), config=cfg), out/'checkpoint.pt')
++                dump(out/'progress.json', dict(step=step, validation=final, elapsed_seconds=time.perf_counter()-started))
++                print(f'{condition} seed{seed} step={step} validation={final["accuracy"]:.3%}', flush=True)
++            if mw is None:
++                mw = csv.DictWriter(mf, fieldnames=list(row)); mw.writeheader()
++            mw.writerow(row)
++            mf.flush(); lf.flush()
++    abs_y.flush()
++    assert calls == 1536000
++    probe_rows.extend(probes(m, x, y, seed, 'final'))
++    write_csv(out/'probes.csv', probe_rows)
++    # The only test evaluation, after all predetermined training is complete.
++    test = evaluate(m, tx, ty)
++    torch.save(dict(weights=m.weights, config=cfg), out/'model.pt')
++    summary = dict(condition=condition, seed=seed, initial_validation=initial,
++        final_validation=final, test=test, train_forward_calls=calls,
++        diagnostic_probe_forward_calls=4608, total_forward_calls=m.forward_calls,
++        total_forward_examples=m.forward_examples, test_evaluations=1,
++        elapsed_seconds=time.perf_counter()-started, layer_totals=totals,
++        counter_histogram=histogram, num_params=m.num_params)
++    dump(out/'summary.json', summary)
++    dump(out/'manifest.json', {p.name: sha(p) for p in sorted(out.iterdir()) if p.is_file()})
++    return condition, seed
++
++
++def aggregate(root):
++    per_seed = []; firing = []; signals = []; activations = []; ratios = []; isolated = []
++    for condition in CONDITIONS:
++        for seed in range(3):
++            out = root/'per_seed'/f'{condition}-seed{seed}'
++            s = json.loads((out/'summary.json').read_text())
++            cfg = json.loads((out/'config.json').read_text())
++            checkpoint = torch.load(out/'model.pt', weights_only=False, map_location='cpu')
++            assert checkpoint['weights'].dtype == torch.int8 and checkpoint['weights'].numel() == 100016
++            assert set(checkpoint['weights'].unique().tolist()) <= {-1,0,1}
++            assert s['train_forward_calls'] == 1536000 and s['test_evaluations'] == 1
++            metrics = list(csv.DictReader((out/'metrics.csv').open()))
++            assert [int(r['step']) for r in metrics] == list(range(1,12001))
++            assert [int(r['step']) for r in metrics if r['val_accuracy']] == list(range(500,12001,500))
++            y = np.load(out/'abs_y.npy')
++            assert y.shape == (12000,64)
++            per_seed.append(dict(condition=condition, seed=seed, test_accuracy_percent=100*s['test']['accuracy'],
++                validation_accuracy_percent=100*s['final_validation']['accuracy'],
++                mean_abs_y=float(y.astype('float64').mean()), zero_difference_fraction=float((y==0).mean()),
++                fires=sum(t['fires'] for t in s['layer_totals'])))
++            for layer, t in enumerate(s['layer_totals']):
++                firing.append(dict(condition=condition, seed=seed, layer=layer, matrix=cfg['matrix_names'][layer],
++                    **t, all_interval_firing_rate=t['fire_intervals']/12000,
++                    selected_interval_firing_rate=t['fire_intervals']/t['selected_intervals'] if t['selected_intervals'] else None))
++            for name, target in [('signal',signals),('activation',activations),('rms_ratios',ratios)]:
++                rows = list(csv.DictReader((out/f'{name}.csv').open()))
++                assert len(set(r['step'] for r in rows)) == 25
++                target.extend(dict(condition=condition, seed=seed, **r) for r in rows)
++            rows = list(csv.DictReader((out/'probes.csv').open()))
++            assert len(rows) == 2304
++            for stage in ('initial','final'):
++                for layer in range(18):
++                    vals = [float(r['abs_y']) for r in rows if r['stage']==stage and int(r['layer'])==layer]
++                    assert len(vals)==64
++                    isolated.append(dict(condition=condition, seed=seed, stage=stage, layer=layer,
++                        matrix=cfg['matrix_names'][layer], mean_abs_y=statistics.mean(vals),
++                        std_abs_y=statistics.stdev(vals), zero_fraction=sum(v==0 for v in vals)/64))
++    ag = []
++    for c in CONDITIONS:
++        values = [r['test_accuracy_percent'] for r in per_seed if r['condition']==c]
++        ag.append(dict(condition=c, test_mean_percent=statistics.mean(values), test_sample_std_percent=statistics.stdev(values)))
++    effects = []
++    for label, pos, neg in [('ReLU_effect','E17a','E17b'), ('A8_cost','E17c','E17a')]:
++        diffs = [next(r['test_accuracy_percent'] for r in per_seed if r['condition']==pos and r['seed']==s)-
++                 next(r['test_accuracy_percent'] for r in per_seed if r['condition']==neg and r['seed']==s) for s in range(3)]
++        effects.append(dict(effect=label, mean_pp=statistics.mean(diffs), sample_std_pp=statistics.stdev(diffs),
++                            seed0_pp=diffs[0], seed1_pp=diffs[1], seed2_pp=diffs[2]))
++    passed = ag[0]['test_mean_percent'] >= 90.31 and all(r['test_accuracy_percent']>87.31 for r in per_seed if r['condition']=='E17a')
++    warnings = [dict(condition=r['condition'],seed=r['seed'],block=r['block'],ratio=float(r['branch_stream_rms_ratio']))
++                for r in ratios if r['step']=='12000' and float(r['branch_stream_rms_ratio'])>.5]
++    logits_warnings = [r for r in signals if r['step']=='12000' and r['layer']=='17' and r['stage']=='output' and float(r['rms'])>10]
++    for path, rows in [('per_seed/results.csv',per_seed),('aggregate/results.csv',ag),('aggregate/paired_effects.csv',effects),
++                       ('firing/matrices.csv',firing),('signal/metrics.csv',signals),('signal/rms_ratios.csv',ratios),
++                       ('signal/isolated_candidates.csv',isolated),('activation/metrics.csv',activations)]:
++        write_csv(root/path, rows)
++    dump(root/'verification.json', dict(passed=True, runs=9, primary_criterion_passed=passed,
++        rms_ratio_warnings=warnings, logits_warnings=logits_warnings))
++    report = ['# E17 結果', '', '各条件12,000区間×3seed。平均±標本標準偏差。testは最終モデルのみ。', '',
++              '| 条件 | test精度 (%) |', '| --- | ---: |']
++    report += [f"| {r['condition']} | {r['test_mean_percent']:.4f} ± {r['test_sample_std_percent']:.4f} |" for r in ag]
++    report += ['| E16 A32（既存） | 87.31 ± 0.471 |', '| E16 A8（既存） | 87.03 ± 0.104 |',
++               '| E14 backprop（参考・異なる学習則と重み数） | 93.89 |', '',
++               f'事前登録主判定: {"合格（非線形性が機能した）" if passed else "不合格（事前登録基準に未達）"}。', '']
++    report += [f"{r['effect']}: {r['mean_pp']:.4f} ± {r['sample_std_pp']:.4f}ポイント（対応seed差）。" for r in effects]
++    report += ['', 'E17a−E17bはReLU追加の効果。E17bにもRMSNorm・動的量子化の非線形性がある。',
++        f'最終枝/ストリームRMS比>0.5: {len(warnings)}件。logits RMS>10: {len(logits_warnings)}件。詳細はverification.json。',
++        '層別一覧: signal/metrics.csv、signal/rms_ratios.csv、signal/isolated_candidates.csv、firing/matrices.csv。',
++        '量子化診断: activation/metrics.csv。全候補・区間・行列の生記録はper_seed配下。']
++    (root/'README.md').write_text('\n'.join(report)+'\n')
++    dump(root/'status.json',dict(complete=True,completed=9,expected=9))
++    dump(root/'artifacts_sha256.json', {str(p.relative_to(root)):sha(p) for p in sorted(root.rglob('*'))
++        if p.is_file() and p.name != 'artifacts_sha256.json'})
++
++
++def main():
++    p = argparse.ArgumentParser()
++    p.add_argument('mode', choices=['preflight','run','aggregate'])
++    p.add_argument('--root', type=Path, default=ROOT)
++    p.add_argument('--data', type=Path, default=HERE/'data')
++    p.add_argument('--workers', type=int, default=9)
++    a = p.parse_args()
++    if a.mode == 'preflight':
++        preflight(a.root, a.data); return
++    if a.mode == 'aggregate':
++        aggregate(a.root); return
++    assert (a.root/'preflight.json').exists()
++    assert not (a.root/'manifest.json').exists(), 'Existing experiment; do not overwrite'
++    revision = subprocess.check_output(['git','rev-parse','HEAD'],cwd=HERE,text=True).strip()
++    subprocess.run(['git','merge-base','--is-ancestor','1ad7b12',revision],cwd=HERE,check=True)
++    sources = ['train.py','activation_quantization.py','depth_diagnostics.py','residual_stream.py',
++               'run_residual_e17.py','test_residual_stream.py','E17_PREREGISTRATION.md']
++    source_dir = a.root/'sources'; source_dir.mkdir()
++    for n in sources:
++        shutil.copy2(HERE/n, source_dir/n)
++    dump(a.root/'manifest.json',dict(git_revision=revision, preregistration_commit='1ad7b12',
++        sources={n:sha(source_dir/n) for n in sources},conditions=CONDITIONS,seeds=[0,1,2],
++        data_sha256=json.loads((a.root/'preflight.json').read_text())['data_sha256']))
++    completed=[]; errors=[]
++    dump(a.root/'status.json',dict(complete=False,completed=0,expected=9,errors=[]))
++    with ProcessPoolExecutor(max_workers=a.workers) as pool:
++        futures={pool.submit(train_run,c,s,a.root,a.data):(c,s) for c in CONDITIONS for s in range(3)}
++        for f in as_completed(futures):
++            try:
++                completed.append(f.result())
++            except Exception as e:
++                errors.append(dict(run=futures[f],error=repr(e)))
++            dump(a.root/'status.json',dict(complete=False,completed=len(completed),expected=9,errors=errors))
++    if errors:
++        raise RuntimeError(errors)
++    aggregate(a.root)
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/tdt_mnist/test_residual_stream.py b/tdt_mnist/test_residual_stream.py
+new file mode 100644
+index 0000000..f6846a2
+--- /dev/null
++++ b/tdt_mnist/test_residual_stream.py
+@@ -0,0 +1,54 @@
++import unittest
++import torch
++from residual_stream import ResidualStreamModel
++from train import epoch, parser
++
++
++class ResidualTests(unittest.TestCase):
++    def setUp(self):
++        torch.set_num_threads(1)
++
++    def test_zero_branches_are_exact_identity(self):
++        for precision in ('a8', 'a32'):
++            for activation in ('relu', 'identity'):
++                m = ResidualStreamModel(precision=precision, activation=activation)
++                matrices = m.matrices(m.weights)
++                h = torch.randn(13, 76)
++                for b in range(8):
++                    matrices[1+2*b].zero_()
++                    matrices[2+2*b].zero_()
++                    self.assertTrue(torch.equal(m.block(h, b, matrices), h))
++
++    def test_budget_and_legacy_epoch_calls(self):
++        m = ResidualStreamModel()
++        self.assertEqual(m.num_params, 100016)
++        self.assertEqual(len(m.shapes), 18)
++        self.assertEqual(m.weights.dtype, torch.int8)
++        args = parser().parse_args(['--measurements', '64', '--threshold', '8', '--block-size', '16'])
++        before = m.weights.clone()
++        proposal, _, stats, _ = epoch(m, torch.randn(128, 90), torch.arange(128)%10,
++            args, torch.Generator().manual_seed(1), .02, torch.Generator().manual_seed(100000))
++        self.assertEqual(m.forward_calls, 128)
++        self.assertEqual(m.forward_examples, 128*128)
++        self.assertTrue(torch.equal(m.weights, before))
++        self.assertLessEqual(int((proposal != before).sum()), 1)
++        self.assertTrue(set(proposal.unique().tolist()) <= {-1, 0, 1})
++        self.assertLessEqual(stats['counter_peak_abs'], 64)
++
++    def test_formula_and_fp32(self):
++        m = ResidualStreamModel(precision='a32')
++        x = torch.randn(7, 90)
++        w = m.matrices(m.weights)
++        h = x @ w[0].T
++        for b in range(8):
++            z = h / (h.square().mean(-1, keepdim=True)+1e-8).sqrt()
++            h = h + torch.relu(z @ w[1+2*b].T) @ w[2+2*b].T
++        expected = m.rmsnorm(h) @ w[-1].T
++        actual = m(x)
++        self.assertTrue(torch.equal(actual, expected))
++        self.assertEqual(actual.dtype, torch.float32)
++        self.assertFalse(actual.requires_grad)
++
++
++if __name__ == '__main__':
++    unittest.main()

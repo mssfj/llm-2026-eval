@@ -1,0 +1,10 @@
+{
+  "matplotlib_version": "3.11.1",
+  "source_sha256": "c1e2b5652f506f3d223d0747f96c7f3b1a4b606cd326f2b1f4e2ee5306014709",
+  "files": {
+    "accuracy.png": "6c4561b7eca54753b6dada244d7a0ac9c44e6c725a13a372415e44ed1d694d2a",
+    "accuracy.svg": "69b895b46775eb40ac99727c427b4b52b918b0228fc8fa36ea931ededc8edfee",
+    "diagnostics.png": "665c658d0e9af7675380fe6a8e67499cc09daba031b1ce50015a0626cd1b3419",
+    "diagnostics.svg": "577ba6ae9edba05d565f58e7f00644060bf5579fb4a460c0e098f1959caaeecb"
+  }
+}

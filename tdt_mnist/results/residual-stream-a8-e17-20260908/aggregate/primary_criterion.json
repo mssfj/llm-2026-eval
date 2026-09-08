@@ -1,0 +1,11 @@
+{
+  "mean_test_percent": 90.63666666666667,
+  "fixed_control_percent": 87.31,
+  "mean_improvement_pp": 3.326666666666668,
+  "seed_improvements_pp": [
+    3.799999999999997,
+    2.9599999999999937,
+    3.219999999999999
+  ],
+  "passed": true
+}

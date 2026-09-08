@@ -1,0 +1,242 @@
+{
+  "passed": true,
+  "runs": 9,
+  "primary_criterion_passed": true,
+  "rms_ratio_warnings": [
+    {
+      "condition": "E17a",
+      "seed": 0,
+      "block": "0",
+      "ratio": 0.8371518475819449
+    },
+    {
+      "condition": "E17a",
+      "seed": 0,
+      "block": "1",
+      "ratio": 0.6672837698713442
+    },
+    {
+      "condition": "E17a",
+      "seed": 0,
+      "block": "2",
+      "ratio": 0.6044286159968121
+    },
+    {
+      "condition": "E17a",
+      "seed": 0,
+      "block": "4",
+      "ratio": 0.5092135602011135
+    },
+    {
+      "condition": "E17a",
+      "seed": 1,
+      "block": "0",
+      "ratio": 0.963963765360465
+    },
+    {
+      "condition": "E17a",
+      "seed": 1,
+      "block": "1",
+      "ratio": 0.7297391505847409
+    },
+    {
+      "condition": "E17a",
+      "seed": 1,
+      "block": "2",
+      "ratio": 0.6303827711693666
+    },
+    {
+      "condition": "E17a",
+      "seed": 1,
+      "block": "3",
+      "ratio": 0.5411107694269558
+    },
+    {
+      "condition": "E17a",
+      "seed": 2,
+      "block": "0",
+      "ratio": 0.8570692788087897
+    },
+    {
+      "condition": "E17a",
+      "seed": 2,
+      "block": "1",
+      "ratio": 0.7307336255745636
+    },
+    {
+      "condition": "E17a",
+      "seed": 2,
+      "block": "2",
+      "ratio": 0.5852780683202439
+    },
+    {
+      "condition": "E17b",
+      "seed": 0,
+      "block": "0",
+      "ratio": 1.2058006327993154
+    },
+    {
+      "condition": "E17b",
+      "seed": 0,
+      "block": "1",
+      "ratio": 0.8475117916467784
+    },
+    {
+      "condition": "E17b",
+      "seed": 0,
+      "block": "2",
+      "ratio": 0.6962639519221334
+    },
+    {
+      "condition": "E17b",
+      "seed": 0,
+      "block": "3",
+      "ratio": 0.6279291601233538
+    },
+    {
+      "condition": "E17b",
+      "seed": 0,
+      "block": "4",
+      "ratio": 0.5783699189073925
+    },
+    {
+      "condition": "E17b",
+      "seed": 0,
+      "block": "5",
+      "ratio": 0.5252453120949439
+    },
+    {
+      "condition": "E17b",
+      "seed": 1,
+      "block": "0",
+      "ratio": 1.2891098625956319
+    },
+    {
+      "condition": "E17b",
+      "seed": 1,
+      "block": "1",
+      "ratio": 0.9161980287296146
+    },
+    {
+      "condition": "E17b",
+      "seed": 1,
+      "block": "2",
+      "ratio": 0.7525405338718978
+    },
+    {
+      "condition": "E17b",
+      "seed": 1,
+      "block": "3",
+      "ratio": 0.6292978016671212
+    },
+    {
+      "condition": "E17b",
+      "seed": 1,
+      "block": "4",
+      "ratio": 0.5663700751062859
+    },
+    {
+      "condition": "E17b",
+      "seed": 2,
+      "block": "0",
+      "ratio": 1.2098073413467203
+    },
+    {
+      "condition": "E17b",
+      "seed": 2,
+      "block": "1",
+      "ratio": 0.8283697888622436
+    },
+    {
+      "condition": "E17b",
+      "seed": 2,
+      "block": "2",
+      "ratio": 0.6949907729233478
+    },
+    {
+      "condition": "E17b",
+      "seed": 2,
+      "block": "3",
+      "ratio": 0.6158994147868425
+    },
+    {
+      "condition": "E17b",
+      "seed": 2,
+      "block": "4",
+      "ratio": 0.5146895972889991
+    },
+    {
+      "condition": "E17c",
+      "seed": 0,
+      "block": "0",
+      "ratio": 0.9459030625810912
+    },
+    {
+      "condition": "E17c",
+      "seed": 0,
+      "block": "1",
+      "ratio": 0.6893707380272092
+    },
+    {
+      "condition": "E17c",
+      "seed": 0,
+      "block": "2",
+      "ratio": 0.6579006794201393
+    },
+    {
+      "condition": "E17c",
+      "seed": 0,
+      "block": "3",
+      "ratio": 0.504163742447465
+    },
+    {
+      "condition": "E17c",
+      "seed": 1,
+      "block": "0",
+      "ratio": 1.0136799324764116
+    },
+    {
+      "condition": "E17c",
+      "seed": 1,
+      "block": "1",
+      "ratio": 0.7706627548097081
+    },
+    {
+      "condition": "E17c",
+      "seed": 1,
+      "block": "2",
+      "ratio": 0.6680168343337776
+    },
+    {
+      "condition": "E17c",
+      "seed": 1,
+      "block": "3",
+      "ratio": 0.618047706149148
+    },
+    {
+      "condition": "E17c",
+      "seed": 2,
+      "block": "0",
+      "ratio": 0.8949464535927265
+    },
+    {
+      "condition": "E17c",
+      "seed": 2,
+      "block": "1",
+      "ratio": 0.732305570247991
+    },
+    {
+      "condition": "E17c",
+      "seed": 2,
+      "block": "2",
+      "ratio": 0.664364246320215
+    },
+    {
+      "condition": "E17c",
+      "seed": 2,
+      "block": "3",
+      "ratio": 0.5064710919884351
+    }
+  ],
+  "logits_warnings": []
+}
