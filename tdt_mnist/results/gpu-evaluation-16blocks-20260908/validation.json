@@ -1,0 +1,9 @@
+{
+  "structural_checks_passed": true,
+  "numerical_acceptance_passed": false,
+  "max_relative_loss_error": 0.0033030027989298105,
+  "loss_comparisons": 2304,
+  "rng_all_equal": true,
+  "graph_bitwise_equal_all_refresh_cases": true,
+  "test_evaluated": false
+}

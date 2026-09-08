@@ -1,0 +1,28 @@
+{
+  "seed": 2,
+  "engine": "gpu_sequential",
+  "blocks": 16,
+  "width": 76,
+  "matrices": 34,
+  "weights": 192432,
+  "intervals": 100,
+  "seconds": 61.55155219882727,
+  "seconds_per_interval": 0.6155155219882726,
+  "setup_seconds": 0.13623344898223877,
+  "warmup_seconds": 2.1589107513427734,
+  "gpu_workflow_milliseconds_mean": 598.6474786376953,
+  "schedule_seconds_mean": 0.003664576783776283,
+  "gpu_peak_allocated_bytes": 146449408,
+  "gpu_peak_reserved_bytes": 157286400,
+  "rss_before": 1570648064,
+  "peak_rss": 1573830656,
+  "rss_peak_reset": true,
+  "cpu_affinity": [
+    15
+  ],
+  "cpu_threads": 1,
+  "final_weights_sha256": "e87ae71444700bb862400f53e54263da5b19844142f72ca4d62770f9f71b7d1b",
+  "final_scale": 0.0019046929965271199,
+  "generator_sha256": "7bf31f6ba5514d18cb1c98c0f53b832190662f8803d58ae45c2f4c6d8925c9fe",
+  "batch_generator_sha256": "d8f92d904da0d271dcc7ba4dfe001340c6f0326739dd37ebcbcfa091ad2be440"
+}

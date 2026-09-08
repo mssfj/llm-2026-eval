@@ -1,0 +1,7 @@
+state,seed,changed_base_coordinates,changed_indices,bitwise_mismatches,max_relative_error
+initial,0,0,True,0,0.0
+initial,1,1,True,0,0.0
+initial,2,0,True,0,0.0
+trained,0,0,True,0,0.0
+trained,1,0,True,0,0.0
+trained,2,0,True,0,0.0
