@@ -75,11 +75,13 @@ def main(root):
         ylabel='Accuracy difference (percentage points)',title='Paired decomposition: mean +/- sample SD')
     fig.text(.5,-.02,'*Includes initialization, W3 scaling, budget and model-selection differences; not an isolated causal learning-rule effect.',ha='center',fontsize=9)
     save(fig,out/'e20_decomposition')
+    from followup_layer_tables import write_tables
+    write_tables(root)
     shutil.copy2(Path(__file__),root/'sources'/Path(__file__).name)
     dump(out/'manifest.json',dict(matplotlib_version=matplotlib.__version__,source_sha256=sha(Path(__file__)),
         files={p.name:sha(p) for p in out.iterdir() if p.suffix in ['.png','.svg']}))
     with (root/'README.md').open('a') as f:
-        f.write('\n図: [E18深さ比較](figures/e18_depth.png)、[E19 A4コスト](figures/e19_a4.png)、[E20分解](figures/e20_decomposition.png)。同名SVGも保存。\n')
+        f.write('\n層別一覧: [LAYER_TABLES.md](LAYER_TABLES.md)。図: [E18深さ比較](figures/e18_depth.png)、[E19 A4コスト](figures/e19_a4.png)、[E20分解](figures/e20_decomposition.png)。同名SVGも保存。\n')
     dump(root/'artifacts_sha256.json',{str(p.relative_to(root)):sha(p) for p in sorted(root.rglob('*')) if p.is_file() and p.name!='artifacts_sha256.json'})
 
 
