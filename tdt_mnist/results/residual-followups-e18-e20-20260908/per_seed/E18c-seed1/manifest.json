@@ -1,0 +1,14 @@
+{
+  "abs_y.npy": "255c6669cbff0d50f10097c34607d276fbac620c6a556c591ae5f93b4b551ac5",
+  "activation.csv": "b4ccfe26edd7fa82e66802ef6dd9072cc7e47bc1fd39db7042b7d4bd3e15b811",
+  "checkpoint.pt": "d547ca590d187ce501a8204c46720d5f5dabbb63af8c4655d91a4b2c37a68df4",
+  "config.json": "822fbfc0ed3b7144d8452c87f6a07db948134d48120ae8cd7013eab60fb74fef",
+  "layer_metrics.csv": "88901759bf125a8f40dfdc67f7ef912321b8cf141d4cb438ba19ce16e4ae522b",
+  "metrics.csv": "9fa07970d9cd934fe1ffd0933facf1f1393197fe0c4d3067f0cc716efa008672",
+  "model.pt": "987c88620ccb2d975dbe1a1a069ed862a324e5c4d75b24c57e9e93b2689e1cbb",
+  "probes.csv": "03e8e2abf35ba74505d7d7d4ebb351e29bb8b5f45136104ceaedcf991c7c60a3",
+  "progress.json": "dbe8c38d93facd123e2f0b762868e05feaa78f54a5971f7542f8c357e83b9288",
+  "rms_ratios.csv": "98bdb22e77fd2e3f2ff1f7e11dfb651acc9f680a94cad82b0b2bde18e286f7fd",
+  "signal.csv": "e25c3d3e4c190923dc5cb03addb70e7e39edaf0fe6c67c9a8efe29b07a5053d2",
+  "summary.json": "b2d8a1bc505b092d1a3dddd92bc1df9f633640085cc8fa5ec46d02f822e13170"
+}

@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "new_training_runs": 33,
+  "aggregate_conditions": 11,
+  "verified_artifact_hashes": 651,
+  "update_pages": 32,
+  "preserved_v5_3_pages": 133,
+  "total_pages": 165,
+  "old_text_and_pixels_preserved": true,
+  "no_text_outside_page": true,
+  "all_attachments_verified": true,
+  "pdf_sha256": "03ed658edf88c8b0d5edd526d4885c0ad7e253bf99878ca900147b92a0706d63",
+  "original_sha256": "6138dbc0e415c5975cbe8a5a94b7acf5aced8c37c08b138972cd4a7829abd106",
+  "archive_sha256": "a814a269deb24b52368f3389e2c96f5ad3c67302146b8d8b1f040f0c77e58818"
+}

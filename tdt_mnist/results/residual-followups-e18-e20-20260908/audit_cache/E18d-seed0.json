@@ -1,0 +1,747 @@
+{
+  "input_manifest_sha256": "1c387a65d1f51d6fd542aaccfb96bb4ad8bb49c0bed8723d0b57d78325b030c1",
+  "audit_function_sha256": "a774453c079ac884924fd0a58c9267592892399fca1ca4fc7cd6c932318b84bf",
+  "firing": [
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 0,
+      "matrix": "W_in",
+      "parameters": 4860,
+      "fires": 500,
+      "selected_intervals": 6592,
+      "fire_intervals": 500,
+      "selected_coordinates": 9492,
+      "all_interval_firing_rate": 0.041666666666666664,
+      "selected_interval_firing_rate": 0.07584951456310679
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 1,
+      "matrix": "block0.W1",
+      "parameters": 2916,
+      "fires": 319,
+      "selected_intervals": 4503,
+      "fire_intervals": 319,
+      "selected_coordinates": 5557,
+      "all_interval_firing_rate": 0.026583333333333334,
+      "selected_interval_firing_rate": 0.07084166111481234
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 2,
+      "matrix": "block0.W2",
+      "parameters": 2916,
+      "fires": 278,
+      "selected_intervals": 4591,
+      "fire_intervals": 278,
+      "selected_coordinates": 5722,
+      "all_interval_firing_rate": 0.023166666666666665,
+      "selected_interval_firing_rate": 0.06055325637116097
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 3,
+      "matrix": "block1.W1",
+      "parameters": 2916,
+      "fires": 271,
+      "selected_intervals": 4523,
+      "fire_intervals": 271,
+      "selected_coordinates": 5646,
+      "all_interval_firing_rate": 0.022583333333333334,
+      "selected_interval_firing_rate": 0.05991598496573071
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 4,
+      "matrix": "block1.W2",
+      "parameters": 2916,
+      "fires": 262,
+      "selected_intervals": 4600,
+      "fire_intervals": 262,
+      "selected_coordinates": 5723,
+      "all_interval_firing_rate": 0.021833333333333333,
+      "selected_interval_firing_rate": 0.056956521739130433
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 5,
+      "matrix": "block2.W1",
+      "parameters": 2916,
+      "fires": 303,
+      "selected_intervals": 4606,
+      "fire_intervals": 303,
+      "selected_coordinates": 5757,
+      "all_interval_firing_rate": 0.02525,
+      "selected_interval_firing_rate": 0.06578376031263569
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 6,
+      "matrix": "block2.W2",
+      "parameters": 2916,
+      "fires": 285,
+      "selected_intervals": 4582,
+      "fire_intervals": 285,
+      "selected_coordinates": 5764,
+      "all_interval_firing_rate": 0.02375,
+      "selected_interval_firing_rate": 0.06219991270187691
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 7,
+      "matrix": "block3.W1",
+      "parameters": 2916,
+      "fires": 300,
+      "selected_intervals": 4504,
+      "fire_intervals": 300,
+      "selected_coordinates": 5556,
+      "all_interval_firing_rate": 0.025,
+      "selected_interval_firing_rate": 0.06660746003552398
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 8,
+      "matrix": "block3.W2",
+      "parameters": 2916,
+      "fires": 324,
+      "selected_intervals": 4589,
+      "fire_intervals": 324,
+      "selected_coordinates": 5725,
+      "all_interval_firing_rate": 0.027,
+      "selected_interval_firing_rate": 0.07060361734582697
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 9,
+      "matrix": "block4.W1",
+      "parameters": 2916,
+      "fires": 317,
+      "selected_intervals": 4579,
+      "fire_intervals": 317,
+      "selected_coordinates": 5664,
+      "all_interval_firing_rate": 0.026416666666666668,
+      "selected_interval_firing_rate": 0.0692290893208124
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 10,
+      "matrix": "block4.W2",
+      "parameters": 2916,
+      "fires": 286,
+      "selected_intervals": 4458,
+      "fire_intervals": 286,
+      "selected_coordinates": 5516,
+      "all_interval_firing_rate": 0.023833333333333335,
+      "selected_interval_firing_rate": 0.06415432929564828
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 11,
+      "matrix": "block5.W1",
+      "parameters": 2916,
+      "fires": 309,
+      "selected_intervals": 4540,
+      "fire_intervals": 309,
+      "selected_coordinates": 5550,
+      "all_interval_firing_rate": 0.02575,
+      "selected_interval_firing_rate": 0.06806167400881057
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 12,
+      "matrix": "block5.W2",
+      "parameters": 2916,
+      "fires": 298,
+      "selected_intervals": 4518,
+      "fire_intervals": 298,
+      "selected_coordinates": 5641,
+      "all_interval_firing_rate": 0.024833333333333332,
+      "selected_interval_firing_rate": 0.06595838866755202
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 13,
+      "matrix": "block6.W1",
+      "parameters": 2916,
+      "fires": 297,
+      "selected_intervals": 4520,
+      "fire_intervals": 297,
+      "selected_coordinates": 5645,
+      "all_interval_firing_rate": 0.02475,
+      "selected_interval_firing_rate": 0.0657079646017699
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 14,
+      "matrix": "block6.W2",
+      "parameters": 2916,
+      "fires": 293,
+      "selected_intervals": 4509,
+      "fire_intervals": 293,
+      "selected_coordinates": 5633,
+      "all_interval_firing_rate": 0.024416666666666666,
+      "selected_interval_firing_rate": 0.06498114881348414
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 15,
+      "matrix": "block7.W1",
+      "parameters": 2916,
+      "fires": 306,
+      "selected_intervals": 4677,
+      "fire_intervals": 306,
+      "selected_coordinates": 5775,
+      "all_interval_firing_rate": 0.0255,
+      "selected_interval_firing_rate": 0.0654265554842848
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 16,
+      "matrix": "block7.W2",
+      "parameters": 2916,
+      "fires": 278,
+      "selected_intervals": 4560,
+      "fire_intervals": 278,
+      "selected_coordinates": 5634,
+      "all_interval_firing_rate": 0.023166666666666665,
+      "selected_interval_firing_rate": 0.06096491228070176
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 17,
+      "matrix": "block8.W1",
+      "parameters": 2916,
+      "fires": 311,
+      "selected_intervals": 4566,
+      "fire_intervals": 311,
+      "selected_coordinates": 5612,
+      "all_interval_firing_rate": 0.025916666666666668,
+      "selected_interval_firing_rate": 0.06811213315812527
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 18,
+      "matrix": "block8.W2",
+      "parameters": 2916,
+      "fires": 337,
+      "selected_intervals": 4532,
+      "fire_intervals": 337,
+      "selected_coordinates": 5631,
+      "all_interval_firing_rate": 0.02808333333333333,
+      "selected_interval_firing_rate": 0.07436010591350398
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 19,
+      "matrix": "block9.W1",
+      "parameters": 2916,
+      "fires": 343,
+      "selected_intervals": 4609,
+      "fire_intervals": 343,
+      "selected_coordinates": 5769,
+      "all_interval_firing_rate": 0.028583333333333332,
+      "selected_interval_firing_rate": 0.07441961379908874
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 20,
+      "matrix": "block9.W2",
+      "parameters": 2916,
+      "fires": 326,
+      "selected_intervals": 4670,
+      "fire_intervals": 326,
+      "selected_coordinates": 5785,
+      "all_interval_firing_rate": 0.027166666666666665,
+      "selected_interval_firing_rate": 0.06980728051391863
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 21,
+      "matrix": "block10.W1",
+      "parameters": 2916,
+      "fires": 317,
+      "selected_intervals": 4523,
+      "fire_intervals": 317,
+      "selected_coordinates": 5612,
+      "all_interval_firing_rate": 0.026416666666666668,
+      "selected_interval_firing_rate": 0.07008622595622374
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 22,
+      "matrix": "block10.W2",
+      "parameters": 2916,
+      "fires": 326,
+      "selected_intervals": 4594,
+      "fire_intervals": 326,
+      "selected_coordinates": 5689,
+      "all_interval_firing_rate": 0.027166666666666665,
+      "selected_interval_firing_rate": 0.07096212451023073
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 23,
+      "matrix": "block11.W1",
+      "parameters": 2916,
+      "fires": 295,
+      "selected_intervals": 4527,
+      "fire_intervals": 295,
+      "selected_coordinates": 5635,
+      "all_interval_firing_rate": 0.024583333333333332,
+      "selected_interval_firing_rate": 0.0651645681466755
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 24,
+      "matrix": "block11.W2",
+      "parameters": 2916,
+      "fires": 303,
+      "selected_intervals": 4573,
+      "fire_intervals": 303,
+      "selected_coordinates": 5678,
+      "all_interval_firing_rate": 0.02525,
+      "selected_interval_firing_rate": 0.06625847364968292
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 25,
+      "matrix": "block12.W1",
+      "parameters": 2916,
+      "fires": 332,
+      "selected_intervals": 4610,
+      "fire_intervals": 332,
+      "selected_coordinates": 5721,
+      "all_interval_firing_rate": 0.027666666666666666,
+      "selected_interval_firing_rate": 0.0720173535791757
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 26,
+      "matrix": "block12.W2",
+      "parameters": 2916,
+      "fires": 313,
+      "selected_intervals": 4562,
+      "fire_intervals": 313,
+      "selected_coordinates": 5680,
+      "all_interval_firing_rate": 0.026083333333333333,
+      "selected_interval_firing_rate": 0.06861025865848312
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 27,
+      "matrix": "block13.W1",
+      "parameters": 2916,
+      "fires": 315,
+      "selected_intervals": 4614,
+      "fire_intervals": 315,
+      "selected_coordinates": 5734,
+      "all_interval_firing_rate": 0.02625,
+      "selected_interval_firing_rate": 0.06827048114434331
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 28,
+      "matrix": "block13.W2",
+      "parameters": 2916,
+      "fires": 359,
+      "selected_intervals": 4584,
+      "fire_intervals": 359,
+      "selected_coordinates": 5678,
+      "all_interval_firing_rate": 0.029916666666666668,
+      "selected_interval_firing_rate": 0.07831588132635253
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 29,
+      "matrix": "block14.W1",
+      "parameters": 2916,
+      "fires": 317,
+      "selected_intervals": 4541,
+      "fire_intervals": 317,
+      "selected_coordinates": 5581,
+      "all_interval_firing_rate": 0.026416666666666668,
+      "selected_interval_firing_rate": 0.06980841224399911
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 30,
+      "matrix": "block14.W2",
+      "parameters": 2916,
+      "fires": 316,
+      "selected_intervals": 4529,
+      "fire_intervals": 316,
+      "selected_coordinates": 5648,
+      "all_interval_firing_rate": 0.026333333333333334,
+      "selected_interval_firing_rate": 0.06977257672775447
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 31,
+      "matrix": "block15.W1",
+      "parameters": 2916,
+      "fires": 326,
+      "selected_intervals": 4587,
+      "fire_intervals": 326,
+      "selected_coordinates": 5760,
+      "all_interval_firing_rate": 0.027166666666666665,
+      "selected_interval_firing_rate": 0.0710704163941574
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 32,
+      "matrix": "block15.W2",
+      "parameters": 2916,
+      "fires": 298,
+      "selected_intervals": 4638,
+      "fire_intervals": 298,
+      "selected_coordinates": 5753,
+      "all_interval_firing_rate": 0.024833333333333332,
+      "selected_interval_firing_rate": 0.06425183268650281
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 33,
+      "matrix": "W_out",
+      "parameters": 540,
+      "fires": 106,
+      "selected_intervals": 1002,
+      "fire_intervals": 106,
+      "selected_coordinates": 1034,
+      "all_interval_firing_rate": 0.008833333333333334,
+      "selected_interval_firing_rate": 0.10578842315369262
+    }
+  ],
+  "conditioned": [
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 0,
+      "mean_abs_y": 0.0037908542348375402,
+      "zero_fraction": 9.481189320388349e-06,
+      "selected_intervals": 6592
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 1,
+      "mean_abs_y": 0.003730866463733711,
+      "zero_fraction": 1.3879635798356651e-05,
+      "selected_intervals": 4503
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 2,
+      "mean_abs_y": 0.0037294026836773176,
+      "zero_fraction": 6.806795905031584e-06,
+      "selected_intervals": 4591
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 3,
+      "mean_abs_y": 0.003641497490899985,
+      "zero_fraction": 1.3818262215343799e-05,
+      "selected_intervals": 4523
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 4,
+      "mean_abs_y": 0.0036671640632329914,
+      "zero_fraction": 6.7934782608695655e-06,
+      "selected_intervals": 4600
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 5,
+      "mean_abs_y": 0.0035600388795460924,
+      "zero_fraction": 6.7846287451150675e-06,
+      "selected_intervals": 4606
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 6,
+      "mean_abs_y": 0.0035349206633793475,
+      "zero_fraction": 1.705041466608468e-05,
+      "selected_intervals": 4582
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 7,
+      "mean_abs_y": 0.0035412443525093353,
+      "zero_fraction": 1.3876554174067496e-05,
+      "selected_intervals": 4504
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 8,
+      "mean_abs_y": 0.0035278917967909483,
+      "zero_fraction": 6.809762475484855e-06,
+      "selected_intervals": 4589
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 9,
+      "mean_abs_y": 0.0034955358856788212,
+      "zero_fraction": 1.0236951299410351e-05,
+      "selected_intervals": 4579
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 10,
+      "mean_abs_y": 0.0035033445686127817,
+      "zero_fraction": 7.009869896814715e-06,
+      "selected_intervals": 4458
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 11,
+      "mean_abs_y": 0.0035261825887108887,
+      "zero_fraction": 1.032488986784141e-05,
+      "selected_intervals": 4540
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 12,
+      "mean_abs_y": 0.003507444255331044,
+      "zero_fraction": 1.0375166002656042e-05,
+      "selected_intervals": 4518
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 13,
+      "mean_abs_y": 0.0034584470882917037,
+      "zero_fraction": 6.913716814159292e-06,
+      "selected_intervals": 4520
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 14,
+      "mean_abs_y": 0.00350272700705467,
+      "zero_fraction": 6.930583277888667e-06,
+      "selected_intervals": 4509
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 15,
+      "mean_abs_y": 0.0034677658814706684,
+      "zero_fraction": 6.681633525764379e-06,
+      "selected_intervals": 4677
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 16,
+      "mean_abs_y": 0.003489997138303966,
+      "zero_fraction": 3.4265350877192983e-06,
+      "selected_intervals": 4560
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 17,
+      "mean_abs_y": 0.003474469520490204,
+      "zero_fraction": 1.7110162067455102e-05,
+      "selected_intervals": 4566
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 18,
+      "mean_abs_y": 0.0034732962647183335,
+      "zero_fraction": 1.0343115622241837e-05,
+      "selected_intervals": 4532
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 19,
+      "mean_abs_y": 0.0034631585402130904,
+      "zero_fraction": 1.3560425254935995e-05,
+      "selected_intervals": 4609
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 20,
+      "mean_abs_y": 0.0034417753854200117,
+      "zero_fraction": 1.003747323340471e-05,
+      "selected_intervals": 4670
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 21,
+      "mean_abs_y": 0.003460830570473071,
+      "zero_fraction": 1.0363696661507849e-05,
+      "selected_intervals": 4523
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 22,
+      "mean_abs_y": 0.0034585852715911317,
+      "zero_fraction": 1.0203526338702656e-05,
+      "selected_intervals": 4594
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 23,
+      "mean_abs_y": 0.003471260117759847,
+      "zero_fraction": 6.9030262867241e-06,
+      "selected_intervals": 4527
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 24,
+      "mean_abs_y": 0.0034523918221118334,
+      "zero_fraction": 1.0250382680953422e-05,
+      "selected_intervals": 4573
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 25,
+      "mean_abs_y": 0.003411328712470199,
+      "zero_fraction": 1.0168112798264642e-05,
+      "selected_intervals": 4610
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 26,
+      "mean_abs_y": 0.00345470129017396,
+      "zero_fraction": 1.0275098640946953e-05,
+      "selected_intervals": 4562
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 27,
+      "mean_abs_y": 0.0034549741201001004,
+      "zero_fraction": 1.6932162982228e-05,
+      "selected_intervals": 4614
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 28,
+      "mean_abs_y": 0.003468066089805687,
+      "zero_fraction": 6.817190226876091e-06,
+      "selected_intervals": 4584
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 29,
+      "mean_abs_y": 0.003442880106011914,
+      "zero_fraction": 2.0645232327681127e-05,
+      "selected_intervals": 4541
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 30,
+      "mean_abs_y": 0.003441166923870595,
+      "zero_fraction": 1.3799955840141311e-05,
+      "selected_intervals": 4529
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 31,
+      "mean_abs_y": 0.0034813268435723043,
+      "zero_fraction": 3.4063658164377587e-06,
+      "selected_intervals": 4587
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 32,
+      "mean_abs_y": 0.0034488380726273426,
+      "zero_fraction": 3.3689090125053904e-06,
+      "selected_intervals": 4638
+    },
+    {
+      "condition": "E18d",
+      "seed": 0,
+      "layer": 33,
+      "mean_abs_y": 0.004360706316996849,
+      "zero_fraction": 0.0,
+      "selected_intervals": 1002
+    }
+  ],
+  "audit": {
+    "condition": "E18d",
+    "seed": 0,
+    "passed": true,
+    "validation_and_probes_replay": [
+      {
+        "stage": "initial",
+        "validation": {
+          "loss": 2.79838525390625,
+          "accuracy": 0.083
+        },
+        "probe_pairs": 2176
+      },
+      {
+        "stage": "final",
+        "validation": {
+          "loss": 0.43712103271484376,
+          "accuracy": 0.879
+        },
+        "probe_pairs": 2176
+      }
+    ],
+    "audit_forward_calls": 8706,
+    "test_replayed": false
+  }
+}

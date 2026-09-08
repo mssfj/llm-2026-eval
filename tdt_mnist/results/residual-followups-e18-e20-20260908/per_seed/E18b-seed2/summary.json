@@ -1,0 +1,448 @@
+{
+  "condition": "E18b",
+  "seed": 2,
+  "initial_validation": {
+    "loss": 2.590007568359375,
+    "accuracy": 0.145
+  },
+  "final_validation": {
+    "loss": 0.4618028564453125,
+    "accuracy": 0.866
+  },
+  "test": {
+    "loss": 0.4195201141357422,
+    "accuracy": 0.8868
+  },
+  "train_forward_calls": 1536000,
+  "diagnostic_probe_forward_calls": 12800,
+  "total_forward_calls": 1548835,
+  "total_forward_examples": 198281400,
+  "test_evaluations": 1,
+  "elapsed_seconds": 6761.863553024828,
+  "layer_totals": [
+    {
+      "fires": 305,
+      "selected_intervals": 3886,
+      "fire_intervals": 305,
+      "selected_coordinates": 4594
+    },
+    {
+      "fires": 274,
+      "selected_intervals": 3456,
+      "fire_intervals": 274,
+      "selected_coordinates": 3988
+    },
+    {
+      "fires": 240,
+      "selected_intervals": 3447,
+      "fire_intervals": 240,
+      "selected_coordinates": 4026
+    },
+    {
+      "fires": 258,
+      "selected_intervals": 3395,
+      "fire_intervals": 258,
+      "selected_coordinates": 3939
+    },
+    {
+      "fires": 235,
+      "selected_intervals": 3311,
+      "fire_intervals": 235,
+      "selected_coordinates": 3824
+    },
+    {
+      "fires": 237,
+      "selected_intervals": 3366,
+      "fire_intervals": 237,
+      "selected_coordinates": 3939
+    },
+    {
+      "fires": 206,
+      "selected_intervals": 3457,
+      "fire_intervals": 206,
+      "selected_coordinates": 4020
+    },
+    {
+      "fires": 239,
+      "selected_intervals": 3284,
+      "fire_intervals": 239,
+      "selected_coordinates": 3792
+    },
+    {
+      "fires": 220,
+      "selected_intervals": 3314,
+      "fire_intervals": 220,
+      "selected_coordinates": 3861
+    },
+    {
+      "fires": 192,
+      "selected_intervals": 3367,
+      "fire_intervals": 192,
+      "selected_coordinates": 3906
+    },
+    {
+      "fires": 218,
+      "selected_intervals": 3408,
+      "fire_intervals": 218,
+      "selected_coordinates": 3949
+    },
+    {
+      "fires": 213,
+      "selected_intervals": 3311,
+      "fire_intervals": 213,
+      "selected_coordinates": 3825
+    },
+    {
+      "fires": 197,
+      "selected_intervals": 3258,
+      "fire_intervals": 197,
+      "selected_coordinates": 3797
+    },
+    {
+      "fires": 229,
+      "selected_intervals": 3346,
+      "fire_intervals": 229,
+      "selected_coordinates": 3903
+    },
+    {
+      "fires": 187,
+      "selected_intervals": 3359,
+      "fire_intervals": 187,
+      "selected_coordinates": 3897
+    },
+    {
+      "fires": 222,
+      "selected_intervals": 3358,
+      "fire_intervals": 222,
+      "selected_coordinates": 3898
+    },
+    {
+      "fires": 210,
+      "selected_intervals": 3357,
+      "fire_intervals": 210,
+      "selected_coordinates": 3864
+    },
+    {
+      "fires": 218,
+      "selected_intervals": 3339,
+      "fire_intervals": 218,
+      "selected_coordinates": 3865
+    },
+    {
+      "fires": 233,
+      "selected_intervals": 3426,
+      "fire_intervals": 233,
+      "selected_coordinates": 3988
+    },
+    {
+      "fires": 222,
+      "selected_intervals": 3374,
+      "fire_intervals": 222,
+      "selected_coordinates": 3927
+    },
+    {
+      "fires": 192,
+      "selected_intervals": 3324,
+      "fire_intervals": 192,
+      "selected_coordinates": 3856
+    },
+    {
+      "fires": 198,
+      "selected_intervals": 3421,
+      "fire_intervals": 198,
+      "selected_coordinates": 4036
+    },
+    {
+      "fires": 220,
+      "selected_intervals": 3277,
+      "fire_intervals": 220,
+      "selected_coordinates": 3786
+    },
+    {
+      "fires": 215,
+      "selected_intervals": 3390,
+      "fire_intervals": 215,
+      "selected_coordinates": 3954
+    },
+    {
+      "fires": 215,
+      "selected_intervals": 3307,
+      "fire_intervals": 215,
+      "selected_coordinates": 3836
+    },
+    {
+      "fires": 235,
+      "selected_intervals": 3424,
+      "fire_intervals": 235,
+      "selected_coordinates": 4006
+    },
+    {
+      "fires": 182,
+      "selected_intervals": 3352,
+      "fire_intervals": 182,
+      "selected_coordinates": 3940
+    },
+    {
+      "fires": 194,
+      "selected_intervals": 3297,
+      "fire_intervals": 194,
+      "selected_coordinates": 3840
+    },
+    {
+      "fires": 208,
+      "selected_intervals": 3358,
+      "fire_intervals": 208,
+      "selected_coordinates": 3865
+    },
+    {
+      "fires": 199,
+      "selected_intervals": 3386,
+      "fire_intervals": 199,
+      "selected_coordinates": 3962
+    },
+    {
+      "fires": 213,
+      "selected_intervals": 3397,
+      "fire_intervals": 213,
+      "selected_coordinates": 3927
+    },
+    {
+      "fires": 209,
+      "selected_intervals": 3339,
+      "fire_intervals": 209,
+      "selected_coordinates": 3841
+    },
+    {
+      "fires": 232,
+      "selected_intervals": 3322,
+      "fire_intervals": 232,
+      "selected_coordinates": 3848
+    },
+    {
+      "fires": 185,
+      "selected_intervals": 3357,
+      "fire_intervals": 185,
+      "selected_coordinates": 3903
+    },
+    {
+      "fires": 228,
+      "selected_intervals": 3397,
+      "fire_intervals": 228,
+      "selected_coordinates": 3954
+    },
+    {
+      "fires": 234,
+      "selected_intervals": 3356,
+      "fire_intervals": 234,
+      "selected_coordinates": 3909
+    },
+    {
+      "fires": 213,
+      "selected_intervals": 3404,
+      "fire_intervals": 213,
+      "selected_coordinates": 3904
+    },
+    {
+      "fires": 215,
+      "selected_intervals": 3406,
+      "fire_intervals": 215,
+      "selected_coordinates": 3960
+    },
+    {
+      "fires": 192,
+      "selected_intervals": 3376,
+      "fire_intervals": 192,
+      "selected_coordinates": 3920
+    },
+    {
+      "fires": 228,
+      "selected_intervals": 3297,
+      "fire_intervals": 228,
+      "selected_coordinates": 3823
+    },
+    {
+      "fires": 220,
+      "selected_intervals": 3372,
+      "fire_intervals": 220,
+      "selected_coordinates": 3924
+    },
+    {
+      "fires": 200,
+      "selected_intervals": 3332,
+      "fire_intervals": 200,
+      "selected_coordinates": 3814
+    },
+    {
+      "fires": 203,
+      "selected_intervals": 3350,
+      "fire_intervals": 203,
+      "selected_coordinates": 3896
+    },
+    {
+      "fires": 217,
+      "selected_intervals": 3299,
+      "fire_intervals": 217,
+      "selected_coordinates": 3821
+    },
+    {
+      "fires": 190,
+      "selected_intervals": 3360,
+      "fire_intervals": 190,
+      "selected_coordinates": 3951
+    },
+    {
+      "fires": 193,
+      "selected_intervals": 3237,
+      "fire_intervals": 193,
+      "selected_coordinates": 3798
+    },
+    {
+      "fires": 211,
+      "selected_intervals": 3313,
+      "fire_intervals": 211,
+      "selected_coordinates": 3851
+    },
+    {
+      "fires": 232,
+      "selected_intervals": 3264,
+      "fire_intervals": 232,
+      "selected_coordinates": 3797
+    },
+    {
+      "fires": 213,
+      "selected_intervals": 3286,
+      "fire_intervals": 213,
+      "selected_coordinates": 3801
+    },
+    {
+      "fires": 72,
+      "selected_intervals": 465,
+      "fire_intervals": 72,
+      "selected_coordinates": 475
+    }
+  ],
+  "counter_histogram": {
+    "-8": 6727,
+    "-5": 11492,
+    "-4": 13113,
+    "-3": 14440,
+    "-2": 15778,
+    "-1": 16241,
+    "0": 16818,
+    "1": 16485,
+    "2": 16007,
+    "3": 14671,
+    "6": 9837,
+    "9": 5255,
+    "4": 12987,
+    "7": 8124,
+    "-7": 7968,
+    "-6": 9851,
+    "8": 6682,
+    "12": 2571,
+    "13": 1974,
+    "14": 1534,
+    "-11": 3279,
+    "5": 11296,
+    "16": 882,
+    "21": 212,
+    "-26": 66,
+    "-18": 535,
+    "-13": 1920,
+    "-12": 2540,
+    "11": 3275,
+    "20": 284,
+    "-29": 38,
+    "-10": 4271,
+    "15": 1145,
+    "-9": 5211,
+    "10": 4173,
+    "19": 379,
+    "-14": 1494,
+    "24": 102,
+    "-28": 41,
+    "18": 475,
+    "22": 174,
+    "-17": 611,
+    "-33": 11,
+    "-15": 1101,
+    "38": 10,
+    "-23": 129,
+    "-19": 355,
+    "26": 65,
+    "-46": 4,
+    "-27": 52,
+    "-25": 82,
+    "25": 87,
+    "-30": 25,
+    "-22": 173,
+    "45": 3,
+    "-37": 14,
+    "-16": 840,
+    "37": 11,
+    "17": 636,
+    "-55": 2,
+    "36": 19,
+    "32": 27,
+    "-41": 8,
+    "-24": 112,
+    "23": 141,
+    "-20": 295,
+    "-21": 222,
+    "27": 55,
+    "28": 56,
+    "57": 1,
+    "-38": 8,
+    "-52": 2,
+    "-47": 2,
+    "51": 3,
+    "-36": 12,
+    "29": 45,
+    "31": 34,
+    "43": 6,
+    "42": 4,
+    "34": 19,
+    "41": 6,
+    "-31": 12,
+    "-34": 15,
+    "-43": 4,
+    "40": 6,
+    "30": 27,
+    "44": 5,
+    "50": 1,
+    "-44": 9,
+    "64": 1,
+    "52": 2,
+    "39": 8,
+    "33": 20,
+    "48": 3,
+    "-42": 6,
+    "46": 4,
+    "35": 12,
+    "-45": 3,
+    "47": 1,
+    "-53": 5,
+    "-40": 7,
+    "-49": 3,
+    "-32": 23,
+    "-35": 6,
+    "-57": 1,
+    "59": 2,
+    "-39": 6,
+    "-58": 2,
+    "-51": 3,
+    "56": 2,
+    "53": 1,
+    "-48": 2,
+    "-50": 1,
+    "60": 1,
+    "-60": 1,
+    "-54": 1,
+    "49": 3
+  },
+  "num_params": 284848,
+  "status": "success",
+  "blocks": 24,
+  "width": 76,
+  "activation_precision": "a8"
+}

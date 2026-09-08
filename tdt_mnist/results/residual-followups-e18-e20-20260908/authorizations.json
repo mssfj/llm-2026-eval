@@ -1,0 +1,16 @@
+{
+  "e18d_budget_exception_approved": true,
+  "user_message": "E18dを実行してください",
+  "recorded_at_utc": "2026-09-08T08:08:47.541339+00:00",
+  "blocks": 16,
+  "width": 54,
+  "weights": 98712,
+  "deviation_percent": -1.288,
+  "exception": "Keep the explicitly specified width 54 and record the exception to the 100000 +/- 1% parameter budget.",
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "approval_commit": "c9a635a"
+}

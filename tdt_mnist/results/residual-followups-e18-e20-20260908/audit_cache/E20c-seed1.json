@@ -1,0 +1,19 @@
+{
+  "input_manifest_sha256": "2d1b8e3e2eec929df959fa77a3f94b4f05ab3052179f9767a5ec7a9c65bac0f6",
+  "audit_function_sha256": "e0ad8eeaa9cc1665f12419c3c4abea788d39e250a3a24b67a617c5f8244e1c12",
+  "audit": {
+    "condition": "E20c",
+    "seed": 1,
+    "passed": true,
+    "attempts": [
+      {
+        "attempt": 0,
+        "status": "success",
+        "passed": true,
+        "epochs": 59,
+        "test_replayed": false
+      }
+    ],
+    "initial_weight_sha256": "378eda022cda84b3f2fd389f4335a4845e0691b6a1a0b4904c0c9fdbc74c4f75"
+  }
+}

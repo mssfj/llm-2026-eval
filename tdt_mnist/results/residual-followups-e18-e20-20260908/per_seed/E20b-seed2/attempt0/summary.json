@@ -1,0 +1,27 @@
+{
+  "status": "success",
+  "condition": "E20b",
+  "seed": 2,
+  "attempt": 0,
+  "epochs": 30,
+  "best_epoch": 10,
+  "optimizer_updates": 2370,
+  "initial_validation": {
+    "loss": 2.530764404296875,
+    "accuracy": 0.115
+  },
+  "selected_validation": {
+    "loss": 0.17577613830566408,
+    "accuracy": 0.955
+  },
+  "test": {
+    "loss": 0.16872913436889647,
+    "accuracy": 0.9542
+  },
+  "test_evaluations": 1,
+  "elapsed_seconds": 20.999246023595333,
+  "initial_weight_sha256": "75e828c97a936d8bb8bd068fbcc673d40521c7fb644b160b54195546d63eb508",
+  "final_weight_sha256": "f4ca715ef858cf0b8dc01e68cf1d4107b61acd154ccefd2c9ef557beff3e3b7a",
+  "forward_calls": 2418,
+  "forward_examples": 348000
+}

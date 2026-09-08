@@ -1,0 +1,20 @@
+{
+  "activation.csv": "66e77c9482f0baec050dd1ee726640fab5ea5c8dfff3e34fc8b4264014e6e9f5",
+  "best_model.pt": "29b24ad8eb30fe675ed4b056100af1a28b673f220ce6c9a4c988d639f8f980e8",
+  "config.json": "f7df3227148f332f48589e61682ace113087997c5be92771824806d387a38a60",
+  "gradient_metrics.csv": "84bdb7ac67de86656a359b5867d8cc8f8faf58609f3726ee495e3bdd677f42de",
+  "initial_model.pt": "e3f94e6f440c8426d53f060cc904565bf0667f6e51db5b7bdb687ae2cf28be70",
+  "initial_validation_predictions.npz": "703f8df0dd5143275f4c189209ed78a6935e59866388ca7a8ac1aaa0e28f0441",
+  "model.pt": "eada36e6697a39bbee554b6745e2ff292d7ff60edff7a7c3b2486bef6dc6bd2a",
+  "progress.json": "3663d73631d110ada569c7a7686ee4f14f291ada3790fb9debbf64046f26884e",
+  "rms_ratios.csv": "3e7b09e6abd3e35cadebc894682982d77ed03ec11323dc51f915be322053c633",
+  "selected_activation.csv": "274515d9c896706c96ff2158008063f7b141d827e6e0e8ba17941940a44e339c",
+  "selected_rms_ratios.csv": "84bd3c757f89b1d31a34e6cae7798ee1db192a15b7111aa0ac881c699a319cff",
+  "selected_signal.csv": "fdfbf7fd8f5fc61bacc805144abd8349d4816e0b3d8a94584dbd29b18c2a6c9f",
+  "selected_validation_predictions.npz": "ac17c7747d26ffcecd5e2ff00c2db597ed707f20e60e33b1cacb24c05cb0f4ba",
+  "signal.csv": "57ed5fe7f1fc7f8535ad1c943519cccf86f8bdd23ee53211c8fb3bf945a2a5ac",
+  "summary.json": "ff32e964ee972c12502a905839055017318111d7f25e1abd26770aaa524a3ac1",
+  "training.csv": "65b3046f292ea4637031ba3d453d0dff0a90b925e7a307468ae2d9059ab8732f",
+  "update_validation.csv": "3d1f28b4c8e13c976ecb82998c8407533402caf30f2debb03502e4b1e6deb214",
+  "weight_metrics.csv": "a3af5af01d67c5b9426c023ebfa80c3becdcc1f846f462d18a44be51af072d73"
+}

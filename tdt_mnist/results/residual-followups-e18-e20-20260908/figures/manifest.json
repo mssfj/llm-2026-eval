@@ -1,0 +1,12 @@
+{
+  "matplotlib_version": "3.11.1",
+  "source_sha256": "d9323ee1cc10eb149a2ae19cf0b396879bb1b032b150234eee27d52e4307b7cb",
+  "files": {
+    "e18_depth.png": "975c22141e929e527aec7ec35ceb13b2bac800a63c69e1ed85eb97ae72c83e3e",
+    "e18_depth.svg": "eaa74eca2fe28d74cc7d4883e77505b11f2ff13e14eb65a3e2882468b439ecec",
+    "e19_a4.png": "0f9af4f30d26d3a3d7a775e571d511d34fa90c190d261c531fa5735c13531e5d",
+    "e19_a4.svg": "0c822416091498a4a907fe24ceba39278b9f6a38e586db7a275f437c4dc4724f",
+    "e20_decomposition.png": "0033667ee6afe7535a8fdc620047a55c5ae14118fd7530bb5cbb20f249be9357",
+    "e20_decomposition.svg": "68b740bb8b35e44cfb9ed7cb042134e4dc56e99c70dce6274d1ee5fa0e54ac19"
+  }
+}

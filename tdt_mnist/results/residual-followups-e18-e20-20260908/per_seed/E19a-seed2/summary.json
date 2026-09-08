@@ -1,0 +1,204 @@
+{
+  "condition": "E19a",
+  "seed": 2,
+  "initial_validation": {
+    "loss": 2.680883056640625,
+    "accuracy": 0.095
+  },
+  "final_validation": {
+    "loss": 0.8937281494140625,
+    "accuracy": 0.765
+  },
+  "test": {
+    "loss": 0.8713149780273437,
+    "accuracy": 0.7738
+  },
+  "train_forward_calls": 1536000,
+  "diagnostic_probe_forward_calls": 4608,
+  "total_forward_calls": 1540643,
+  "total_forward_examples": 197232824,
+  "test_evaluations": 1,
+  "elapsed_seconds": 3683.0648880898952,
+  "layer_totals": [
+    {
+      "fires": 733,
+      "selected_intervals": 8012,
+      "fire_intervals": 733,
+      "selected_coordinates": 12791
+    },
+    {
+      "fires": 603,
+      "selected_intervals": 7392,
+      "fire_intervals": 603,
+      "selected_coordinates": 11194
+    },
+    {
+      "fires": 663,
+      "selected_intervals": 7419,
+      "fire_intervals": 663,
+      "selected_coordinates": 11274
+    },
+    {
+      "fires": 601,
+      "selected_intervals": 7373,
+      "fire_intervals": 601,
+      "selected_coordinates": 11074
+    },
+    {
+      "fires": 617,
+      "selected_intervals": 7299,
+      "fire_intervals": 617,
+      "selected_coordinates": 11037
+    },
+    {
+      "fires": 640,
+      "selected_intervals": 7339,
+      "fire_intervals": 640,
+      "selected_coordinates": 11052
+    },
+    {
+      "fires": 586,
+      "selected_intervals": 7408,
+      "fire_intervals": 586,
+      "selected_coordinates": 11294
+    },
+    {
+      "fires": 630,
+      "selected_intervals": 7477,
+      "fire_intervals": 630,
+      "selected_coordinates": 11384
+    },
+    {
+      "fires": 575,
+      "selected_intervals": 7312,
+      "fire_intervals": 575,
+      "selected_coordinates": 10949
+    },
+    {
+      "fires": 646,
+      "selected_intervals": 7281,
+      "fire_intervals": 646,
+      "selected_coordinates": 10906
+    },
+    {
+      "fires": 575,
+      "selected_intervals": 7429,
+      "fire_intervals": 575,
+      "selected_coordinates": 11181
+    },
+    {
+      "fires": 620,
+      "selected_intervals": 7366,
+      "fire_intervals": 620,
+      "selected_coordinates": 11044
+    },
+    {
+      "fires": 632,
+      "selected_intervals": 7291,
+      "fire_intervals": 632,
+      "selected_coordinates": 10935
+    },
+    {
+      "fires": 600,
+      "selected_intervals": 7435,
+      "fire_intervals": 600,
+      "selected_coordinates": 11137
+    },
+    {
+      "fires": 626,
+      "selected_intervals": 7435,
+      "fire_intervals": 626,
+      "selected_coordinates": 11177
+    },
+    {
+      "fires": 621,
+      "selected_intervals": 7355,
+      "fire_intervals": 621,
+      "selected_coordinates": 11067
+    },
+    {
+      "fires": 629,
+      "selected_intervals": 7350,
+      "fire_intervals": 629,
+      "selected_coordinates": 11057
+    },
+    {
+      "fires": 101,
+      "selected_intervals": 1367,
+      "fire_intervals": 101,
+      "selected_coordinates": 1447
+    }
+  ],
+  "counter_histogram": {
+    "-13": 1722,
+    "-4": 13554,
+    "-3": 15432,
+    "-2": 16254,
+    "-1": 17104,
+    "0": 17613,
+    "1": 17312,
+    "2": 16201,
+    "3": 15292,
+    "5": 11812,
+    "7": 8379,
+    "8": 6674,
+    "9": 5251,
+    "10": 4038,
+    "13": 1662,
+    "-12": 2293,
+    "-9": 5238,
+    "-8": 6471,
+    "-5": 11979,
+    "4": 13601,
+    "-28": 4,
+    "-11": 3045,
+    "-6": 9895,
+    "6": 10016,
+    "-17": 451,
+    "16": 635,
+    "-7": 8119,
+    "17": 502,
+    "-14": 1225,
+    "11": 2968,
+    "12": 2237,
+    "18": 319,
+    "-29": 2,
+    "-10": 3913,
+    "-27": 8,
+    "-15": 862,
+    "14": 1216,
+    "-20": 149,
+    "-16": 616,
+    "21": 98,
+    "15": 844,
+    "19": 219,
+    "-25": 24,
+    "-19": 202,
+    "-18": 315,
+    "-21": 95,
+    "20": 155,
+    "-24": 21,
+    "23": 50,
+    "25": 9,
+    "-22": 72,
+    "24": 25,
+    "22": 56,
+    "-33": 1,
+    "-23": 26,
+    "27": 7,
+    "-36": 2,
+    "26": 15,
+    "-32": 2,
+    "30": 3,
+    "39": 1,
+    "-26": 12,
+    "29": 3,
+    "28": 2,
+    "-31": 2
+  },
+  "num_params": 100016,
+  "status": "success",
+  "blocks": 8,
+  "width": 76,
+  "activation_precision": "a4"
+}
