@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "update_pages": 8,
+  "preserved_v5_5_pages": 186,
+  "total_pages": 194,
+  "verified_artifact_hashes": 167,
+  "recomputed_seed_measurements": 15,
+  "old_text_and_pixels_preserved": true,
+  "attachments_verified": true,
+  "no_text_outside_page": true,
+  "archive_files": 172,
+  "new_training": false,
+  "test_evaluated": false,
+  "pdf_sha256": "f2e349a9ab9764bff0e498124a109877ea90b579e70fa83314638e0377b566fb",
+  "original_sha256": "04b59cf1de8c0c45e79fb61ab81be2f92e0b52c108c768d06fe29ef0b52c6c21",
+  "archive_sha256": "b4feaae4319330fe83def8d3ecb5511bfcd2f20b02396d3766b9cfbfb997d0c4"
+}
