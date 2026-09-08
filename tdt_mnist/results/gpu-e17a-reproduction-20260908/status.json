@@ -1,0 +1,8 @@
+{
+  "complete": true,
+  "training_complete": true,
+  "completed": 3,
+  "expected": 3,
+  "audited": true,
+  "accuracy_band_pass": true
+}

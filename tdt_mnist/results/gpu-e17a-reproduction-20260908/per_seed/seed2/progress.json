@@ -1,0 +1,10 @@
+{
+  "step": 12000,
+  "validation": {
+    "loss": 0.37615744018554687,
+    "accuracy": 0.885
+  },
+  "elapsed_seconds": 196.78770397603512,
+  "engine_seconds": 188.7472682185471,
+  "first_firing_divergence": 10
+}

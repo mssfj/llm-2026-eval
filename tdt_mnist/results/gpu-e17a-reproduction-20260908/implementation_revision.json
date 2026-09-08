@@ -1,0 +1,7 @@
+{
+  "preregistration_commit": "c908462",
+  "implementation_commit": "5045846",
+  "reference": "E17a:8 residual blocks,76 width,100016 weights",
+  "training_initialization": "fresh original-seed ternary initialization",
+  "test_evaluation_device": "cpu; same evaluator as original E17a"
+}

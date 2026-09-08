@@ -1,0 +1,19 @@
+{
+  "abs_y.npy": "4891aae7d7ba371ef92bf854031ec0810f82a218192cffecb8873b872a563395",
+  "activation.csv": "b69f6f41b9208fd4e327359758d5d449564585956c9c098e3d77bb0973e17925",
+  "candidate_losses.npy": "4e7f8d3bcec2e12afa6fe78ab4bd49222a62b266a614c7be239a1909b9ed8ecb",
+  "checkpoint.pt": "160247f08bd306f678430542922a3b9151bbb4bda4286c7f7b86797abba63338",
+  "config.json": "2eea343b67f96374ae378a7704560253591abad2eab312775bbdf678de859c1a",
+  "firing.csv": "2223df9d795765e6da6be85a5533cb80eacbe37941d26fc8a55b291623b74ab0",
+  "first_divergence.json": "49312602112d0fb280a379c99ba70d027db87376368e65af2c0edf2344b47476",
+  "initial_validation.json": "4d4e0aa31a837e3a62be9bcb1005b9eafa1a0958158dc479e1176fc10ba7657f",
+  "layer_metrics.csv": "6bfa03f3fdc1544b1bfdead24ff17ba65257c4c8625ff3b242db5a7ab83b5195",
+  "metrics.csv": "a7757746c06bc6ec3937b86f5168d5f6c07debda35927efd27d7548b1d7ba64f",
+  "model.pt": "f84ab5b8c4f581076f409385353f3d7faaefd963e620fbbcddf211e15c767c5f",
+  "probes.csv": "7f4604d1af291a31a1d8c78a56436b9bf01bc084709e416e97b972eacfbff97b",
+  "progress.json": "cc55c4eaa263bbdb36e87d1a9887574739f0a55f665602d875a7718ca1fb86cd",
+  "rms_ratios.csv": "4b33a29ba44c768b2bff6b6bba4739743affc8ef656d26b71a467d4a5f40c41d",
+  "selected_indices.npy": "ac710ff0dbdffbc9716babcc04593b1616195f384cb6a14b6acd609bad44153d",
+  "signal.csv": "b5298652f7d461358092098bb59fb16070241ce82d0ba0a07631902170851523",
+  "summary.json": "a4f23b604a8e95bb7996c567c5b46589587abcf2ac9b9be3ecfd9eef9c221d78"
+}

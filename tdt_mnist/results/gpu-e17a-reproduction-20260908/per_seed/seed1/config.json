@@ -1,0 +1,171 @@
+{
+  "a3_improvement": "none",
+  "hidden_activation": "relu",
+  "a3_method": "absmax",
+  "a3_threshold_factor": 0.5,
+  "activation_precision": "a8",
+  "pool_size": 10,
+  "pool_shape": [
+    9,
+    10
+  ],
+  "expected_params": null,
+  "hidden_sizes": null,
+  "loss_diagnostics": true,
+  "layer_diagnostics": true,
+  "hidden_size": 0,
+  "steps": 12000,
+  "batch_size": 128,
+  "block_size": 16,
+  "measurements": 64,
+  "threshold": 8,
+  "max_fires": 1,
+  "counter_bits": 8,
+  "leak": 1.0,
+  "scale": 0.02,
+  "scale_ema": 0.1,
+  "min_scale": 1e-05,
+  "zero_rate": 0.3333333333333333,
+  "gain": 1.0,
+  "train_size": 10000,
+  "val_size": 1000,
+  "test_size": 10000,
+  "eval_every": 500,
+  "oracle_every": 0,
+  "oracle_size": 512,
+  "tie_tolerance": 1e-05,
+  "data_seed": 0,
+  "batch_seed": 100001,
+  "seed": 1,
+  "device": "cpu",
+  "threads": 1,
+  "data_dir": "/root/lowbit-math-reasoning/tdt_mnist/data",
+  "output_dir": "runs/tdt-1000",
+  "download": false,
+  "condition": "GPU_E17a",
+  "engine": "gpu_graph",
+  "blocks": 8,
+  "width": 76,
+  "num_params": 100016,
+  "matrices": 18,
+  "shapes": [
+    [
+      76,
+      90
+    ],
+    [
+      76,
+      76
+    ],
+    [
+      76,
+      76
+    ],
+    [
+      76,
+      76
+    ],
+    [
+      76,
+      76
+    ],
+    [
+      76,
+      76
+    ],
+    [
+      76,
+      76
+    ],
+    [
+      76,
+      76
+    ],
+    [
+      76,
+      76
+    ],
+    [
+      76,
+      76
+    ],
+    [
+      76,
+      76
+    ],
+    [
+      76,
+      76
+    ],
+    [
+      76,
+      76
+    ],
+    [
+      76,
+      76
+    ],
+    [
+      76,
+      76
+    ],
+    [
+      76,
+      76
+    ],
+    [
+      76,
+      76
+    ],
+    [
+      10,
+      76
+    ]
+  ],
+  "layer_scales": [
+    0.12909944487358055,
+    0.1404878717372541,
+    0.1404878717372541,
+    0.1404878717372541,
+    0.1404878717372541,
+    0.1404878717372541,
+    0.1404878717372541,
+    0.1404878717372541,
+    0.1404878717372541,
+    0.1404878717372541,
+    0.1404878717372541,
+    0.1404878717372541,
+    0.1404878717372541,
+    0.1404878717372541,
+    0.1404878717372541,
+    0.1404878717372541,
+    0.1404878717372541,
+    0.1404878717372541
+  ],
+  "evaluation_device": "cpu",
+  "candidate_device": "cuda",
+  "source_manifest": {
+    "preregistration_commit": "c908462",
+    "sources": {
+      "run_gpu_e17a.py": "f93b531617edac0968d3d7a7dd32a5a42369c76dbf330ede29b2ce12c75132d5",
+      "audit_gpu_e17a.py": "9668774c0f1a37932d4d2b10691d2ff2c2dbdc79eb02bb410dec2c09e2fd0282",
+      "gpu_evaluation_engines.py": "4142d6ed0c0e7a58b494835e4b19195bfd5ebc9255a048583daa262344c6dbcc",
+      "allocation_engines.py": "d36ba74682850d33bfaf8ee76179d0f6aa15010fef4169f93ec0d3c43f901202",
+      "GPU_E17A_REPRODUCTION_PREREGISTRATION.md": "3091e74a487b4d0805857d840971196032177cedae2797f0878379c73a263ddf",
+      "train.py": "c8bd627ff7adcd74d05991aa22c8a71f4b281ec9b8149339d39d740f33b20cbb",
+      "residual_followup_models.py": "e3bf978d492c9c92573b987cdcee6140df55e207cc883a1eaa34223a4f8e9185",
+      "residual_stream.py": "628fc6900678e9e5580f922b53872f9284f949e1786b74332dfab07d8ebf5863",
+      "activation_quantization.py": "96eb70ce744cf3833cc4b058b1cc3f3dc24df24284321a7a0546eaeb31f260b5",
+      "depth_diagnostics.py": "209a989a9ae5bba7729ec110b2324717178326d3e19c4f91f717e480a04972a7",
+      "run_residual_e17.py": "975d8524f34e57b99b59e5565e3e53ed8110c638d9e2af20248917e07a108243"
+    },
+    "data": {
+      "train-images-idx3-ubyte": "ba891046e6505d7aadcbbe25680a0738ad16aec93bde7f9b65e87a2fc25776db",
+      "train-labels-idx1-ubyte": "65a50cbbf4e906d70832878ad85ccda5333a97f0f4c3dd2ef09a8a9eef7101c5",
+      "t10k-images-idx3-ubyte": "0fa7898d509279e482958e8ce81c8e77db3f2f8254e26661ceb7762c4d494ce7",
+      "t10k-labels-idx1-ubyte": "ff7bcfd416de33731a308c3f266cc351222c34898ecbeaf847f06e48f7ec33f2"
+    },
+    "cpu_reference_sha256": "24ebbc73c856154f1d6858645b1a9b6e59fe9fd210daf59f660d47bd81981603",
+    "cpu_source_manifest_sha256": "7cee62c3b0ef7cc416c1ef01ca4c6269537db9fe41ea7976202bb7298a58c537"
+  }
+}

@@ -1,0 +1,25 @@
+GPU E17a seed0 step=500 val=38.600% first_divergence=4
+GPU E17a seed0 step=1000 val=59.900% first_divergence=4
+GPU E17a seed0 step=1500 val=69.900% first_divergence=4
+GPU E17a seed0 step=2000 val=76.800% first_divergence=4
+GPU E17a seed0 step=2500 val=79.400% first_divergence=4
+GPU E17a seed0 step=3000 val=80.800% first_divergence=4
+GPU E17a seed0 step=3500 val=81.500% first_divergence=4
+GPU E17a seed0 step=4000 val=82.900% first_divergence=4
+GPU E17a seed0 step=4500 val=84.600% first_divergence=4
+GPU E17a seed0 step=5000 val=84.600% first_divergence=4
+GPU E17a seed0 step=5500 val=85.400% first_divergence=4
+GPU E17a seed0 step=6000 val=85.300% first_divergence=4
+GPU E17a seed0 step=6500 val=86.300% first_divergence=4
+GPU E17a seed0 step=7000 val=86.200% first_divergence=4
+GPU E17a seed0 step=7500 val=86.800% first_divergence=4
+GPU E17a seed0 step=8000 val=87.600% first_divergence=4
+GPU E17a seed0 step=8500 val=87.900% first_divergence=4
+GPU E17a seed0 step=9000 val=88.500% first_divergence=4
+GPU E17a seed0 step=9500 val=88.300% first_divergence=4
+GPU E17a seed0 step=10000 val=88.400% first_divergence=4
+GPU E17a seed0 step=10500 val=88.600% first_divergence=4
+GPU E17a seed0 step=11000 val=89.100% first_divergence=4
+GPU E17a seed0 step=11500 val=89.600% first_divergence=4
+GPU E17a seed0 step=12000 val=89.500% first_divergence=4
+GPU E17a seed0 complete; final test saved for aggregate after all3

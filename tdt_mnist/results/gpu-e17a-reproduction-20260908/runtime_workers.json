@@ -1,0 +1,37 @@
+{
+  "gpu_workers": 1,
+  "seeds_sequential": true,
+  "cpu_threads": 1,
+  "cpu_affinity": [
+    15
+  ],
+  "existing_jobs": [
+    "  30674    01:58:00 eval/.venv/bin/python tdt_mnist/run_fast_engine.py run",
+    "  31004    01:52:55 eval/.venv/bin/python tdt_mnist/finish_fast_engine_report.py --wait",
+    "  35596       10:55 /root/lowbit-math-reasoning/eval/.venv/bin/python /root/lowbit-math-reasoning/tdt_mnist/run_fast_engine.py worker --seed 1 --engine fast",
+    "  35597       10:55 /root/lowbit-math-reasoning/eval/.venv/bin/python /root/lowbit-math-reasoning/tdt_mnist/run_fast_engine.py worker --seed 2 --engine fast"
+  ],
+  "events": [
+    {
+      "seed": 0,
+      "pid": 36251,
+      "start_time": 1788872651.24357,
+      "end_time": 1788872854.1309288,
+      "returncode": 0
+    },
+    {
+      "seed": 1,
+      "pid": 36324,
+      "start_time": 1788872854.1322052,
+      "end_time": 1788873059.7362592,
+      "returncode": 0
+    },
+    {
+      "seed": 2,
+      "pid": 36549,
+      "start_time": 1788873059.737375,
+      "end_time": 1788873265.0830448,
+      "returncode": 0
+    }
+  ]
+}
