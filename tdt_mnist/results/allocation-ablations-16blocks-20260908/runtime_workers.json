@@ -1,0 +1,27 @@
+{
+  "sequential_benchmarks": true,
+  "threads_per_worker": 1,
+  "cpu": 15,
+  "concurrent_existing_jobs": [
+    "  30674    01:12:56 eval/.venv/bin/python tdt_mnist/run_fast_engine.py run",
+    "  31004    01:07:51 eval/.venv/bin/python tdt_mnist/finish_fast_engine_report.py --wait",
+    "  31984       37:29 /root/lowbit-math-reasoning/eval/.venv/bin/python /root/lowbit-math-reasoning/tdt_mnist/run_fast_engine.py worker --seed 0 --engine fast"
+  ],
+  "order": [
+    [
+      "naive",
+      "restore_cache",
+      "candidate_buffers"
+    ],
+    [
+      "restore_cache",
+      "candidate_buffers",
+      "naive"
+    ],
+    [
+      "candidate_buffers",
+      "naive",
+      "restore_cache"
+    ]
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "seed": 0,
+  "engine": "naive",
+  "blocks": 16,
+  "linear_matrices": 34,
+  "width": 76,
+  "weights": 192432,
+  "intervals": 100,
+  "seconds": 30.05079835280776,
+  "seconds_per_interval": 0.3005079835280776,
+  "interval_seconds_sum": 30.050678674131632,
+  "threads": 1,
+  "cpu_affinity": [
+    15
+  ],
+  "rss_baseline": 718274560,
+  "peak_rss": 720371712,
+  "peak_rss_reset_after_warmup": true,
+  "rss_peak_increment": 2097152,
+  "final_weights_sha256": "1c225f5195cfa928f6ed39164b2483967ff96fbc958d4831a75c0870b0d92a6b",
+  "final_scale": 0.0020545783800420773,
+  "generator_sha256": "fef1f971a527c42f3e7ac09fa7a9b005302cb05d4cccf5244e3ea880a8c6d5f4",
+  "batch_generator_sha256": "ff99baf6d192cd5d2176eb862c4edc9a06a9f2a9878259ff704c61fca4554d4b"
+}
