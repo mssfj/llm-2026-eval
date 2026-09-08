@@ -10,6 +10,7 @@ eval/.venv/bin/python -m unittest discover -s tdt_mnist -p test_residual_stream.
 eval/.venv/bin/python tdt_mnist/run_residual_e17.py preflight
 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 eval/.venv/bin/python tdt_mnist/run_residual_e17.py run
 eval/.venv/bin/python tdt_mnist/audit_residual_e17.py
+eval/.venv/bin/python tdt_mnist/plot_residual_e17.py
 ```
 
 既存結果は上書きしない。再現時はpreflight/runの両方で同じ`--root PATH`を指定し、監査にもPATHを位置引数で渡す。`--data PATH`でMNISTキャッシュを指定できる。条件・学習設定を変更するCLIは設けていない。各runのCPU threadsは1。

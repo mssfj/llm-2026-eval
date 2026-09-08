@@ -125,7 +125,7 @@ def main(root):
             m = ResidualStreamModel(seed,precision,activation)
             (x,labels),(vx,vy),_=load_data(a,m.device)
             checkpoint=torch.load(out/'model.pt',map_location='cpu',weights_only=False)
-            assert checkpoint['config']==cfg
+            assert json.loads(json.dumps(checkpoint['config']))==cfg
             expected_probes=read(out/'probes.csv')
             assert len(expected_probes)==2304
             replay=[]

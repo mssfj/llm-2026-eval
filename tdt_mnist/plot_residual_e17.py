@@ -34,8 +34,8 @@ def line(ax, rows, xkey, ykey, condition, factor=1., label=None):
 
 def save(fig, path):
     fig.tight_layout()
-    fig.savefig(path.with_suffix('.png'),dpi=180)
-    fig.savefig(path.with_suffix('.svg'))
+    fig.savefig(path.with_suffix('.png'),dpi=180,bbox_inches='tight')
+    fig.savefig(path.with_suffix('.svg'),bbox_inches='tight')
     plt.close(fig)
 
 
@@ -79,14 +79,18 @@ def main(root):
     ax[1,0].set(xlabel='Matrix (0-based; 0=input, 17=output)',ylabel='Firing intervals / 12,000 (%)',title='Firing across all training intervals')
     ax[1,1].set(xlabel='Matrix (0-based)',ylabel='Mean |loss(+) - loss(-)|',title='Final isolated probes: 64 pairs, 16 edges')
     ax[1,2].set(xlabel='Quantization point / matrix (0-based)',ylabel='Relative squared error',title='Final per-point quantization error')
+    for axis in ax[1]:
+        axis.set_xticks([0,2,4,6,8,10,12,14,16,17])
     ax[0,0].legend(fontsize=8)
     fig.suptitle('E17 diagnostics: means and sample SD across 3 seeds',y=1.02)
     save(fig,out/'diagnostics')
     shutil.copy2(Path(__file__),root/'sources'/Path(__file__).name)
     dump(out/'manifest.json',dict(matplotlib_version=matplotlib.__version__,source_sha256=sha(Path(__file__)),
          files={p.name:sha(p) for p in out.iterdir() if p.suffix in ('.png','.svg')}))
-    with (root/'README.md').open('a') as f:
-        f.write('\n図: [精度比較](figures/accuracy.png)、[層別診断](figures/diagnostics.png)。同名SVGも保存。帯は3seedの標本標準偏差。\n')
+    note='\n図: [精度比較](figures/accuracy.png)、[層別診断](figures/diagnostics.png)。同名SVGも保存。帯は3seedの標本標準偏差。\n'
+    if note not in (root/'README.md').read_text():
+        with (root/'README.md').open('a') as f:
+            f.write(note)
     dump(root/'artifacts_sha256.json',{str(p.relative_to(root)):sha(p) for p in sorted(root.rglob('*'))
                                       if p.is_file() and p.name!='artifacts_sha256.json'})
 
