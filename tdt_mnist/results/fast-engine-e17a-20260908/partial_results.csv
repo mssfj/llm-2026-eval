@@ -1,4 +1,0 @@
-seed,logged_intervals,checkpoint_interval,last_validation_percent,test_percent,historical_metric_mismatch_count,historical_abs_y_prefix_exact,all_candidates_fallback,firing_rows,layer_rows
-0,12000,12000,90.10000000000001,91.11,0,True,True,12000,216000
-1,5282,5000,85.9,,0,True,True,5282,95076
-2,5465,5000,85.9,,0,True,True,5465,98370

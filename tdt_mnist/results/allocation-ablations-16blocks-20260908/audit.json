@@ -1,8 +1,0 @@
-{
-  "passed": true,
-  "source_data_model_hashes_checked": 31,
-  "interval_trace_fields_checked": 1800,
-  "loss_comparisons": 4608,
-  "test_evaluated": false,
-  "existing_running_experiment_sources_unchanged": true
-}

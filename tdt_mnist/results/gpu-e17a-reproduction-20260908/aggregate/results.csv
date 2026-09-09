@@ -1,2 +1,0 @@
-gpu_test_mean_percent,gpu_test_sample_std_percent,cpu_test_mean_percent,cpu_test_sample_std_percent,paired_delta_mean_pp,paired_delta_sample_std_pp,fixed_reference_percent,lower_bound_percent,upper_bound_percent,accuracy_band_pass,nondegradation_lower_bound_pass,strict_firing_sequence_equal,mean_training_seconds
-90.58666666666666,0.39803684921541743,90.63666666666667,0.43003875794320495,-0.0500000000000019,0.23643180835074393,90.637,90.337,90.937,True,True,False,196.10479241857925

@@ -1,5 +1,0 @@
-{
-  "pid": 46336,
-  "command": "eval/.venv/bin/python tdt_mnist/run_depth_budget.py run",
-  "autonomous_postprocessing": true
-}

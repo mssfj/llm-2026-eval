@@ -1,9 +1,0 @@
-{
-  "epoch": 37,
-  "updates": 2923,
-  "validation": {
-    "loss": 0.184703125,
-    "accuracy": 0.959
-  },
-  "failure": null
-}

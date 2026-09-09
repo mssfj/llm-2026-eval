@@ -1,8 +1,0 @@
-{
-  "runs_checked": 27,
-  "exact_prefix_comparisons_passed": 27,
-  "loss_improved_runs": 27,
-  "accuracy_improved_runs": 27,
-  "source_hashes_verified": true,
-  "conditions_budgets_counters_and_weights_verified": true
-}

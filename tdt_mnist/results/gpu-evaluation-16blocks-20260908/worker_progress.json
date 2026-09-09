@@ -1,6 +1,0 @@
-{
-  "engine": "gpu_sequential",
-  "seed": 2,
-  "step": 100,
-  "intervals": 100
-}

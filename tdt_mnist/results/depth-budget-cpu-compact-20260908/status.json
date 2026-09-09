@@ -1,9 +1,0 @@
-{
-  "complete": false,
-  "stage": "paused_by_user",
-  "completed_trajectories": 0,
-  "expected_trajectories": 6,
-  "active": null,
-  "test_evaluated": false,
-  "paused_at": "2026-09-08T16:49:34Z"
-}

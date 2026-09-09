@@ -1,8 +1,0 @@
-{
-  "step": 12000,
-  "validation": {
-    "loss": 0.38130889892578124,
-    "accuracy": 0.884
-  },
-  "elapsed_seconds": 2194.586402285844
-}

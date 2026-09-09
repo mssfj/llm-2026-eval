@@ -1,4 +1,0 @@
-engine,max_relative_loss_error
-gpu_sequential,2.8432933163458074e-07
-gpu_batched,2.727657317791454e-07
-gpu_graph,2.727657317791454e-07
